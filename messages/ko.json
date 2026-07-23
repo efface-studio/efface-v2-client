@@ -1,0 +1,92 @@
+{
+  "Meta": {
+    "title": "efface — 복잡함은 지우고, 효과만 남깁니다",
+    "description": "efface는 AI와 웹·앱 프로덕트를 만드는 개발 스튜디오입니다. 군더더기를 덜어내고, 잘 작동하는 것만 남깁니다."
+  },
+  "Nav": {
+    "menu": "메뉴",
+    "close": "닫기",
+    "items": {
+      "work": "무엇을 하나요",
+      "approach": "일하는 방식",
+      "contact": "연락처"
+    }
+  },
+  "Hero": {
+    "eyebrow": "AI · 웹 · 앱 개발 스튜디오",
+    "titleLine1": "복잡함은 지우고,",
+    "titleLine2": "효과만 남깁니다.",
+    "sub": "efface는 AI와 웹·앱 프로덕트를 만드는 개발 스튜디오입니다. 불필요한 것을 덜어내고, 잘 작동하는 것만 남깁니다.",
+    "scroll": "스크롤"
+  },
+  "Services": {
+    "label": "what we do",
+    "title": "우리가 만드는 것",
+    "lead": "아이디어를 실제로 작동하는 제품으로. 세 가지 축으로 만듭니다.",
+    "items": [
+      {
+        "no": "01",
+        "title": "AI 프로덕트",
+        "desc": "LLM 기반 기능, 에이전트, 자동화. 막연한 아이디어를 실제로 작동하는 지능형 제품으로 구현합니다.",
+        "tags": ["LLM", "Agents", "Automation", "RAG"]
+      },
+      {
+        "no": "02",
+        "title": "웹 개발",
+        "desc": "Next.js 기반의 빠르고 견고한 웹. 한 장의 랜딩부터 복잡한 대시보드까지, 확장 가능한 구조로 짓습니다.",
+        "tags": ["Next.js", "TypeScript", "Tailwind"]
+      },
+      {
+        "no": "03",
+        "title": "앱 개발",
+        "desc": "모바일과 웹앱. 화면과 데이터가 하나의 흐름으로 이어지는 사용자 경험을 설계하고 구현합니다.",
+        "tags": ["Web App", "Mobile", "PWA"]
+      }
+    ]
+  },
+  "Approach": {
+    "label": "approach",
+    "title": "적게, 그러나 정확하게.",
+    "lead": "efface는 '지우다'라는 뜻입니다. 우리는 덜어내는 방식으로 문제를 풉니다.",
+    "items": [
+      {
+        "no": "01",
+        "title": "본질만 남기는 설계",
+        "desc": "화려함보다 명료함. 정말 필요한 것만 남을 때까지 덜어냅니다."
+      },
+      {
+        "no": "02",
+        "title": "검증된 기술만",
+        "desc": "유행이 아니라 오래 살아남는 도구. 넘겨받아도 막히지 않는 코드를 씁니다."
+      },
+      {
+        "no": "03",
+        "title": "끝까지 책임지는 완성도",
+        "desc": "배포로 끝이 아니라, 실제로 잘 돌아가는 상태까지 책임집니다."
+      },
+      {
+        "no": "04",
+        "title": "빠른 판단, 정확한 일정",
+        "desc": "기획·디자인·개발을 한 흐름으로. 커뮤니케이션 비용을 줄이고 약속한 일정을 지킵니다."
+      }
+    ],
+    "stack": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Anthropic", "OpenAI", "Vercel", "Supabase", "PostgreSQL", "React Native", "Framer Motion", "Cloudflare"]
+  },
+  "Contact": {
+    "label": "contact",
+    "title": "함께 만들 준비가 되셨나요?",
+    "lead": "새로운 제품, 막연한 아이디어, 혹은 협업 제안. 무엇이든 편하게 보내주세요.",
+    "cta": "이메일 보내기",
+    "email": "contact@efface.dev"
+  },
+  "Footer": {
+    "tagline": "복잡함은 지우고, 효과만 남깁니다.",
+    "studio": "AI · 웹 · 앱 개발 스튜디오",
+    "founderLabel": "대표",
+    "founder": "서지완",
+    "rights": "© 2026 efface. All rights reserved.",
+    "backToTop": "맨 위로",
+    "navTitle": "메뉴",
+    "contactTitle": "연락처"
+  }
+}

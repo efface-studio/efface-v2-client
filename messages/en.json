@@ -1,0 +1,92 @@
+{
+  "Meta": {
+    "title": "efface — Erase the complexity. Keep the effect.",
+    "description": "efface is a development studio building AI, web, and app products. We strip away the clutter and keep only what works."
+  },
+  "Nav": {
+    "menu": "Menu",
+    "close": "Close",
+    "items": {
+      "work": "What we do",
+      "approach": "How we work",
+      "contact": "Contact"
+    }
+  },
+  "Hero": {
+    "eyebrow": "AI · Web · App Studio",
+    "titleLine1": "Erase the complexity.",
+    "titleLine2": "Keep the effect.",
+    "sub": "efface is a development studio crafting AI, web, and app products. We take away the excess and keep only what works.",
+    "scroll": "Scroll"
+  },
+  "Services": {
+    "label": "what we do",
+    "title": "What we build",
+    "lead": "Ideas turned into products that actually run — built across three axes.",
+    "items": [
+      {
+        "no": "01",
+        "title": "AI Products",
+        "desc": "LLM-powered features, agents, and automation. We turn vague ideas into intelligent products that actually ship.",
+        "tags": ["LLM", "Agents", "Automation", "RAG"]
+      },
+      {
+        "no": "02",
+        "title": "Web",
+        "desc": "Fast, resilient web on Next.js — from a single landing page to complex dashboards, built to scale.",
+        "tags": ["Next.js", "TypeScript", "Tailwind"]
+      },
+      {
+        "no": "03",
+        "title": "Apps",
+        "desc": "Mobile and web apps. We design and engineer experiences where screens and data move as one flow.",
+        "tags": ["Web App", "Mobile", "PWA"]
+      }
+    ]
+  },
+  "Approach": {
+    "label": "approach",
+    "title": "Less, but exact.",
+    "lead": "efface means to erase. We solve problems by taking away, not piling on.",
+    "items": [
+      {
+        "no": "01",
+        "title": "Design to the essence",
+        "desc": "Clarity over decoration. We strip a product back until only what matters is left."
+      },
+      {
+        "no": "02",
+        "title": "Only proven tech",
+        "desc": "Tools that last, not trends. Code that anyone can pick up and keep running."
+      },
+      {
+        "no": "03",
+        "title": "Finished, not just shipped",
+        "desc": "Deploying isn't the finish line — working well in the real world is."
+      },
+      {
+        "no": "04",
+        "title": "Fast calls, exact timelines",
+        "desc": "Planning, design, and engineering as one flow — less overhead, dates we keep."
+      }
+    ],
+    "stack": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Anthropic", "OpenAI", "Vercel", "Supabase", "PostgreSQL", "React Native", "Framer Motion", "Cloudflare"]
+  },
+  "Contact": {
+    "label": "contact",
+    "title": "Ready to build something?",
+    "lead": "A new product, a rough idea, or a partnership — whatever it is, send it our way.",
+    "cta": "Say hello",
+    "email": "contact@efface.dev"
+  },
+  "Footer": {
+    "tagline": "Erase the complexity. Keep the effect.",
+    "studio": "AI · Web · App Studio",
+    "founderLabel": "Founder",
+    "founder": "Seojiwan Suh",
+    "rights": "© 2026 efface. All rights reserved.",
+    "backToTop": "Back to top",
+    "navTitle": "Menu",
+    "contactTitle": "Contact"
+  }
+}
