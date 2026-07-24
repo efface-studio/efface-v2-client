@@ -30,21 +30,24 @@ export default function Hero() {
           right half and the copy owns the lower-left. Overscanned wrapper leaves
           room for the parallax translate/scale without exposing edges. */}
       <motion.div
-        className="absolute -inset-[8%]"
+        className="absolute inset-0"
         style={reduce ? undefined : { y: videoY, scale: videoScale }}
       >
+        {/* object-contain shows the mark at its natural (smaller) size instead of
+           zoom-cropping it larger; the video's dark backdrop blends into the page
+           bg so the letterbox is invisible. */}
         <video
-          className="h-full w-full object-cover object-center md:[object-position:36%_50%]"
+          className="h-full w-full object-contain object-[center_42%] md:object-center"
           autoPlay
           muted
           loop
           playsInline
-          poster="/hero-poster.jpg?v=2"
+          poster="/hero-poster.jpg?v=3"
           aria-hidden="true"
         >
           {/* ?v bumps the URL when the file is swapped, busting the immutable
              CDN/browser cache without renaming the asset. */}
-          <source src="/hero.mp4?v=2" type="video/mp4" />
+          <source src="/hero.mp4?v=3" type="video/mp4" />
         </video>
       </motion.div>
 
