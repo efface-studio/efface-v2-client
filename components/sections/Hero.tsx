@@ -39,10 +39,12 @@ export default function Hero() {
           muted
           loop
           playsInline
-          poster="/hero-poster.jpg"
+          poster="/hero-poster.jpg?v=2"
           aria-hidden="true"
         >
-          <source src="/hero.mp4" type="video/mp4" />
+          {/* ?v bumps the URL when the file is swapped, busting the immutable
+             CDN/browser cache without renaming the asset. */}
+          <source src="/hero.mp4?v=2" type="video/mp4" />
         </video>
       </motion.div>
 
