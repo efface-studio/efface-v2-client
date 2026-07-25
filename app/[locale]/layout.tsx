@@ -9,7 +9,12 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-const SITE_URL = "https://efface.dev";
+// Canonical origin for metadata (canonical links, hreflang, OG/Twitter URLs).
+// Set NEXT_PUBLIC_SITE_URL per environment; falls back to the v2 host.
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://v2.efface.dev").replace(
+  /\/$/,
+  ""
+);
 const OG_IMAGE = `${SITE_URL}/og.jpg`;
 
 export async function generateMetadata({
