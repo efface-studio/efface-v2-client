@@ -8,11 +8,17 @@ import * as THREE from "three";
  * setup is untyped and doesn't need to pass tsc.
  *
  * @param {HTMLCanvasElement} canvas
+ * @param {{ still?: boolean }} [options] `still` renders a single locked-up
+ *   frame instead of animating — the reduced-motion fallback.
  * @returns {() => void} dispose
  */
-export function createGlassScene(canvas) {
+export function createGlassScene(canvas, options) {
+  const still = !!(options && options.still);
   // ---- Loop timing: gather -> full 360° spin -> settle -> drift apart => seamless loop ----
   const PERIOD = 11.0;
+  // Phase where the cards sit gathered in the lock-up pose — used for the
+  // reduced-motion still frame.
+  const STILL_PHASE = 0.15;
 
   // ---- Card geometry: rounded, beveled square slab ----
   function roundedRectShape(w, h, r) {
@@ -54,13 +60,35 @@ export function createGlassScene(canvas) {
     cv.height = h;
     const ctx = cv.getContext("2d");
     const vg = ctx.createLinearGradient(0, 0, 0, h);
-    vg.addColorStop(0.0, "#0b0c10");
-    vg.addColorStop(0.5, "#0e1015");
+    vg.addColorStop(0.0, "#0a0b0f");
+    vg.addColorStop(0.42, "#101319");
+    vg.addColorStop(0.72, "#0c0e13");
     vg.addColorStop(1.0, "#08090c");
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, w, h);
-    // (Removed the wide horizontal light streaks — the backdrop is a clean
-    //  vertical gradient now so no light trails across the logo.)
+    function blob(cx, cy, r, sx, sy, color) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(sx, sy);
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+      g.addColorStop(0, color);
+      g.addColorStop(1, "rgba(11,12,16,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(-r, -r, 2 * r, 2 * r);
+      ctx.restore();
+    }
+    // Studio lighting baked across the WHOLE frame (this texture is the entire
+    // backdrop now — there is no floor mesh). Broad sweep in from the left,
+    // gentle spill through the middle, and a faint bounce along the bottom so
+    // the lower half never goes flat black. All static: the shaft that used to
+    // travel with the logo is gone for good.
+    blob(w * 0.1, h * 0.36, 460, 3.1, 0.55, "rgba(146,155,172,0.6)");
+    blob(w * 0.02, h * 0.5, 380, 2.7, 0.44, "rgba(118,126,144,0.48)");
+    blob(w * 0.42, h * 0.44, 400, 2.6, 0.34, "rgba(96,104,122,0.3)");
+    blob(w * 0.78, h * 0.1, 340, 2.1, 0.8, "rgba(56,62,78,0.32)");
+    // lower-half bounce + a cool blue pool under where the mark sits
+    blob(w * 0.42, h * 0.86, 460, 3.0, 0.4, "rgba(46,54,74,0.42)");
+    blob(w * 0.66, h * 0.8, 340, 2.0, 0.34, "rgba(38,72,150,0.26)");
     const t = new THREE.CanvasTexture(cv);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
@@ -80,7 +108,6 @@ export function createGlassScene(canvas) {
 
   const scene = new THREE.Scene();
   scene.background = backgroundTexture();
-  scene.fog = new THREE.Fog(0x0d0f14, 10, 26); // blend the floor into the backdrop (no hard horizon)
   function buildEnv(ry, rz) {
     const pmrem = new THREE.PMREMGenerator(renderer);
     const es = new THREE.Scene();
@@ -215,38 +242,22 @@ export function createGlassScene(canvas) {
   fill.position.set(3, -2, 5);
   scene.add(key, rim, fill);
 
-  // ---- Floor + contact shadow + blue glow ----
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(80, 80),
-    new THREE.MeshStandardMaterial({ color: 0x0a0c11, roughness: 0.72, metalness: 0.0, envMapIntensity: 0.12 })
-  );
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -3.0;
-  scene.add(floor);
-
-  const shadow = new THREE.Mesh(
-    new THREE.PlaneGeometry(6.5, 4.2),
-    new THREE.MeshBasicMaterial({
-      map: radialTexture("rgba(0,0,0,0.6)", "rgba(0,0,0,0)"),
-      transparent: true,
-      depthWrite: false,
-    })
-  );
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(1.9, -2.98, 0.35);
-  scene.add(shadow);
-
+  // ---- Ambient glow ----
+  // No floor plane and no contact shadow: a ground plane draws a hard horizon
+  // across the middle of the hero, leaving the lower half flat black. The
+  // backdrop texture carries the whole frame instead, and this additive glow
+  // sits behind the mark as a soft blue bloom.
   const glow = new THREE.Mesh(
     new THREE.PlaneGeometry(5, 3.5),
     new THREE.MeshBasicMaterial({
-      map: radialTexture("rgba(30,110,255,0.5)", "rgba(30,110,255,0)"),
+      map: radialTexture("rgba(34,96,230,0.26)", "rgba(34,96,230,0)"),
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     })
   );
-  glow.rotation.x = -Math.PI / 2;
-  glow.position.set(2.35, -2.97, 0.6);
+  glow.scale.set(3.4, 3.0, 1); // wide + soft so it reads as ambient bloom
+  glow.position.set(2.0, -0.9, -4.0); // behind the cards, facing the camera
   scene.add(glow);
 
   // ---- Resize + framing (sized to the canvas box, not the whole window) ----
@@ -325,9 +336,7 @@ export function createGlassScene(canvas) {
     renderer.toneMappingExposure = 1.05 + 0.1 * pop;
     camera.position.set(0, 0.6 + 0.15 * L.w, 12.2 - 1.15 * L.w); // push in during the transform
     camera.lookAt(0.4, -0.15, 0);
-    glow.scale.setScalar(1 + 0.35 * L.w); // floor glow breathes with the weave
-    glow.material.color.setScalar(1 + 0.5 * L.w);
-    shadow.scale.setScalar(1 + 0.22 * L.w);
+    glow.material.color.setScalar(1 + 0.5 * L.w); // glow breathes with the weave
     renderer.render(scene, camera);
   }
 
@@ -349,10 +358,26 @@ export function createGlassScene(canvas) {
     applyPhase((elapsed % PERIOD) / PERIOD);
   }
 
-  const ro = new ResizeObserver(resize);
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (still) applyPhase(STILL_PHASE); // keep the frozen frame correct on resize
+  });
   ro.observe(canvas);
   resize();
-  requestAnimationFrame(resize); // guard against a 0×0 first layout
+  requestAnimationFrame(() => {
+    resize(); // guard against a 0×0 first layout
+    if (still) applyPhase(STILL_PHASE);
+  });
+
+  // Reduced motion: draw the locked-up pose once and never animate.
+  if (still) {
+    applyPhase(STILL_PHASE);
+    return function disposeStill() {
+      disposed = true;
+      ro.disconnect();
+      renderer.dispose();
+    };
+  }
 
   const onVis = () => {
     if (!disposed) paused = document.hidden;
