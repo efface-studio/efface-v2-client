@@ -48,7 +48,7 @@ export default function ServiceScroll() {
   // only drives how far the track slides, not the section height.
   // The long runway is deliberate: the same travel spread over more scroll
   // makes the panels glide instead of snapping past.
-  const heightVh = items.length * 90 + 90;
+  const heightVh = items.length * 30 + 30;
 
   return (
     <>
