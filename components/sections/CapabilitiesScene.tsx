@@ -90,14 +90,32 @@ export default function CapabilitiesScene() {
       };
     });
 
+    let mouseMoved = true;
     const onMouse = (e: MouseEvent) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
+      mouseMoved = true;
     };
     window.addEventListener("mousemove", onMouse);
 
+    // Only run while the scene is on screen and the tab is visible.
+    let onScreen = true;
+    let hidden = document.hidden;
+    const io = new IntersectionObserver(
+      (entries) => {
+        onScreen = entries[0].isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    io.observe(root);
+    const onVis = () => {
+      hidden = document.hidden;
+    };
+    document.addEventListener("visibilitychange", onVis);
+
     const tick = () => {
       raf = requestAnimationFrame(tick);
+      if (!onScreen || hidden) return;
       const vh = window.innerHeight;
       const rect = root.getBoundingClientRect();
       const total = Math.max(1, root.offsetHeight - vh);
@@ -146,7 +164,12 @@ export default function CapabilitiesScene() {
         // The lens only arms once the scene has finished dealing itself out —
         // popping a magnifier over cards that are still flying in reads as a bug.
         const armed = p >= LENS_ARM_AT;
-        for (let c = 0; c < 4 && over < 0 && armed; c++) {
+        // Hit-testing walks up to 30 elements with getBoundingClientRect, which
+        // forces layout each time. The answer can only change when the cursor
+        // moves, so reuse the previous result on idle frames.
+        const needsHitTest = armed && mouseMoved;
+        mouseMoved = false;
+        for (let c = 0; c < 4 && over < 0 && needsHitTest; c++) {
           const d = capData[c];
           if (!d) continue;
           const targets = d.rows.slice();
@@ -168,7 +191,8 @@ export default function CapabilitiesScene() {
           }
           if (near && mouse.x >= near.left - 8 && mouse.x <= near.right + 14) over = c;
         }
-        overRows = over;
+        if (needsHitTest) overRows = over;
+        else over = overRows;
 
         if (!lp.x && !lp.y) {
           lp.x = G.width / 2;
@@ -301,6 +325,8 @@ export default function CapabilitiesScene() {
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("mousemove", onMouse);
     };
   }, [groups.length]);
