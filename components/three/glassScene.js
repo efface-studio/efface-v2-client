@@ -59,21 +59,8 @@ export function createGlassScene(canvas) {
     vg.addColorStop(1.0, "#08090c");
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, w, h);
-    function blob(cx, cy, r, sx, sy, color) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(sx, sy);
-      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
-      g.addColorStop(0, color);
-      g.addColorStop(1, "rgba(11,12,16,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(-r, -r, 2 * r, 2 * r);
-      ctx.restore();
-    }
-    // wide horizontal light streaks sweeping in from the left (like the source)
-    blob(w * 0.08, h * 0.42, 320, 2.8, 0.5, "rgba(98,105,118,0.55)");
-    blob(w * 0.04, h * 0.56, 280, 2.4, 0.38, "rgba(80,87,100,0.4)");
-    blob(w * 0.72, h * 0.1, 300, 1.9, 0.75, "rgba(38,42,52,0.30)");
+    // (Removed the wide horizontal light streaks — the backdrop is a clean
+    //  vertical gradient now so no light trails across the logo.)
     const t = new THREE.CanvasTexture(cv);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
@@ -216,7 +203,7 @@ export function createGlassScene(canvas) {
   const pivot = new THREE.Group();
   pivot.add(spinner);
   pivot.rotation.z = 0.12; // slight roll -> diagonal lock-up like the source
-  pivot.position.set(1.55, 0.35, 0);
+  pivot.position.set(1.9, -0.05, 0); // nudged right + down
   scene.add(pivot);
 
   // ---- Lights ----
@@ -246,7 +233,7 @@ export function createGlassScene(canvas) {
     })
   );
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(1.55, -2.98, 0.35);
+  shadow.position.set(1.9, -2.98, 0.35);
   scene.add(shadow);
 
   const glow = new THREE.Mesh(
@@ -259,23 +246,8 @@ export function createGlassScene(canvas) {
     })
   );
   glow.rotation.x = -Math.PI / 2;
-  glow.position.set(2.0, -2.97, 0.6);
+  glow.position.set(2.35, -2.97, 0.6);
   scene.add(glow);
-
-  // soft light shaft sweeping behind the cards once per loop
-  const streak = new THREE.Mesh(
-    new THREE.PlaneGeometry(6, 30),
-    new THREE.MeshBasicMaterial({
-      map: radialTexture("rgba(190,205,230,0.16)", "rgba(190,205,230,0)"),
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    })
-  );
-  streak.position.set(-16, 1.5, -4);
-  streak.rotation.z = 1.05;
-  scene.add(streak);
 
   // ---- Resize + framing (sized to the canvas box, not the whole window) ----
   function resize() {
@@ -347,15 +319,12 @@ export function createGlassScene(canvas) {
     }
     const pop = bell(0.123, 0.018, p); // impact accent when cards lock
     pivot.scale.setScalar(0.8);
-    pivot.position.y = 0.35 + 0.05 * Math.sin(TAU * p); // gentle float
+    pivot.position.y = -0.05 + 0.05 * Math.sin(TAU * p); // gentle float (nudged down)
     pivot.rotation.z = 0.12 + 0.018 * Math.sin(TAU * 2 * p + 1.2); // gentle rock
     pivot.rotation.x = 0.05 * L.w * Math.sin(L.psi); // weave sway
     renderer.toneMappingExposure = 1.05 + 0.1 * pop;
     camera.position.set(0, 0.6 + 0.15 * L.w, 12.2 - 1.15 * L.w); // push in during the transform
     camera.lookAt(0.4, -0.15, 0);
-    const str = sm(0.364, 0.745, p); // background light shaft sweep
-    streak.position.x = -16 + 32 * str;
-    streak.material.opacity = Math.sin(Math.PI * str) * 0.6;
     glow.scale.setScalar(1 + 0.35 * L.w); // floor glow breathes with the weave
     glow.material.color.setScalar(1 + 0.5 * L.w);
     shadow.scale.setScalar(1 + 0.22 * L.w);
