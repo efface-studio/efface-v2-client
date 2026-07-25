@@ -82,18 +82,18 @@
     ]
   },
   "Capabilities": {
-    "label": "capabilities",
-    "title": "무엇을, 어디까지.",
-    "lead": "표면만 훑지 않습니다. 각 영역에서 실제로 손대는 범위입니다.",
+    "label": "CAPABILITIES",
+    "title": "무엇을, 얼마나 깊게 다루는가.",
+    "lead": "표면만 훑지 않습니다. 각 영역에서 실제로 책임지는 범위입니다.",
     "groups": [
       {
         "no": "01",
         "title": "AI 엔지니어링",
         "items": [
-          "LLM 기반 기능 설계와 구현",
+          "LLM 기능을 설계하고, 만들고, 배포까지",
           "에이전트 · 툴 호출 · 자동화 파이프라인",
-          "RAG · 벡터 검색",
-          "프롬프트 설계와 품질 평가"
+          "운영 환경에서 버티는 RAG · 벡터 검색",
+          "품질을 수치로 검증하는 프롬프트 설계"
         ],
         "tools": [
           "Claude",
@@ -108,8 +108,8 @@
         "items": [
           "Next.js App Router 기반 풀스택",
           "서버 컴포넌트 · 스트리밍 · 캐싱 전략",
-          "다국어 · SEO · 접근성",
-          "Core Web Vitals 성능 최적화"
+          "다국어 · SEO · 접근성을 기본값으로",
+          "측정에 그치지 않는 Core Web Vitals 튜닝"
         ],
         "tools": [
           "Next.js",
@@ -125,10 +125,12 @@
           "웹앱 · 대시보드 · 어드민",
           "모바일 앱 · PWA",
           "WebGL · 3D · 모션 인터랙션",
-          "디자인 시스템 구축"
+          "제품과 함께 확장되는 디자인 시스템"
         ],
         "tools": [
           "React Native",
+          "Swift",
+          "Kotlin",
           "Three.js",
           "Motion"
         ]
@@ -139,11 +141,12 @@
         "items": [
           "배포 · CI/CD · 모니터링",
           "데이터베이스 설계와 마이그레이션",
-          "인증 · 결제 연동",
+          "인증 · 결제를 전 구간에 걸쳐 연동",
           "성능과 비용 최적화"
         ],
         "tools": [
           "Vercel",
+          "AWS",
           "Supabase",
           "PostgreSQL",
           "Cloudflare"
