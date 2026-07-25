@@ -1,0 +1,199 @@
+{
+  "Meta": {
+    "title": "efface — 복잡함은 지우고, 효과만 남깁니다",
+    "description": "efface는 AI와 웹·앱 프로덕트를 만드는 개발 스튜디오입니다. 군더더기를 덜어내고, 잘 작동하는 것만 남깁니다."
+  },
+  "Nav": {
+    "menu": "메뉴",
+    "close": "닫기",
+    "items": {
+      "apps": "만든 앱",
+      "capabilities": "기술 역량",
+      "about": "소개",
+      "contact": "연락처"
+    }
+  },
+  "Hero": {
+    "eyebrow": "AI · 웹 · 앱 개발 스튜디오",
+    "titleLine1": "복잡함은 지우고,",
+    "titleLine2": "효과만 남깁니다.",
+    "sub": "AI와 웹·앱을 다루는 개발팀입니다. 기술을 깊게 파고, 잘 작동하는 제품으로 만듭니다.",
+    "scroll": "스크롤"
+  },
+  "AppCards": {
+    "word1": "INNOVATIVE",
+    "word2": "SERVICES",
+    "cards": [
+      {
+        "title": "HiNest",
+        "sub": "사내 관리의 새로운 시작"
+      },
+      {
+        "title": "Muru",
+        "sub": "커플들의 순간을 연결하다"
+      },
+      {
+        "title": "QTO",
+        "sub": "일상을 사진으로 남기다"
+      },
+      {
+        "title": "GOMS",
+        "sub": "외출제를 간편하게"
+      }
+    ]
+  },
+  "Capabilities": {
+    "label": "CAPABILITIES",
+    "title": "무엇을, 얼마나 깊게 다루는가.",
+    "lead": "표면만 훑지 않습니다. 각 영역에서 실제로 책임지는 범위입니다.",
+    "groups": [
+      {
+        "no": "01",
+        "title": "AI 엔지니어링",
+        "items": [
+          "LLM 기능을 설계하고, 만들고, 배포까지",
+          "에이전트 · 툴 호출 · 자동화 파이프라인",
+          "운영 환경에서 버티는 RAG · 벡터 검색",
+          "품질을 수치로 검증하는 프롬프트 설계"
+        ],
+        "tools": [
+          "Claude",
+          "OpenAI",
+          "Vercel AI SDK",
+          "pgvector"
+        ]
+      },
+      {
+        "no": "02",
+        "title": "웹 엔지니어링",
+        "items": [
+          "Next.js App Router 기반 풀스택",
+          "서버 컴포넌트 · 스트리밍 · 캐싱 전략",
+          "다국어 · SEO · 접근성을 기본값으로",
+          "측정에 그치지 않는 Core Web Vitals 튜닝"
+        ],
+        "tools": [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS"
+        ]
+      },
+      {
+        "no": "03",
+        "title": "앱 · 인터랙션",
+        "items": [
+          "웹앱 · 대시보드 · 어드민",
+          "모바일 앱 · PWA",
+          "WebGL · 3D · 모션 인터랙션",
+          "제품과 함께 확장되는 디자인 시스템"
+        ],
+        "tools": [
+          "React Native",
+          "Swift",
+          "Kotlin",
+          "Three.js",
+          "Motion"
+        ]
+      },
+      {
+        "no": "04",
+        "title": "인프라 · 데이터",
+        "items": [
+          "배포 · CI/CD · 모니터링",
+          "데이터베이스 설계와 마이그레이션",
+          "인증 · 결제를 전 구간에 걸쳐 연동",
+          "성능과 비용 최적화"
+        ],
+        "tools": [
+          "Vercel",
+          "AWS",
+          "Supabase",
+          "PostgreSQL",
+          "Cloudflare"
+        ]
+      }
+    ]
+  },
+  "Approach": {
+    "label": "approach",
+    "title": "적게, 그러나 정확하게.",
+    "lead": "efface는 '지우다'라는 뜻입니다. 우리는 덜어내는 방식으로 문제를 풉니다.",
+    "items": [
+      {
+        "no": "01",
+        "title": "본질만 남기는 설계",
+        "desc": "화려함보다 명료함. 정말 필요한 것만 남을 때까지 덜어냅니다."
+      },
+      {
+        "no": "02",
+        "title": "검증된 기술만",
+        "desc": "유행이 아니라 오래 살아남는 도구. 넘겨받아도 막히지 않는 코드를 씁니다."
+      },
+      {
+        "no": "03",
+        "title": "끝까지 책임지는 완성도",
+        "desc": "배포로 끝이 아니라, 실제로 잘 돌아가는 상태까지 책임집니다."
+      },
+      {
+        "no": "04",
+        "title": "빠른 판단, 정확한 일정",
+        "desc": "기획·디자인·개발을 한 흐름으로. 커뮤니케이션 비용을 줄이고 약속한 일정을 지킵니다."
+      }
+    ],
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Anthropic",
+      "OpenAI",
+      "Vercel",
+      "Supabase",
+      "PostgreSQL",
+      "React Native",
+      "Framer Motion",
+      "Cloudflare"
+    ]
+  },
+  "About": {
+    "label": "about",
+    "title": "작게 일하고, 깊게 팝니다.",
+    "paragraphs": [
+      "efface는 AI와 웹·앱 프로덕트를 만드는 개발팀입니다. 기획과 설계부터 개발, 배포, 운영까지 한 흐름으로 직접 다룹니다.",
+      "규모를 키우는 대신 깊이를 택했습니다. 새로운 기술은 데모에서 끝내지 않고 실제 제품에 넣어 검증합니다. 지금 보고 계신 이 페이지의 배경도 영상이 아니라 브라우저에서 실시간으로 그려지는 3D 씬입니다.",
+      "잘 만든 제품은 결국 오래 잘 돌아가는 제품이라고 생각합니다. 화려한 기능보다 견고한 구조를, 빠른 출시보다 정확한 완성을 먼저 둡니다."
+    ],
+    "meta": [
+      {
+        "label": "대표",
+        "value": "서지완"
+      },
+      {
+        "label": "다루는 것",
+        "value": "AI · 웹 · 앱"
+      },
+      {
+        "label": "연락",
+        "value": "contact@efface.dev"
+      }
+    ]
+  },
+  "Contact": {
+    "label": "contact",
+    "title": "함께 만들 준비가 되셨나요?",
+    "lead": "새로운 제품, 막연한 아이디어, 혹은 협업 제안. 무엇이든 편하게 보내주세요.",
+    "cta": "이메일 보내기",
+    "email": "contact@efface.dev"
+  },
+  "Footer": {
+    "tagline": "복잡함은 지우고, 효과만 남깁니다.",
+    "studio": "AI · 웹 · 앱 개발 스튜디오",
+    "founderLabel": "대표",
+    "founder": "서지완",
+    "rights": "© 2026 efface. All rights reserved.",
+    "backToTop": "맨 위로",
+    "navTitle": "메뉴",
+    "contactTitle": "연락처"
+  }
+}

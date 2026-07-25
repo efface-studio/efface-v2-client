@@ -1,0 +1,199 @@
+{
+  "Meta": {
+    "title": "efface — Erase the complexity. Keep the effect.",
+    "description": "efface is a development studio building AI, web, and app products. We strip away the clutter and keep only what works."
+  },
+  "Nav": {
+    "menu": "Menu",
+    "close": "Close",
+    "items": {
+      "apps": "Apps",
+      "capabilities": "Capabilities",
+      "about": "About",
+      "contact": "Contact"
+    }
+  },
+  "Hero": {
+    "eyebrow": "AI · Web · App Studio",
+    "titleLine1": "Erase the complexity.",
+    "titleLine2": "Keep the effect.",
+    "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up.",
+    "scroll": "Scroll"
+  },
+  "AppCards": {
+    "word1": "INNOVATIVE",
+    "word2": "SERVICES",
+    "cards": [
+      {
+        "title": "HiNest",
+        "sub": "Workplace, organized"
+      },
+      {
+        "title": "Muru",
+        "sub": "Moments, connected"
+      },
+      {
+        "title": "QTO",
+        "sub": "Life in photos"
+      },
+      {
+        "title": "GOMS",
+        "sub": "Leave made easy"
+      }
+    ]
+  },
+  "Capabilities": {
+    "label": "CAPABILITIES",
+    "title": "What we handle, and how deep we go.",
+    "lead": "No surface-level passes — this is the scope we actually own in every area.",
+    "groups": [
+      {
+        "no": "01",
+        "title": "AI Engineering",
+        "items": [
+          "LLM features designed, built, and shipped",
+          "Agents, tool calling, automation pipelines",
+          "RAG and vector search that hold up in production",
+          "Prompt design with measurable quality evals"
+        ],
+        "tools": [
+          "Claude",
+          "OpenAI",
+          "Vercel AI SDK",
+          "pgvector"
+        ]
+      },
+      {
+        "no": "02",
+        "title": "Web Engineering",
+        "items": [
+          "Full-stack on the Next.js App Router",
+          "Server components, streaming, caching strategy",
+          "i18n, SEO, and accessibility as defaults",
+          "Core Web Vitals tuned, not just measured"
+        ],
+        "tools": [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS"
+        ]
+      },
+      {
+        "no": "03",
+        "title": "Apps & Interaction",
+        "items": [
+          "Web apps, dashboards, admin tools",
+          "Mobile apps and PWAs",
+          "WebGL, 3D, and motion interaction",
+          "Design systems that scale with the product"
+        ],
+        "tools": [
+          "React Native",
+          "Swift",
+          "Kotlin",
+          "Three.js",
+          "Motion"
+        ]
+      },
+      {
+        "no": "04",
+        "title": "Infra & Data",
+        "items": [
+          "Deployment, CI/CD, and monitoring",
+          "Database design and migrations",
+          "Auth and payments, integrated end to end",
+          "Performance and cost tuning"
+        ],
+        "tools": [
+          "Vercel",
+          "AWS",
+          "Supabase",
+          "PostgreSQL",
+          "Cloudflare"
+        ]
+      }
+    ]
+  },
+  "Approach": {
+    "label": "approach",
+    "title": "Less, but exact.",
+    "lead": "efface means to erase. We solve problems by taking away, not piling on.",
+    "items": [
+      {
+        "no": "01",
+        "title": "Design to the essence",
+        "desc": "Clarity over decoration. We strip a product back until only what matters is left."
+      },
+      {
+        "no": "02",
+        "title": "Only proven tech",
+        "desc": "Tools that last, not trends. Code that anyone can pick up and keep running."
+      },
+      {
+        "no": "03",
+        "title": "Finished, not just shipped",
+        "desc": "Deploying isn't the finish line — working well in the real world is."
+      },
+      {
+        "no": "04",
+        "title": "Fast calls, exact timelines",
+        "desc": "Planning, design, and engineering as one flow — less overhead, dates we keep."
+      }
+    ],
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Anthropic",
+      "OpenAI",
+      "Vercel",
+      "Supabase",
+      "PostgreSQL",
+      "React Native",
+      "Framer Motion",
+      "Cloudflare"
+    ]
+  },
+  "About": {
+    "label": "about",
+    "title": "Small team, deep work.",
+    "paragraphs": [
+      "efface is an engineering team building AI, web, and app products. Planning, design, development, deployment, operations — we handle it end to end, ourselves.",
+      "We chose depth over headcount. New tech doesn't stop at a demo here; it goes into real products and gets proven there. The backdrop on this page isn't a video — it's a 3D scene rendering live in your browser.",
+      "A good product is one that keeps working. We take solid structure over flashy features, and getting it right over getting it out."
+    ],
+    "meta": [
+      {
+        "label": "Founder",
+        "value": "Seojiwan Suh"
+      },
+      {
+        "label": "Focus",
+        "value": "AI · Web · Apps"
+      },
+      {
+        "label": "Contact",
+        "value": "contact@efface.dev"
+      }
+    ]
+  },
+  "Contact": {
+    "label": "contact",
+    "title": "Ready to build something?",
+    "lead": "A new product, a rough idea, or a partnership — whatever it is, send it our way.",
+    "cta": "Say hello",
+    "email": "contact@efface.dev"
+  },
+  "Footer": {
+    "tagline": "Erase the complexity. Keep the effect.",
+    "studio": "AI · Web · App Studio",
+    "founderLabel": "Founder",
+    "founder": "Seojiwan Suh",
+    "rights": "© 2026 efface. All rights reserved.",
+    "backToTop": "Back to top",
+    "navTitle": "Menu",
+    "contactTitle": "Contact"
+  }
+}

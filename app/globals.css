@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   efface — v2 design tokens (dark)
+   Black canvas, near-white ink, single royal-blue accent sampled
+   from the logo mark (#3B62E5). Restraint is the whole point.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-bg: #0a0a0b;
+  --color-bg-soft: #101013;
+  --color-surface: #141418;
+  --color-surface-2: #1b1b21;
+
+  --color-fg: #f6f6f7;
+  --color-fg-dim: #9b9ba4;
+  --color-fg-faint: #6a6a73;
+
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+
+  --color-accent: #3b62e5;
+  --color-accent-bright: #6183ff;
+
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-bg);
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "ss02", "cv01";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* JetBrains Mono — one variable file, only for small mono labels. */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTOlOV.woff2")
+    format("woff2");
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Mono eyebrow label used above section titles — `// like this` */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-fg-faint);
+}
+
+/* ── Motion utilities ─────────────────────────────────────────── */
+
+/* Above-the-fold rise, runs on stylesheet parse (no hydration wait). */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rise-d1 {
+  animation-delay: 0.08s;
+}
+.rise-d2 {
+  animation-delay: 0.18s;
+}
+.rise-d3 {
+  animation-delay: 0.28s;
+}
+.rise-d4 {
+  animation-delay: 0.4s;
+}
+.rise-d5 {
+  animation-delay: 0.52s;
+}
+
+/* Slow vertical bob for the scroll cue. */
+@keyframes scroll-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+.scroll-bob {
+  animation: scroll-bob 1.8s ease-in-out infinite;
+}
+
+/* Tech marquee. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+
+/* ── App card (product showcase scene) ───────────────────────────
+   Fixed 360×560 tile with a diagonal sheen overlay and a lift on hover.
+   Sizes/colours mirror the source scene exactly; the gradient and sheen
+   strength come in per card as inline style / --sheen. */
+.app-card {
+  position: relative;
+  width: 360px;
+  height: 560px;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 52px 28px 0;
+  box-sizing: border-box;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+  transition: transform 0.35s ease;
+}
+.app-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, var(--sheen, 0.16)) 50%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  pointer-events: none;
+}
+.app-card:hover {
+  transform: translateY(-14px) scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-card {
+    transition: none;
+  }
+  .app-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Capabilities scene ──────────────────────────────────────────
+   Per-card accent arrives as the --acc custom property; chips mix it
+   into their text/background/border so one rule covers all four columns. */
+@keyframes caretBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.cap-caret {
+  animation: caretBlink 1.1s steps(1) infinite;
+}
+.cap-chip {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: color-mix(in oklab, var(--acc) 45%, #e8e8ec);
+  background: color-mix(in oklab, var(--acc) 12%, rgba(255, 255, 255, 0.02));
+  border: 1px solid color-mix(in oklab, var(--acc) 20%, transparent);
+  border-radius: 8px;
+  padding: 6px 12px;
+  opacity: 0;
+  transition: background 0.25s, border-color 0.25s;
+}
+.cap-chip:hover {
+  border-color: color-mix(in oklab, var(--acc) 45%, transparent);
+  background: color-mix(in oklab, var(--acc) 18%, rgba(255, 255, 255, 0.02));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cap-caret {
+    animation: none;
+  }
+}
+
+/* Animated underline for text links. */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .rise-in,
+  .scroll-bob,
+  .animate-marquee {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
