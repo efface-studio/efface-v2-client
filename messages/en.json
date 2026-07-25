@@ -43,18 +43,18 @@
     ]
   },
   "Capabilities": {
-    "label": "capabilities",
-    "title": "What we handle, and how far.",
-    "lead": "No surface-level work. This is the scope we actually take on in each area.",
+    "label": "CAPABILITIES",
+    "title": "What we handle, and how deep we go.",
+    "lead": "No surface-level passes — this is the scope we actually own in every area.",
     "groups": [
       {
         "no": "01",
         "title": "AI Engineering",
         "items": [
-          "LLM-powered features, designed and built",
+          "LLM features designed, built, and shipped",
           "Agents, tool calling, automation pipelines",
-          "RAG and vector search",
-          "Prompt design and quality evaluation"
+          "RAG and vector search that hold up in production",
+          "Prompt design with measurable quality evals"
         ],
         "tools": [
           "Claude",
@@ -69,8 +69,8 @@
         "items": [
           "Full-stack on the Next.js App Router",
           "Server components, streaming, caching strategy",
-          "i18n, SEO, accessibility",
-          "Core Web Vitals performance work"
+          "i18n, SEO, and accessibility as defaults",
+          "Core Web Vitals tuned, not just measured"
         ],
         "tools": [
           "Next.js",
@@ -85,11 +85,13 @@
         "items": [
           "Web apps, dashboards, admin tools",
           "Mobile apps and PWAs",
-          "WebGL, 3D, motion interaction",
-          "Design systems"
+          "WebGL, 3D, and motion interaction",
+          "Design systems that scale with the product"
         ],
         "tools": [
           "React Native",
+          "Swift",
+          "Kotlin",
           "Three.js",
           "Motion"
         ]
@@ -98,13 +100,14 @@
         "no": "04",
         "title": "Infra & Data",
         "items": [
-          "Deployment, CI/CD, monitoring",
+          "Deployment, CI/CD, and monitoring",
           "Database design and migrations",
-          "Auth and payment integration",
+          "Auth and payments, integrated end to end",
           "Performance and cost tuning"
         ],
         "tools": [
           "Vercel",
+          "AWS",
           "Supabase",
           "PostgreSQL",
           "Cloudflare"

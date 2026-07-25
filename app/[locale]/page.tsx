@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import Hero from "@/components/sections/Hero";
 import AppCards from "@/components/sections/AppCards";
-import Capabilities from "@/components/sections/Capabilities";
+import CapabilitiesScene from "@/components/sections/CapabilitiesScene";
 import Approach from "@/components/sections/Approach";
 import About from "@/components/sections/About";
 import Contact from "@/components/sections/Contact";
@@ -21,7 +21,7 @@ export default async function Home({
       <main>
         <Hero />
         <AppCards />
-        <Capabilities />
+        <CapabilitiesScene />
         <Approach />
         <About />
         <Contact />

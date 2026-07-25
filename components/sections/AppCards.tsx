@@ -48,7 +48,7 @@ const CARDS = [
 ] as const;
 
 const PARALLAX = 0.5;
-const SCENE_LENGTH_VH = 320;
+const SCENE_LENGTH_VH = 160; // runway length sets the pace of the deal-in
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -204,9 +204,27 @@ export default function AppCards() {
     <section
       id="apps"
       ref={sceneRef}
-      style={{ height: `${SCENE_LENGTH_VH}vh`, position: "relative", background: "#131315" }}
+      style={{
+        height: `${SCENE_LENGTH_VH}vh`,
+        position: "relative",
+        background: "var(--color-bg)",
+      }}
     >
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
+        {/* The source scene used a flat #131315 fill, which left a visible seam
+            against the page background. Same tone comes back as a soft radial
+            wash that fades to the page colour at the edges — no seam. */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+            background:
+              "radial-gradient(125% 85% at 50% 45%, #17171a 0%, #101012 42%, var(--color-bg) 78%)",
+          }}
+        />
         <div ref={w1Ref} style={{ ...wordStyle, top: 0 }}>
           {word1.split("").map((ch, i) => (
             <span key={i} style={{ color: "#3A3A40" }}>
