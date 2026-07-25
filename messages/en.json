@@ -14,9 +14,9 @@
   },
   "Hero": {
     "eyebrow": "AI · Web · App Studio",
-    "titleLine1": "Erase the complexity.",
-    "titleLine2": "Keep the effect.",
-    "sub": "efface is a development studio crafting AI, web, and app products. We take away the excess and keep only what works.",
+    "title": "efface",
+    "subLine1": "Erase the complexity.",
+    "subLine2": "Keep the effect.",
     "scroll": "Scroll"
   },
   "Services": {

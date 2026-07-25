@@ -14,9 +14,9 @@
   },
   "Hero": {
     "eyebrow": "AI · 웹 · 앱 개발 스튜디오",
-    "titleLine1": "복잡함은 지우고,",
-    "titleLine2": "효과만 남깁니다.",
-    "sub": "efface는 AI와 웹·앱 프로덕트를 만드는 개발 스튜디오입니다. 불필요한 것을 덜어내고, 잘 작동하는 것만 남깁니다.",
+    "title": "efface",
+    "subLine1": "복잡함은 지우고,",
+    "subLine2": "효과만 남깁니다.",
     "scroll": "스크롤"
   },
   "Services": {
