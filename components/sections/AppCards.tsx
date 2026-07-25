@@ -48,7 +48,9 @@ const CARDS = [
 ] as const;
 
 const PARALLAX = 0.5;
-const SCENE_LENGTH_VH = 320;
+// Runway length sets the pace. Sized from the timeline: 4 stages × ~4.5 wheel
+// notches of travel each, plus the 100vh the sticky viewport itself occupies.
+const SCENE_LENGTH_VH = 280;
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
