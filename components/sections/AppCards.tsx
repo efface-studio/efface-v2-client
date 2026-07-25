@@ -134,8 +134,25 @@ export default function AppCards() {
       }
     };
 
+    // Only run while the scene is actually on screen and the tab is visible —
+    // otherwise this loop burns a frame's work on every page the user visits.
+    let onScreen = true;
+    let hidden = document.hidden;
+    const io = new IntersectionObserver(
+      (entries) => {
+        onScreen = entries[0].isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    if (sceneRef.current) io.observe(sceneRef.current);
+    const onVis = () => {
+      hidden = document.hidden;
+    };
+    document.addEventListener("visibilitychange", onVis);
+
     const tick = () => {
       raf = requestAnimationFrame(tick);
+      if (!onScreen || hidden) return;
       const scene = sceneRef.current;
       if (!scene) return;
       const vh = window.innerHeight;
@@ -183,6 +200,8 @@ export default function AppCards() {
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("mousemove", onMouse);
     };
   }, []);
