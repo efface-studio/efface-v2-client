@@ -55,13 +55,13 @@ export default function Hero() {
             {t("eyebrow")}
           </p>
 
-          <h1 className="rise-in rise-d1 mt-6 text-[4rem] font-semibold lowercase leading-[0.95] tracking-tight sm:text-7xl md:text-8xl">
-            {t("title")}
+          <h1 className="mt-6 text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
+            <span className="rise-in rise-d1 block">{t("titleLine1")}</span>
+            <span className="rise-in rise-d2 block">{t("titleLine2")}</span>
           </h1>
 
-          <p className="mt-6 text-xl font-medium leading-[1.35] tracking-tight text-fg-dim sm:text-2xl md:mt-7 md:text-3xl">
-            <span className="rise-in rise-d2 block">{t("subLine1")}</span>
-            <span className="rise-in rise-d3 block">{t("subLine2")}</span>
+          <p className="rise-in rise-d3 mt-7 max-w-md text-base leading-relaxed text-fg-dim md:text-lg">
+            {t("sub")}
           </p>
         </div>
       </motion.div>

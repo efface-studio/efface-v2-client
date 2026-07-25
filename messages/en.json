@@ -14,9 +14,9 @@
   },
   "Hero": {
     "eyebrow": "AI · Web · App Studio",
-    "title": "efface",
-    "subLine1": "Erase the complexity.",
-    "subLine2": "Keep the effect.",
+    "titleLine1": "Erase the complexity.",
+    "titleLine2": "Keep the effect.",
+    "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up.",
     "scroll": "Scroll"
   },
   "Services": {

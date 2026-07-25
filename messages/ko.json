@@ -14,9 +14,9 @@
   },
   "Hero": {
     "eyebrow": "AI · 웹 · 앱 개발 스튜디오",
-    "title": "efface",
-    "subLine1": "복잡함은 지우고,",
-    "subLine2": "효과만 남깁니다.",
+    "titleLine1": "복잡함은 지우고,",
+    "titleLine2": "효과만 남깁니다.",
+    "sub": "AI와 웹·앱을 다루는 개발팀입니다. 기술을 깊게 파고, 잘 작동하는 제품으로 만듭니다.",
     "scroll": "스크롤"
   },
   "Services": {
