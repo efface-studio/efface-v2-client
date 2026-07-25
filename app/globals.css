@@ -169,6 +169,20 @@ body {
   transform: translateY(-14px) scale(1.02);
 }
 
+/* Mobile: the pinned scene is replaced by a stacked list, so the tile sizes to
+   the screen instead of being scaled down. Height follows content — the icon is
+   smaller here, so a fixed 560px would leave a big empty gap. */
+@media (max-width: 767px) {
+  .app-card {
+    width: min(320px, 86vw);
+    height: auto;
+    min-height: 420px;
+    padding: 40px 24px 32px;
+    /* the Reveal wrapper is full-width, so centre the tile inside it */
+    margin-inline: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-card {
     transition: none;
@@ -208,6 +222,15 @@ body {
 .cap-chip:hover {
   border-color: color-mix(in oklab, var(--acc) 45%, transparent);
   background: color-mix(in oklab, var(--acc) 18%, rgba(255, 255, 255, 0.02));
+}
+
+/* Mobile shows chips at 1:1 (no scene scaling), so nudge them up to a
+   comfortable reading size. */
+@media (max-width: 767px) {
+  .cap-chip {
+    font-size: 12.5px;
+    padding: 7px 13px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
