@@ -30,17 +30,17 @@ export default function Hero() {
     >
       {/* Background: live "glass squares" logo rendered in WebGL — stays crisp at
           any resolution (no fixed-res video to pixelate on large screens). The
-          poster is a static fallback for no-WebGL / reduced-motion. The mark is
-          framed to the right in the scene so the copy owns the lower-left. */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url(/hero-poster.jpg?v=3)" }}
-      >
-        {!reduce && <HeroScene className="block h-full w-full" />}
+          mark is framed to the right in the scene so the copy owns the lower-left.
+          The placeholder behind it is the scene's own backdrop colour, so there's
+          no visible swap when the canvas paints (a poster image would flash a
+          different frame first). Reduced motion gets a single frozen frame. */}
+      <div className="pointer-events-none absolute inset-0 bg-[#0b0c10]">
+        <HeroScene className="block h-full w-full" still={!!reduce} />
       </div>
 
-      {/* Left scrim for legibility — strong lower-left, clears by ~72%. */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#0a0a0b_0%,rgba(10,10,11,0.82)_26%,rgba(10,10,11,0.28)_50%,transparent_72%)]" />
+      {/* Left scrim for legibility — eased off so the backdrop's studio light
+          still reads through behind the copy. */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,11,0.92)_0%,rgba(10,10,11,0.68)_28%,rgba(10,10,11,0.18)_52%,transparent_74%)]" />
       {/* Top scrim (nav) + bottom blend into the next section. */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg/45 via-transparent to-bg" />
 

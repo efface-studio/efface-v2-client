@@ -8,15 +8,22 @@ import { createGlassScene } from "@/components/three/glassScene";
  * via next/dynamic with ssr:false from the hero) so three.js stays out of the
  * server bundle and the initial HTML.
  */
-export default function HeroScene({ className }: { className?: string }) {
+export default function HeroScene({
+  className,
+  still = false,
+}: {
+  className?: string;
+  /** Render one frozen frame instead of animating (reduced-motion). */
+  still?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dispose = createGlassScene(canvas);
+    const dispose = createGlassScene(canvas, { still });
     return () => dispose();
-  }, []);
+  }, [still]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
 }
