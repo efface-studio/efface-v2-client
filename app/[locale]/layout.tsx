@@ -89,6 +89,12 @@ export default async function LocaleLayout({
         {/* Preconnect so first paint isn't blocked by font DNS/TLS. */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* Archivo Black — the oversized display word behind the app cards. */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
+        />
         {/* Pretendard Variable dynamic-subset — only the unicode ranges used on
            the page are fetched (~200KB vs 2MB). SRI pinned to 1.3.9. */}
         <link
