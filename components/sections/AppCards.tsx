@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useIsMobile } from "@/lib/useIsMobile";
+import Reveal from "@/components/Reveal";
 
 /** Per-card layout + scroll-entrance constants (from the source scene). */
 const CFG = [
@@ -97,11 +99,68 @@ function AppIcon({
   return <div ref={hostRef} style={{ width: size, height: size }} aria-hidden="true" />;
 }
 
+/** The card face itself — identical markup in both layouts, so the mobile
+ *  fallback keeps the exact look, just at a size that stays readable. */
+function CardFace({
+  card,
+  copy,
+  iconSize,
+}: {
+  card: (typeof CARDS)[number];
+  copy: { title: string; sub: string } | undefined;
+  iconSize: number;
+}) {
+  return (
+    <div
+      className="app-card"
+      style={{
+        background: card.gradient,
+        // consumed by .app-card::before for the diagonal sheen
+        ["--sheen" as string]: String(card.sheen),
+      }}
+    >
+      <div
+        style={{
+          fontSize: 17,
+          fontWeight: 500,
+          color: "rgba(255,255,255,0.92)",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {copy?.sub}
+      </div>
+      <div
+        style={{
+          fontSize: 48,
+          fontWeight: 800,
+          color: "#fff",
+          marginTop: 6,
+          letterSpacing: "-0.02em",
+        }}
+      >
+        {copy?.title}
+      </div>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <AppIcon {...card.icon} size={iconSize} />
+      </div>
+    </div>
+  );
+}
+
 export default function AppCards() {
   const t = useTranslations("AppCards");
   const cards = t.raw("cards") as { title: string; sub: string }[];
   const word1 = t("word1");
   const word2 = t("word2");
+  const isMobile = useIsMobile();
 
   const sceneRef = useRef<HTMLElement>(null);
   const w1Ref = useRef<HTMLDivElement>(null);
@@ -221,6 +280,27 @@ export default function AppCards() {
     whiteSpace: "nowrap",
   };
 
+  // ── Mobile: the pinned scene scales everything to ~26%, which drops body
+  // copy to ~5px. Fall back to a plain stacked list at full type size.
+  if (isMobile) {
+    return (
+      <section id="apps" className="bg-bg px-6 py-20">
+        <Reveal>
+          <p className="label">
+            <span className="text-accent">//</span> {word1} {word2}
+          </p>
+        </Reveal>
+        <div className="mt-10 flex flex-col items-center gap-6">
+          {CARDS.map((card, i) => (
+            <Reveal key={card.key} delay={i * 0.05}>
+              <CardFace card={card} copy={cards[i]} iconSize={200} />
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id="apps"
@@ -287,47 +367,7 @@ export default function AppCards() {
                 willChange: "transform, opacity",
               }}
             >
-              <div
-                className="app-card"
-                style={{
-                  background: card.gradient,
-                  // consumed by .app-card::before for the diagonal sheen
-                  ["--sheen" as string]: String(card.sheen),
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 17,
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.92)",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {cards[i]?.sub}
-                </div>
-                <div
-                  style={{
-                    fontSize: 48,
-                    fontWeight: 800,
-                    color: "#fff",
-                    marginTop: 6,
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  {cards[i]?.title}
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "100%",
-                  }}
-                >
-                  <AppIcon {...card.icon} size={300} />
-                </div>
-              </div>
+              <CardFace card={card} copy={cards[i]} iconSize={300} />
             </div>
           ))}
         </div>
