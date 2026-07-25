@@ -8,6 +8,7 @@
     "close": "Close",
     "items": {
       "work": "What we do",
+      "apps": "Apps",
       "capabilities": "Capabilities",
       "about": "About",
       "contact": "Contact"
@@ -55,6 +56,28 @@
           "Mobile",
           "PWA"
         ]
+      }
+    ]
+  },
+  "AppCards": {
+    "word1": "INNOVATIVE",
+    "word2": "SERVICES",
+    "cards": [
+      {
+        "title": "HiNest",
+        "sub": "Workplace, organized"
+      },
+      {
+        "title": "Muru",
+        "sub": "Moments, connected"
+      },
+      {
+        "title": "QTO",
+        "sub": "Life in photos"
+      },
+      {
+        "title": "GOMS",
+        "sub": "Leave made easy"
       }
     ]
   },

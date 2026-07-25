@@ -8,6 +8,7 @@
     "close": "닫기",
     "items": {
       "work": "무엇을 하나요",
+      "apps": "만든 앱",
       "capabilities": "기술 역량",
       "about": "소개",
       "contact": "연락처"
@@ -55,6 +56,28 @@
           "Mobile",
           "PWA"
         ]
+      }
+    ]
+  },
+  "AppCards": {
+    "word1": "INNOVATIVE",
+    "word2": "SERVICES",
+    "cards": [
+      {
+        "title": "HiNest",
+        "sub": "사내 관리의 새로운 시작"
+      },
+      {
+        "title": "Muru",
+        "sub": "커플들의 순간을 연결하다"
+      },
+      {
+        "title": "QTO",
+        "sub": "일상을 사진으로 남기다"
+      },
+      {
+        "title": "GOMS",
+        "sub": "외출제를 간편하게"
       }
     ]
   },
