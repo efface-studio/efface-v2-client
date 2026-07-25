@@ -15,6 +15,8 @@ const ACCENTS = [
 
 const SCENE_LENGTH_VH = 1060;
 const TILT = 10;
+/** Scroll progress at which the magnifier lens becomes interactive. */
+const LENS_ARM_AT = 0.95;
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -133,7 +135,10 @@ export default function CapabilitiesScene() {
         const G = gw.getBoundingClientRect();
         const k = fitScale || 1;
         let over = -1;
-        for (let c = 0; c < 4 && over < 0; c++) {
+        // The lens only arms once the scene has finished dealing itself out —
+        // popping a magnifier over cards that are still flying in reads as a bug.
+        const armed = p >= LENS_ARM_AT;
+        for (let c = 0; c < 4 && over < 0 && armed; c++) {
           const d = capData[c];
           if (!d) continue;
           const targets = d.rows.slice();
