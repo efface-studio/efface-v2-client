@@ -13,7 +13,9 @@ const ACCENTS = [
   { hex: "#F59E0B", rgb: "245,158,11" },
 ] as const;
 
-const SCENE_LENGTH_VH = 1060;
+// 7 timeline stages (type → letters → sub → lines → cards → rows → chips)
+// at ~5 wheel notches each, plus the sticky 100vh.
+const SCENE_LENGTH_VH = 440;
 const TILT = 10;
 /** Scroll progress at which the magnifier lens becomes interactive — the point
  *  where the label, headline and sub copy have all landed (the cards are still
