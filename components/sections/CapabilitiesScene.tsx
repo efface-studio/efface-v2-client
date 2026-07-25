@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useIsMobile } from "@/lib/useIsMobile";
+import Reveal from "@/components/Reveal";
 
 type Group = { no: string; title: string; items: string[]; tools: string[] };
 
@@ -35,6 +37,7 @@ export default function CapabilitiesScene() {
   const label = t("label");
   const title = t("title");
   const lead = t("lead");
+  const isMobile = useIsMobile();
 
   const rootRef = useRef<HTMLElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
@@ -52,7 +55,7 @@ export default function CapabilitiesScene() {
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    if (!root || isMobile) return;
 
     const mouse = { x: -1, y: -1 };
     const spotPos = { x: 0, y: 0 };
@@ -329,7 +332,62 @@ export default function CapabilitiesScene() {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("mousemove", onMouse);
     };
-  }, [groups.length]);
+  }, [groups.length, isMobile]);
+
+  // ── Mobile: the pinned scene scales the 1280px grid down to ~58%, dropping
+  // list text to 9px and chips to 7px. Fall back to a single column at full size.
+  if (isMobile) {
+    return (
+      <section id="capabilities" className="bg-bg px-6 py-20" ref={rootRef}>
+        <Reveal>
+          <p className="label">
+            <span className="text-accent">//</span> {label}
+          </p>
+          <h2 className="mt-5 text-3xl font-semibold leading-[1.15] tracking-tight">
+            {title}
+          </h2>
+          <p className="mt-4 text-fg-dim">{lead}</p>
+        </Reveal>
+
+        <div className="mt-12 space-y-10">
+          {groups.slice(0, 4).map((group, c) => (
+            <Reveal key={group.no} delay={c * 0.05}>
+              <div className="border-t border-line pt-8">
+                <div className="flex items-baseline gap-4">
+                  <span className="font-mono text-sm" style={{ color: ACCENTS[c].hex }}>
+                    {group.no}
+                  </span>
+                  <h3 className="text-xl font-medium tracking-tight">{group.title}</h3>
+                </div>
+                <ul className="mt-5 space-y-3">
+                  {group.items.map((item) => (
+                    <li key={item} className="flex gap-3 text-sm leading-relaxed text-fg-dim">
+                      <span
+                        aria-hidden
+                        className="mt-[0.65em] h-px w-4 shrink-0"
+                        style={{ background: `rgba(${ACCENTS[c].rgb},0.6)` }}
+                      />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <ul
+                  className="mt-6 flex flex-wrap gap-2"
+                  style={{ ["--acc" as string]: ACCENTS[c].hex }}
+                >
+                  {group.tools.map((tool) => (
+                    <li key={tool} className="cap-chip" style={{ opacity: 1 }}>
+                      {tool}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
