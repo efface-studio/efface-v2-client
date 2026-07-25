@@ -15,8 +15,10 @@ const ACCENTS = [
 
 const SCENE_LENGTH_VH = 1060;
 const TILT = 10;
-/** Scroll progress at which the magnifier lens becomes interactive. */
-const LENS_ARM_AT = 0.95;
+/** Scroll progress at which the magnifier lens becomes interactive — the point
+ *  where the label, headline and sub copy have all landed (the cards are still
+ *  rising in below, and the lens only shows over rows anyway). */
+const LENS_ARM_AT = 0.48;
 /** Vertical breathing room kept between the scene and the viewport edges. */
 const SCENE_PAD = 72;
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
