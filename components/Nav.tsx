@@ -8,7 +8,6 @@ import LanguageToggle from "./LanguageToggle";
 import LogoMark from "./LogoMark";
 
 const ITEMS = [
-  { key: "work", href: "#work" },
   { key: "apps", href: "#apps" },
   { key: "capabilities", href: "#capabilities" },
   { key: "about", href: "#about" },
