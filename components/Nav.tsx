@@ -8,7 +8,6 @@ import LanguageToggle from "./LanguageToggle";
 import LogoMark from "./LogoMark";
 
 const ITEMS = [
-  { key: "work", href: "#work" },
   { key: "apps", href: "#apps" },
   { key: "capabilities", href: "#capabilities" },
   { key: "about", href: "#about" },
@@ -24,7 +23,7 @@ export default function Nav() {
 
   // Darken + hairline the bar once the hero scrolls past.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -47,11 +46,15 @@ export default function Nav() {
 
   return (
     <>
+      {/* Visible only at the very top of the page: the oversized display type in
+          the scenes below runs right under the viewport edge, and a persistent
+          bar clipped it. Stays put while the overlay menu is open so the close
+          button remains reachable. */}
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${
+        className={`fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[transform,opacity] duration-300 ease-out ${
           scrolled && !open
-            ? "border-b border-line bg-bg/70 backdrop-blur-md"
-            : "border-b border-transparent"
+            ? "pointer-events-none -translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
         }`}
       >
         <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 md:h-20 md:px-10">

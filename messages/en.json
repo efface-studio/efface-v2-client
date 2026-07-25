@@ -7,7 +7,6 @@
     "menu": "Menu",
     "close": "Close",
     "items": {
-      "work": "What we do",
       "apps": "Apps",
       "capabilities": "Capabilities",
       "about": "About",
@@ -20,44 +19,6 @@
     "titleLine2": "Keep the effect.",
     "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up.",
     "scroll": "Scroll"
-  },
-  "Services": {
-    "label": "what we do",
-    "title": "What we build",
-    "lead": "Ideas turned into products that actually run — built across three axes.",
-    "items": [
-      {
-        "no": "01",
-        "title": "AI Products",
-        "desc": "LLM-powered features, agents, and automation. We turn vague ideas into intelligent products that actually ship.",
-        "tags": [
-          "LLM",
-          "Agents",
-          "Automation",
-          "RAG"
-        ]
-      },
-      {
-        "no": "02",
-        "title": "Web",
-        "desc": "Fast, resilient web on Next.js — from a single landing page to complex dashboards, built to scale.",
-        "tags": [
-          "Next.js",
-          "TypeScript",
-          "Tailwind"
-        ]
-      },
-      {
-        "no": "03",
-        "title": "Apps",
-        "desc": "Mobile and web apps. We design and engineer experiences where screens and data move as one flow.",
-        "tags": [
-          "Web App",
-          "Mobile",
-          "PWA"
-        ]
-      }
-    ]
   },
   "AppCards": {
     "word1": "INNOVATIVE",

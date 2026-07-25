@@ -3,7 +3,6 @@ import { Link } from "@/i18n/navigation";
 import LogoMark from "./LogoMark";
 
 const NAV = [
-  { key: "work", href: "#work" },
   { key: "apps", href: "#apps" },
   { key: "capabilities", href: "#capabilities" },
   { key: "about", href: "#about" },
