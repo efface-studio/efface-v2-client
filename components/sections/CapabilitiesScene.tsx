@@ -17,6 +17,8 @@ const SCENE_LENGTH_VH = 1060;
 const TILT = 10;
 /** Scroll progress at which the magnifier lens becomes interactive. */
 const LENS_ARM_AT = 0.95;
+/** Vertical breathing room kept between the scene and the viewport edges. */
+const SCENE_PAD = 72;
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -97,7 +99,9 @@ export default function CapabilitiesScene() {
       const total = Math.max(1, root.offsetHeight - vh);
       const p = clamp(-rect.top / total, 0, 1);
 
-      fitScale = Math.min(1, (vh - 30) / 1150);
+      // Reserve breathing room top and bottom: the source scene only left 30px,
+      // which pinned the tool chips against the next section's edge.
+      fitScale = Math.min(1, (vh - 2 * SCENE_PAD) / 1150);
       if (fitRef.current) fitRef.current.style.transform = `scale(${fitScale})`;
 
       // 1. label types itself in
