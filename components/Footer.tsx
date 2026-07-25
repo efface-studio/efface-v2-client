@@ -4,7 +4,8 @@ import LogoMark from "./LogoMark";
 
 const NAV = [
   { key: "work", href: "#work" },
-  { key: "approach", href: "#approach" },
+  { key: "capabilities", href: "#capabilities" },
+  { key: "about", href: "#about" },
   { key: "contact", href: "#contact" },
 ] as const;
 
