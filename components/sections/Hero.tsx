@@ -3,20 +3,22 @@
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
+import dynamic from "next/dynamic";
+
+// Live WebGL logo scene — client-only so three.js stays out of SSR and the
+// initial bundle, and only mounts once the hero is on the client.
+const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 export default function Hero() {
   const t = useTranslations("Hero");
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
 
-  // Scroll-linked parallax: the video sinks + zooms while the copy lifts and
-  // fades as the hero scrolls away — the "something happens as you scroll" feel.
+  // Scroll-linked parallax: the copy lifts and fades as the hero scrolls away.
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", "9%"]);
-  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.14]);
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-24%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
   const cueOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
@@ -26,30 +28,16 @@ export default function Hero() {
       ref={ref}
       className="relative min-h-[100svh] w-full overflow-hidden bg-bg"
     >
-      {/* Background: looping logo animation, nudged right so the mark sits in the
-          right half and the copy owns the lower-left. Overscanned wrapper leaves
-          room for the parallax translate/scale without exposing edges. */}
-      <motion.div
-        className="absolute inset-0"
-        style={reduce ? undefined : { y: videoY, scale: videoScale }}
+      {/* Background: live "glass squares" logo rendered in WebGL — stays crisp at
+          any resolution (no fixed-res video to pixelate on large screens). The
+          poster is a static fallback for no-WebGL / reduced-motion. The mark is
+          framed to the right in the scene so the copy owns the lower-left. */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url(/hero-poster.jpg?v=3)" }}
       >
-        {/* object-contain shows the mark at its natural (smaller) size instead of
-           zoom-cropping it larger; the video's dark backdrop blends into the page
-           bg so the letterbox is invisible. */}
-        <video
-          className="h-full w-full object-contain object-[center_42%] md:object-center"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/hero-poster.jpg?v=3"
-          aria-hidden="true"
-        >
-          {/* ?v bumps the URL when the file is swapped, busting the immutable
-             CDN/browser cache without renaming the asset. */}
-          <source src="/hero.mp4?v=3" type="video/mp4" />
-        </video>
-      </motion.div>
+        {!reduce && <HeroScene className="block h-full w-full" />}
+      </div>
 
       {/* Left scrim for legibility — strong lower-left, clears by ~72%. */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#0a0a0b_0%,rgba(10,10,11,0.82)_26%,rgba(10,10,11,0.28)_50%,transparent_72%)]" />
