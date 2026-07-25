@@ -46,7 +46,9 @@ export default function ServiceScroll() {
   // Stable section height (taller than the viewport from first paint) so
   // useScroll never initializes with a degenerate 0-length range. `distance`
   // only drives how far the track slides, not the section height.
-  const heightVh = items.length * 60 + 60;
+  // The long runway is deliberate: the same travel spread over more scroll
+  // makes the panels glide instead of snapping past.
+  const heightVh = items.length * 30 + 30;
 
   return (
     <>

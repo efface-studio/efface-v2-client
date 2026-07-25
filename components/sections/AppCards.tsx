@@ -48,7 +48,7 @@ const CARDS = [
 ] as const;
 
 const PARALLAX = 0.5;
-const SCENE_LENGTH_VH = 320;
+const SCENE_LENGTH_VH = 160; // runway length sets the pace of the deal-in
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
