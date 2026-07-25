@@ -8,7 +8,8 @@
     "close": "Close",
     "items": {
       "work": "What we do",
-      "approach": "How we work",
+      "capabilities": "Capabilities",
+      "about": "About",
       "contact": "Contact"
     }
   },
@@ -28,19 +29,102 @@
         "no": "01",
         "title": "AI Products",
         "desc": "LLM-powered features, agents, and automation. We turn vague ideas into intelligent products that actually ship.",
-        "tags": ["LLM", "Agents", "Automation", "RAG"]
+        "tags": [
+          "LLM",
+          "Agents",
+          "Automation",
+          "RAG"
+        ]
       },
       {
         "no": "02",
         "title": "Web",
         "desc": "Fast, resilient web on Next.js — from a single landing page to complex dashboards, built to scale.",
-        "tags": ["Next.js", "TypeScript", "Tailwind"]
+        "tags": [
+          "Next.js",
+          "TypeScript",
+          "Tailwind"
+        ]
       },
       {
         "no": "03",
         "title": "Apps",
         "desc": "Mobile and web apps. We design and engineer experiences where screens and data move as one flow.",
-        "tags": ["Web App", "Mobile", "PWA"]
+        "tags": [
+          "Web App",
+          "Mobile",
+          "PWA"
+        ]
+      }
+    ]
+  },
+  "Capabilities": {
+    "label": "capabilities",
+    "title": "What we handle, and how far.",
+    "lead": "No surface-level work. This is the scope we actually take on in each area.",
+    "groups": [
+      {
+        "no": "01",
+        "title": "AI Engineering",
+        "items": [
+          "LLM-powered features, designed and built",
+          "Agents, tool calling, automation pipelines",
+          "RAG and vector search",
+          "Prompt design and quality evaluation"
+        ],
+        "tools": [
+          "Claude",
+          "OpenAI",
+          "Vercel AI SDK",
+          "pgvector"
+        ]
+      },
+      {
+        "no": "02",
+        "title": "Web Engineering",
+        "items": [
+          "Full-stack on the Next.js App Router",
+          "Server components, streaming, caching strategy",
+          "i18n, SEO, accessibility",
+          "Core Web Vitals performance work"
+        ],
+        "tools": [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS"
+        ]
+      },
+      {
+        "no": "03",
+        "title": "Apps & Interaction",
+        "items": [
+          "Web apps, dashboards, admin tools",
+          "Mobile apps and PWAs",
+          "WebGL, 3D, motion interaction",
+          "Design systems"
+        ],
+        "tools": [
+          "React Native",
+          "Three.js",
+          "Motion"
+        ]
+      },
+      {
+        "no": "04",
+        "title": "Infra & Data",
+        "items": [
+          "Deployment, CI/CD, monitoring",
+          "Database design and migrations",
+          "Auth and payment integration",
+          "Performance and cost tuning"
+        ],
+        "tools": [
+          "Vercel",
+          "Supabase",
+          "PostgreSQL",
+          "Cloudflare"
+        ]
       }
     ]
   },
@@ -70,7 +154,43 @@
         "desc": "Planning, design, and engineering as one flow — less overhead, dates we keep."
       }
     ],
-    "stack": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Anthropic", "OpenAI", "Vercel", "Supabase", "PostgreSQL", "React Native", "Framer Motion", "Cloudflare"]
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Anthropic",
+      "OpenAI",
+      "Vercel",
+      "Supabase",
+      "PostgreSQL",
+      "React Native",
+      "Framer Motion",
+      "Cloudflare"
+    ]
+  },
+  "About": {
+    "label": "about",
+    "title": "Small team, deep work.",
+    "paragraphs": [
+      "efface is an engineering team building AI, web, and app products. Planning, design, development, deployment, operations — we handle it end to end, ourselves.",
+      "We chose depth over headcount. New tech doesn't stop at a demo here; it goes into real products and gets proven there. The backdrop on this page isn't a video — it's a 3D scene rendering live in your browser.",
+      "A good product is one that keeps working. We take solid structure over flashy features, and getting it right over getting it out."
+    ],
+    "meta": [
+      {
+        "label": "Founder",
+        "value": "Seojiwan Suh"
+      },
+      {
+        "label": "Focus",
+        "value": "AI · Web · Apps"
+      },
+      {
+        "label": "Contact",
+        "value": "contact@efface.dev"
+      }
+    ]
   },
   "Contact": {
     "label": "contact",

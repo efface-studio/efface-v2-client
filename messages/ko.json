@@ -8,7 +8,8 @@
     "close": "닫기",
     "items": {
       "work": "무엇을 하나요",
-      "approach": "일하는 방식",
+      "capabilities": "기술 역량",
+      "about": "소개",
       "contact": "연락처"
     }
   },
@@ -28,19 +29,102 @@
         "no": "01",
         "title": "AI 프로덕트",
         "desc": "LLM 기반 기능, 에이전트, 자동화. 막연한 아이디어를 실제로 작동하는 지능형 제품으로 구현합니다.",
-        "tags": ["LLM", "Agents", "Automation", "RAG"]
+        "tags": [
+          "LLM",
+          "Agents",
+          "Automation",
+          "RAG"
+        ]
       },
       {
         "no": "02",
         "title": "웹 개발",
         "desc": "Next.js 기반의 빠르고 견고한 웹. 한 장의 랜딩부터 복잡한 대시보드까지, 확장 가능한 구조로 짓습니다.",
-        "tags": ["Next.js", "TypeScript", "Tailwind"]
+        "tags": [
+          "Next.js",
+          "TypeScript",
+          "Tailwind"
+        ]
       },
       {
         "no": "03",
         "title": "앱 개발",
         "desc": "모바일과 웹앱. 화면과 데이터가 하나의 흐름으로 이어지는 사용자 경험을 설계하고 구현합니다.",
-        "tags": ["Web App", "Mobile", "PWA"]
+        "tags": [
+          "Web App",
+          "Mobile",
+          "PWA"
+        ]
+      }
+    ]
+  },
+  "Capabilities": {
+    "label": "capabilities",
+    "title": "무엇을, 어디까지.",
+    "lead": "표면만 훑지 않습니다. 각 영역에서 실제로 손대는 범위입니다.",
+    "groups": [
+      {
+        "no": "01",
+        "title": "AI 엔지니어링",
+        "items": [
+          "LLM 기반 기능 설계와 구현",
+          "에이전트 · 툴 호출 · 자동화 파이프라인",
+          "RAG · 벡터 검색",
+          "프롬프트 설계와 품질 평가"
+        ],
+        "tools": [
+          "Claude",
+          "OpenAI",
+          "Vercel AI SDK",
+          "pgvector"
+        ]
+      },
+      {
+        "no": "02",
+        "title": "웹 엔지니어링",
+        "items": [
+          "Next.js App Router 기반 풀스택",
+          "서버 컴포넌트 · 스트리밍 · 캐싱 전략",
+          "다국어 · SEO · 접근성",
+          "Core Web Vitals 성능 최적화"
+        ],
+        "tools": [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS"
+        ]
+      },
+      {
+        "no": "03",
+        "title": "앱 · 인터랙션",
+        "items": [
+          "웹앱 · 대시보드 · 어드민",
+          "모바일 앱 · PWA",
+          "WebGL · 3D · 모션 인터랙션",
+          "디자인 시스템 구축"
+        ],
+        "tools": [
+          "React Native",
+          "Three.js",
+          "Motion"
+        ]
+      },
+      {
+        "no": "04",
+        "title": "인프라 · 데이터",
+        "items": [
+          "배포 · CI/CD · 모니터링",
+          "데이터베이스 설계와 마이그레이션",
+          "인증 · 결제 연동",
+          "성능과 비용 최적화"
+        ],
+        "tools": [
+          "Vercel",
+          "Supabase",
+          "PostgreSQL",
+          "Cloudflare"
+        ]
       }
     ]
   },
@@ -70,7 +154,43 @@
         "desc": "기획·디자인·개발을 한 흐름으로. 커뮤니케이션 비용을 줄이고 약속한 일정을 지킵니다."
       }
     ],
-    "stack": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Anthropic", "OpenAI", "Vercel", "Supabase", "PostgreSQL", "React Native", "Framer Motion", "Cloudflare"]
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Anthropic",
+      "OpenAI",
+      "Vercel",
+      "Supabase",
+      "PostgreSQL",
+      "React Native",
+      "Framer Motion",
+      "Cloudflare"
+    ]
+  },
+  "About": {
+    "label": "about",
+    "title": "작게 일하고, 깊게 팝니다.",
+    "paragraphs": [
+      "efface는 AI와 웹·앱 프로덕트를 만드는 개발팀입니다. 기획과 설계부터 개발, 배포, 운영까지 한 흐름으로 직접 다룹니다.",
+      "규모를 키우는 대신 깊이를 택했습니다. 새로운 기술은 데모에서 끝내지 않고 실제 제품에 넣어 검증합니다. 지금 보고 계신 이 페이지의 배경도 영상이 아니라 브라우저에서 실시간으로 그려지는 3D 씬입니다.",
+      "잘 만든 제품은 결국 오래 잘 돌아가는 제품이라고 생각합니다. 화려한 기능보다 견고한 구조를, 빠른 출시보다 정확한 완성을 먼저 둡니다."
+    ],
+    "meta": [
+      {
+        "label": "대표",
+        "value": "서지완"
+      },
+      {
+        "label": "다루는 것",
+        "value": "AI · 웹 · 앱"
+      },
+      {
+        "label": "연락",
+        "value": "contact@efface.dev"
+      }
+    ]
   },
   "Contact": {
     "label": "contact",
