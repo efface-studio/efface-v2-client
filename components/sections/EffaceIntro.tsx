@@ -373,7 +373,7 @@ export default function EffaceIntro() {
       <p
         style={{
           margin: 0,
-          fontSize: isMobile ? "clamp(22px, 6.4vw, 30px)" : "clamp(32px, 3.6vw, 52px)",
+          fontSize: isMobile ? "clamp(20px, 6vw, 28px)" : "clamp(30px, 3.4vw, 50px)",
           fontWeight: 700,
           letterSpacing: "-0.02em",
           lineHeight: 1.52,
