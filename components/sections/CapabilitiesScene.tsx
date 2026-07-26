@@ -17,6 +17,9 @@ const ACCENTS = [
 
 // 7 timeline stages (type → letters → sub → lines → cards → rows → chips)
 // at ~5 wheel notches each, plus the sticky 100vh.
+/** Dot colours for the tool stack, cycled per item. */
+const DOT_COLORS = ["#6366F1", "#22D3EE", "#FBBF24", "#34D399"] as const;
+
 const SCENE_LENGTH_VH = 440;
 const TILT = 10;
 /** How far a single card must have dealt in (0→1) before the lens works on it. */
@@ -470,9 +473,14 @@ export default function CapabilitiesScene() {
                   </li>
                 ))}
               </ul>
-              <ul className="mt-6 flex flex-wrap gap-2">
-                {group.tools.map((tool) => (
-                  <li key={tool} data-chip="" className="cap-chip">
+              <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+                {group.tools.map((tool, ti) => (
+                  <li
+                    key={tool}
+                    data-chip=""
+                    className="cap-chip"
+                    style={{ ["--dot" as string]: DOT_COLORS[ti % DOT_COLORS.length] }}
+                  >
                     {tool}
                   </li>
                 ))}
@@ -727,9 +735,14 @@ export default function CapabilitiesScene() {
                       </div>
                     ))}
 
-                    <div style={{ display: "flex", gap: 10, marginTop: 30, flexWrap: "wrap" }}>
-                      {group.tools.map((tool) => (
-                        <span key={tool} data-chip="" className="cap-chip">
+                    <div style={{ display: "flex", gap: "12px 24px", marginTop: 30, flexWrap: "wrap" }}>
+                      {group.tools.map((tool, ti) => (
+                        <span
+                          key={tool}
+                          data-chip=""
+                          className="cap-chip"
+                          style={{ ["--dot" as string]: DOT_COLORS[ti % DOT_COLORS.length] }}
+                        >
                           {tool}
                         </span>
                       ))}
