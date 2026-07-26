@@ -192,13 +192,113 @@
     "email": "contact@efface.dev"
   },
   "Footer": {
-    "tagline": "Erase the complexity. Keep the effect.",
-    "studio": "AI · Web · App Studio",
-    "founderLabel": "Founder",
-    "founder": "Seojiwan Suh",
+    "tagline": "Erase the complexity. ~Keep~ the effect.",
+    "groups": [
+      {
+        "label": "COMPANY",
+        "rows": [
+          {
+            "k": "Name",
+            "v": "efface"
+          },
+          {
+            "k": "Founder",
+            "v": "Seojiwan Suh ↗",
+            "href": "https://www.linkedin.com/in/xixn2"
+          },
+          {
+            "k": "Based in",
+            "v": "Seoul, Korea"
+          }
+        ]
+      },
+      {
+        "label": "CONTACT",
+        "rows": [
+          {
+            "k": "Business",
+            "v": "sales@efface.dev",
+            "href": "mailto:sales@efface.dev"
+          },
+          {
+            "k": "General",
+            "v": "contact@efface.dev",
+            "href": "mailto:contact@efface.dev"
+          },
+          {
+            "k": "Support",
+            "v": "support@efface.dev",
+            "href": "mailto:support@efface.dev"
+          }
+        ]
+      },
+      {
+        "label": "CHANNEL",
+        "rows": [
+          {
+            "k": "KakaoTalk",
+            "v": "@efface",
+            "href": "https://pf.kakao.com/_zxmWKX/chat"
+          },
+          {
+            "k": "GitHub",
+            "v": "efface-studio",
+            "href": "https://github.com/efface-studio"
+          },
+          {
+            "k": "Response",
+            "v": "Within 24h on weekdays"
+          }
+        ]
+      }
+    ],
+    "policyLabel": "POLICY",
+    "policies": [
+      {
+        "t": "Privacy Policy",
+        "href": "/policies#privacy",
+        "strong": true
+      },
+      {
+        "t": "Terms of Service",
+        "href": "/policies#terms"
+      },
+      {
+        "t": "Open Source Licenses",
+        "href": "/policies#oss"
+      },
+      {
+        "t": "Cookie Policy",
+        "href": "/policies#cookies"
+      },
+      {
+        "t": "No Email Collection",
+        "href": "/policies#no-email-collection"
+      },
+      {
+        "t": "Report a Vulnerability",
+        "href": "/policies#security"
+      },
+      {
+        "t": "Copyright Notice",
+        "href": "/policies#copyright"
+      },
+      {
+        "t": "User Rights & Notices",
+        "href": "/policies#user-rights"
+      }
+    ],
     "rights": "© 2026 efface. All rights reserved.",
-    "backToTop": "Back to top",
-    "navTitle": "Menu",
-    "contactTitle": "Contact"
+    "bottomLinks": [
+      {
+        "t": "Privacy",
+        "href": "/policies#privacy"
+      },
+      {
+        "t": "Terms",
+        "href": "/policies#terms"
+      }
+    ],
+    "toTop": "Back to top ↑"
   }
 }
