@@ -192,6 +192,23 @@ body {
   }
 }
 
+/* Slow float for the clutter pieces in the efface intro scene. */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(-6px);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="animation: bob"] {
+    animation: none !important;
+  }
+}
+
 /* ── Capabilities scene ──────────────────────────────────────────
    Per-card accent arrives as the --acc custom property; chips mix it
    into their text/background/border so one rule covers all four columns. */
