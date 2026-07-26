@@ -256,6 +256,98 @@ body {
   }
 }
 
+/* ── Footer ──────────────────────────────────────────────────────
+   Meta columns collapse 4 → 2 → 1 as the viewport narrows. The policy
+   column is pulled up on wide screens to sit level with the others. */
+.footer-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, auto));
+  justify-content: space-between;
+  gap: 36px min(108px, 5vw);
+  margin-top: 34px;
+  will-change: transform, opacity;
+}
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  min-width: 120px;
+  will-change: transform, opacity, filter;
+}
+.footer-col--policy {
+  margin-top: -140px;
+  align-self: start;
+}
+.footer-col__label {
+  font-size: 10.5px;
+  letter-spacing: 0.28em;
+  color: #4a4a52;
+  margin-bottom: 3px;
+}
+.footer-link {
+  position: relative;
+  display: inline-block;
+  transition: color 0.2s;
+}
+.footer-link:hover {
+  color: #ededef !important;
+}
+.footer-hl {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: #3b82f6;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.22s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.footer-link:hover .footer-hl {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+.footer-totop {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #8a8a93;
+  background: transparent;
+  border: 1px solid #26262e;
+  border-radius: 8px;
+  padding: 9px 15px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, transform 0.2s;
+}
+.footer-totop:hover {
+  color: #ededef;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1023px) {
+  .footer-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: start;
+    gap: 32px 40px;
+  }
+  .footer-col--policy {
+    margin-top: 0;
+  }
+}
+@media (max-width: 560px) {
+  .footer-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-hl,
+  .footer-totop {
+    transition: none;
+  }
+}
+
 /* Animated underline for text links. */
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);

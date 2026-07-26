@@ -192,13 +192,113 @@
     "email": "contact@efface.dev"
   },
   "Footer": {
-    "tagline": "복잡함은 지우고, 효과만 남깁니다.",
-    "studio": "AI · 웹 · 앱 개발 스튜디오",
-    "founderLabel": "대표",
-    "founder": "서지완",
+    "tagline": "복잡함은 ~지우고~, 효과만 남깁니다.",
+    "groups": [
+      {
+        "label": "COMPANY",
+        "rows": [
+          {
+            "k": "상호",
+            "v": "efface"
+          },
+          {
+            "k": "대표",
+            "v": "서지완 ↗",
+            "href": "https://www.linkedin.com/in/xixn2"
+          },
+          {
+            "k": "소재지",
+            "v": "서울, 대한민국"
+          }
+        ]
+      },
+      {
+        "label": "CONTACT",
+        "rows": [
+          {
+            "k": "비즈니스",
+            "v": "sales@efface.dev",
+            "href": "mailto:sales@efface.dev"
+          },
+          {
+            "k": "일반 문의",
+            "v": "contact@efface.dev",
+            "href": "mailto:contact@efface.dev"
+          },
+          {
+            "k": "고객 지원",
+            "v": "support@efface.dev",
+            "href": "mailto:support@efface.dev"
+          }
+        ]
+      },
+      {
+        "label": "CHANNEL",
+        "rows": [
+          {
+            "k": "카카오톡",
+            "v": "@efface",
+            "href": "https://pf.kakao.com/_zxmWKX/chat"
+          },
+          {
+            "k": "GitHub",
+            "v": "efface-studio",
+            "href": "https://github.com/efface-studio"
+          },
+          {
+            "k": "응답",
+            "v": "평일 24시간 내"
+          }
+        ]
+      }
+    ],
+    "policyLabel": "POLICY",
+    "policies": [
+      {
+        "t": "개인정보 처리방침",
+        "href": "/policies#privacy",
+        "strong": true
+      },
+      {
+        "t": "서비스 이용약관",
+        "href": "/policies#terms"
+      },
+      {
+        "t": "오픈소스 라이선스",
+        "href": "/policies#oss"
+      },
+      {
+        "t": "쿠키 정책",
+        "href": "/policies#cookies"
+      },
+      {
+        "t": "이메일무단수집거부",
+        "href": "/policies#no-email-collection"
+      },
+      {
+        "t": "보안 취약점 신고",
+        "href": "/policies#security"
+      },
+      {
+        "t": "저작권 안내",
+        "href": "/policies#copyright"
+      },
+      {
+        "t": "이용자의 권리 및 유의사항",
+        "href": "/policies#user-rights"
+      }
+    ],
     "rights": "© 2026 efface. All rights reserved.",
-    "backToTop": "맨 위로",
-    "navTitle": "메뉴",
-    "contactTitle": "연락처"
+    "bottomLinks": [
+      {
+        "t": "개인정보처리방침",
+        "href": "/policies#privacy"
+      },
+      {
+        "t": "이용약관",
+        "href": "/policies#terms"
+      }
+    ],
+    "toTop": "맨 위로 ↑"
   }
 }
