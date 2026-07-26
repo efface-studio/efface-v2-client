@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useIsMobile } from "@/lib/useIsMobile";
-import Reveal from "@/components/Reveal";
+import { elementProgress, useScrollMotion } from "@/lib/scrollMotion";
 
 type Group = { no: string; title: string; items: string[]; tools: string[] };
 
@@ -52,6 +52,67 @@ export default function CapabilitiesScene() {
   const lensInnerRef = useRef<HTMLDivElement>(null);
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const capRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+
+  // ── Mobile motion ──────────────────────────────────────────────
+  // The desktop timeline replayed against each element's own scroll position:
+  // label types itself, headline letters assemble, rows and chips stagger in.
+  const mLabelRef = useRef<HTMLSpanElement>(null);
+  const mHeadRef = useRef<HTMLHeadingElement>(null);
+  const mGroupRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const mLabelFull = useRef("");
+
+  const mobileFrame = useCallback(() => {
+    // label typing
+    const lab = mLabelRef.current;
+    if (lab) {
+      if (!mLabelFull.current) mLabelFull.current = lab.textContent || "";
+      const full = mLabelFull.current;
+      const n = Math.round(elementProgress(lab, 0.9, 0.18) * full.length);
+      const next = full.slice(0, n);
+      if (lab.textContent !== next) lab.textContent = next;
+    }
+
+    // headline letters fly in from scattered offsets
+    const head = mHeadRef.current;
+    if (head) {
+      const p = elementProgress(head, 0.88, 0.42);
+      const letters = head.querySelectorAll<HTMLElement>("[data-l]");
+      letters.forEach((el, i) => {
+        const t = ease(clamp((p - i * 0.012) / 0.5, 0, 1));
+        const u = 1 - t;
+        const sd = {
+          dx: (fr(Math.sin(i * 127.1) * 43758.5) * 2 - 1) * 70,
+          dy: (fr(Math.sin(i * 311.7) * 12543.2) * 2 - 1) * 46,
+          rot: (fr(Math.sin(i * 74.3) * 9631.1) * 2 - 1) * 42,
+        };
+        el.style.transform = `translate(${u * sd.dx}px, ${u * sd.dy}px) rotate(${
+          u * sd.rot
+        }deg) scale(${0.75 + 0.25 * t})`;
+        el.style.opacity = String(clamp(0.1 + t * 1.4, 0, 1));
+        el.style.filter = u > 0.03 ? `blur(${u * 4}px)` : "none";
+      });
+    }
+
+    // rows, dashes and chips stagger per group
+    mGroupRefs.current.forEach((g) => {
+      if (!g) return;
+      const p = elementProgress(g, 0.9, 0.4);
+      g.querySelectorAll<HTMLElement>("[data-row]").forEach((row, i) => {
+        const t = ease(clamp((p - i * 0.09) / 0.4, 0, 1));
+        row.style.opacity = String(t);
+        row.style.transform = `translateX(${(1 - t) * -14}px)`;
+        const dash = row.querySelector<HTMLElement>("[data-dash]");
+        if (dash) dash.style.transform = `scaleX(${t})`;
+      });
+      g.querySelectorAll<HTMLElement>("[data-chip]").forEach((chip, i) => {
+        const t = ease(clamp((p - 0.35 - i * 0.05) / 0.35, 0, 1));
+        chip.style.opacity = String(t);
+        chip.style.transform = `scale(${0.82 + 0.18 * t})`;
+      });
+    });
+  }, []);
+
+  useScrollMotion(rootRef, mobileFrame, isMobile);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -339,50 +400,78 @@ export default function CapabilitiesScene() {
   if (isMobile) {
     return (
       <section id="capabilities" className="bg-bg px-6 py-20" ref={rootRef}>
-        <Reveal>
-          <p className="label">
-            <span className="text-accent">//</span> {label}
-          </p>
-          <h2 className="mt-5 text-3xl font-semibold leading-[1.15] tracking-tight">
-            {title}
-          </h2>
-          <p className="mt-4 text-fg-dim">{lead}</p>
-        </Reveal>
+        <p className="label">
+          <span className="text-accent">//</span>{" "}
+          <span ref={mLabelRef}>{label}</span>
+          <span className="cap-caret ml-2 inline-block h-3.5 w-[7px] align-middle bg-accent" />
+        </p>
+        <h2
+          ref={mHeadRef}
+          className="mt-5 text-3xl font-semibold leading-[1.15] tracking-tight"
+        >
+          {title.split(" ").map((word, wi) => (
+            <span key={wi} className="inline-block align-top">
+              {Array.from(word).map((ch, ci) => (
+                <span
+                  key={ci}
+                  data-l=""
+                  className="inline-block"
+                  style={{ opacity: 0, willChange: "transform, opacity" }}
+                >
+                  {ch}
+                </span>
+              ))}
+              {wi < title.split(" ").length - 1 ? "\u00A0" : null}
+            </span>
+          ))}
+        </h2>
+        <p className="mt-4 text-fg-dim">{lead}</p>
 
         <div className="mt-12 space-y-10">
           {groups.slice(0, 4).map((group, c) => (
-            <Reveal key={group.no} delay={c * 0.05}>
-              <div className="border-t border-line pt-8">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-mono text-sm" style={{ color: ACCENTS[c].hex }}>
-                    {group.no}
-                  </span>
-                  <h3 className="text-xl font-medium tracking-tight">{group.title}</h3>
-                </div>
-                <ul className="mt-5 space-y-3">
-                  {group.items.map((item) => (
-                    <li key={item} className="flex gap-3 text-sm leading-relaxed text-fg-dim">
-                      <span
-                        aria-hidden
-                        className="mt-[0.65em] h-px w-4 shrink-0"
-                        style={{ background: `rgba(${ACCENTS[c].rgb},0.6)` }}
-                      />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <ul
-                  className="mt-6 flex flex-wrap gap-2"
-                  style={{ ["--acc" as string]: ACCENTS[c].hex }}
-                >
-                  {group.tools.map((tool) => (
-                    <li key={tool} className="cap-chip" style={{ opacity: 1 }}>
-                      {tool}
-                    </li>
-                  ))}
-                </ul>
+            <div
+              key={group.no}
+              ref={(el) => {
+                mGroupRefs.current[c] = el;
+              }}
+              className="border-t border-line pt-8"
+              style={{ ["--acc" as string]: ACCENTS[c].hex }}
+            >
+              <div className="flex items-baseline gap-4">
+                <span className="font-mono text-sm" style={{ color: ACCENTS[c].hex }}>
+                  {group.no}
+                </span>
+                <h3 className="text-xl font-medium tracking-tight">{group.title}</h3>
               </div>
-            </Reveal>
+              <ul className="mt-5 space-y-3">
+                {group.items.map((item) => (
+                  <li
+                    key={item}
+                    data-row=""
+                    className="flex gap-3 text-sm leading-relaxed text-fg-dim"
+                    style={{ opacity: 0 }}
+                  >
+                    <span
+                      data-dash=""
+                      aria-hidden
+                      className="mt-[0.65em] h-px w-4 shrink-0 origin-left"
+                      style={{
+                        background: `rgba(${ACCENTS[c].rgb},0.6)`,
+                        transform: "scaleX(0)",
+                      }}
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <ul className="mt-6 flex flex-wrap gap-2">
+                {group.tools.map((tool) => (
+                  <li key={tool} data-chip="" className="cap-chip">
+                    {tool}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </div>
       </section>
