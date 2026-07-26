@@ -224,29 +224,37 @@ body {
 .cap-caret {
   animation: caretBlink 1.1s steps(1) infinite;
 }
+/* Tool stack reads as a plain list: a coloured dot per item, no chrome.
+   `--dot` is set per item so the colours cycle. */
 .cap-chip {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.03em;
-  color: color-mix(in oklab, var(--acc) 45%, #e8e8ec);
-  background: color-mix(in oklab, var(--acc) 12%, rgba(255, 255, 255, 0.02));
-  border: 1px solid color-mix(in oklab, var(--acc) 20%, transparent);
-  border-radius: 8px;
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  color: #a9a9b2;
+  background: none;
+  border: none;
+  padding: 0;
   opacity: 0;
-  transition: background 0.25s, border-color 0.25s;
+  transition: color 0.2s;
+}
+.cap-chip::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot, var(--acc));
+  flex: none;
 }
 .cap-chip:hover {
-  border-color: color-mix(in oklab, var(--acc) 45%, transparent);
-  background: color-mix(in oklab, var(--acc) 18%, rgba(255, 255, 255, 0.02));
+  color: #ededef;
 }
 
-/* Mobile shows chips at 1:1 (no scene scaling), so nudge them up to a
-   comfortable reading size. */
 @media (max-width: 767px) {
   .cap-chip {
-    font-size: 12.5px;
-    padding: 7px 13px;
+    font-size: 14px;
   }
 }
 
