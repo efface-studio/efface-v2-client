@@ -90,10 +90,11 @@ export default async function LocaleLayout({
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        {/* Archivo Black — the oversized display word behind the app cards. */}
+        {/* Archivo Black — the oversized display word behind the app cards.
+           Space Grotesk — the footer wordmark (also drawn into a canvas). */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@500;700&display=swap"
         />
         {/* Pretendard Variable dynamic-subset — only the unicode ranges used on
            the page are fetched (~200KB vs 2MB). SRI pinned to 1.3.9. */}
