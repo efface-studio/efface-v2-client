@@ -19,15 +19,17 @@ const ACCENTS = [
 // at ~5 wheel notches each, plus the sticky 100vh.
 const SCENE_LENGTH_VH = 440;
 const TILT = 10;
-/** Scroll progress at which the magnifier lens becomes interactive — the point
- *  where the label, headline and sub copy have all landed (the cards are still
- *  rising in below, and the lens only shows over rows anyway). */
-const LENS_ARM_AT = 0.48;
+/** How far a single card must have dealt in (0→1) before the lens works on it. */
+const LENS_ARM_AT = 0.98;
 /** Vertical breathing room kept between the scene and the viewport edges. */
 const SCENE_PAD = 72;
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+/** Entrance progress of card `c` at scene progress `p` — mirrors the transform
+ *  timeline below so the lens gate and the animation never disagree. */
+const cardProgress = (c: number, p: number) =>
+  1 - Math.pow(1 - clamp((p - 0.4 - c * 0.07) / 0.22, 0, 1), 3);
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 const fr = (n: number) => n - Math.floor(n);
 
@@ -227,15 +229,19 @@ export default function CapabilitiesScene() {
         let over = -1;
         // The lens only arms once the scene has finished dealing itself out —
         // popping a magnifier over cards that are still flying in reads as a bug.
-        const armed = p >= LENS_ARM_AT;
         // Hit-testing walks up to 30 elements with getBoundingClientRect, which
         // forces layout each time. The answer can only change when the cursor
         // moves, so reuse the previous result on idle frames.
-        const needsHitTest = armed && mouseMoved;
+        const needsHitTest = mouseMoved;
         mouseMoved = false;
         for (let c = 0; c < 4 && over < 0 && needsHitTest; c++) {
           const d = capData[c];
           if (!d) continue;
+          // Per-card gate: each card deals in on its own schedule, so a single
+          // scene-wide threshold would arm the lens over cards that are still
+          // flying in (and the lens content is a static snapshot, so it would
+          // sit offset from the real card). Only cards that have landed qualify.
+          if (cardProgress(c, p) < LENS_ARM_AT) continue;
           const targets = d.rows.slice();
           if (d.head) targets.unshift(d.head);
           if (d.chipsRow) targets.push(d.chipsRow);
