@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useIsMobile } from "@/lib/useIsMobile";
-import Reveal from "@/components/Reveal";
+import { elementProgress, easeOutCubic as easeOut, useScrollMotion } from "@/lib/scrollMotion";
 
 /** Per-card layout + scroll-entrance constants (from the source scene). */
 const CFG = [
@@ -168,6 +168,26 @@ export default function AppCards() {
   const rowRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
 
+  // ── Mobile motion ──────────────────────────────────────────────
+  // Same "deal in from below" feel as the desktop scene, but driven off each
+  // card's own position so the tiles keep their full, readable size.
+  const mobileRootRef = useRef<HTMLElement>(null);
+  const mobileCardRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+
+  const mobileFrame = useCallback(() => {
+    mobileCardRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const e = easeOut(elementProgress(el));
+      const dir = i % 2 === 0 ? -1 : 1; // alternate the tilt, like the fanned deck
+      el.style.opacity = String(Math.min(1, e * 1.6));
+      el.style.transform = `translateY(${(1 - e) * 72}px) rotate(${
+        (1 - e) * dir * 7
+      }deg) scale(${0.9 + 0.1 * e})`;
+    });
+  }, []);
+
+  useScrollMotion(mobileRootRef, mobileFrame, isMobile);
+
   useEffect(() => {
     const mouse = { x: 0, y: 0 };
     const sm = { x: 0, y: 0 };
@@ -284,17 +304,21 @@ export default function AppCards() {
   // copy to ~5px. Fall back to a plain stacked list at full type size.
   if (isMobile) {
     return (
-      <section id="apps" className="bg-bg px-6 py-20">
-        <Reveal>
-          <p className="label">
-            <span className="text-accent">//</span> {word1} {word2}
-          </p>
-        </Reveal>
+      <section id="apps" ref={mobileRootRef} className="bg-bg px-6 py-20">
+        <p className="label">
+          <span className="text-accent">//</span> {word1} {word2}
+        </p>
         <div className="mt-10 flex flex-col items-center gap-6">
           {CARDS.map((card, i) => (
-            <Reveal key={card.key} delay={i * 0.05}>
+            <div
+              key={card.key}
+              ref={(el) => {
+                mobileCardRefs.current[i] = el;
+              }}
+              style={{ opacity: 0, willChange: "transform, opacity" }}
+            >
               <CardFace card={card} copy={cards[i]} iconSize={200} />
-            </Reveal>
+            </div>
           ))}
         </div>
       </section>
