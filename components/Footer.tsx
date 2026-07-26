@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 type Row = { k: string; v: string; href?: string };
 type Group = { label: string; rows: Row[] };
@@ -366,7 +367,7 @@ export default function Footer() {
                 {t("policyLabel")}
               </div>
               {policies.map((p) => (
-                <a
+                <Link
                   key={p.href}
                   href={p.href}
                   className="footer-link"
@@ -379,7 +380,7 @@ export default function Footer() {
                 >
                   {p.t}
                   <span className="footer-hl" aria-hidden />
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -414,10 +415,10 @@ export default function Footer() {
           <div style={{ fontSize: 13, color: "#55555E" }}>{t("rights")}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
             {bottomLinks.map((l) => (
-              <a key={l.href} href={l.href} className="footer-link" style={{ fontSize: 13, color: "#6E6E78" }}>
+              <Link key={l.href} href={l.href} className="footer-link" style={{ fontSize: 13, color: "#6E6E78" }}>
                 {l.t}
                 <span className="footer-hl" aria-hidden />
-              </a>
+              </Link>
             ))}
             <button type="button" onClick={toTop} className="footer-totop" style={{ fontFamily: MONO }}>
               {t("toTop")}

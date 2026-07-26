@@ -348,6 +348,127 @@ body {
   }
 }
 
+/* ── Policy page ─────────────────────────────────────────────────
+   Long-form documents with a sticky section index. `.policy-anim`
+   elements start hidden and are driven by the page's rAF loop. */
+.policy-wordmark {
+  font-family: "Space Grotesk", "Pretendard Variable", sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.policy-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  color: #55555e;
+}
+.policy-kicker--accent {
+  color: #3b82f6;
+  letter-spacing: 0.28em;
+  margin-bottom: 12px;
+}
+.policy-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #55555e;
+  margin-bottom: 26px;
+}
+.policy-anim {
+  opacity: 0.01;
+  will-change: transform, opacity, filter;
+}
+.policy-section {
+  scroll-margin-top: 110px;
+  margin-bottom: 88px;
+}
+.policy-pairs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.policy-pairs li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: 10px;
+}
+.policy-pairs__name {
+  color: #d8d8de;
+}
+.policy-pairs__value {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-fg-faint);
+  white-space: nowrap;
+}
+
+.policy-index {
+  width: 232px;
+  flex: none;
+  position: sticky;
+  top: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.policy-index__label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.28em;
+  color: #4a4a52;
+  margin-bottom: 14px;
+}
+.policy-index__link {
+  font-size: 13.5px;
+  color: #8a8a93;
+  padding: 7px 0 7px 14px;
+  border-left: 2px solid #26262e;
+  transition: color 0.2s, border-color 0.2s;
+}
+.policy-index__link:hover {
+  color: #ededef;
+}
+.policy-index__link[data-active] {
+  color: #ededef;
+  border-left-color: #3b82f6;
+}
+
+/* Index becomes a horizontal scroller above the content on narrow screens. */
+@media (max-width: 1023px) {
+  .policy-index {
+    position: static;
+    width: auto;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .policy-index__label {
+    display: none;
+  }
+  .policy-index__link {
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 2px solid #26262e;
+    padding: 6px 2px;
+  }
+  .policy-index__link[data-active] {
+    border-bottom-color: #3b82f6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .policy-anim {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
 /* Animated underline for text links. */
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);
