@@ -5,7 +5,17 @@ import { useTranslations } from "next-intl";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { elementProgress, easeOutCubic, useScrollMotion } from "@/lib/scrollMotion";
 
-const SCENE_LENGTH_VH = 700;
+/** Scroll (vh) that advances the timeline by 1.0 — the pace the scene was
+ *  tuned at. Scene height is derived from this and the timeline's actual end,
+ *  so the pin releases right as the last word lands (no dead scroll). */
+const PACE_VH = 600;
+/** Word-lighting timeline: first word starts at W0, each next word STEP later,
+ *  each takes WIN to light. Shared by paint() and the scene-length maths. */
+const W0 = 0.36;
+const STEP = 0.017;
+const WIN = 0.08;
+/** Small beat where the finished state holds before the section releases. */
+const HOLD = 0.05;
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 /** Where each clutter image sits, how big it is, and its float timing. */
@@ -77,6 +87,19 @@ export default function EffaceIntro() {
     let n = 0;
     return tokens.map((tk) => (tk.kind === "word" ? n++ : n));
   }, [tokens]);
+
+  // Where the word timeline actually finishes for this locale's copy — the
+  // scene is sized to exactly that, so shorter copy no longer leaves a tail
+  // of empty scroll (the Korean sentence ends near p≈0.68 of the old 700vh).
+  const wordCount = useMemo(
+    () => tokens.filter((tk) => tk.kind === "word").length,
+    [tokens]
+  );
+  const timelineEnd = useMemo(
+    () => W0 + Math.max(0, wordCount - 1) * STEP + WIN + HOLD,
+    [wordCount]
+  );
+  const sceneVh = 100 + Math.round(PACE_VH * timelineEnd);
 
   const rootRef = useRef<HTMLElement>(null);
   const clutterRef = useRef<HTMLDivElement>(null);
@@ -166,9 +189,6 @@ export default function EffaceIntro() {
       }
 
       // 4. sentence lights up word by word; struck words fade back to grey
-      const W0 = 0.36;
-      const STEP = 0.017;
-      const WIN = 0.08;
       tokens.forEach((tk, i) => {
         const wi = wordIndex[i];
         if (tk.kind === "word") {
@@ -238,7 +258,7 @@ export default function EffaceIntro() {
       if (!onScreen || hidden) return;
       const rect = root.getBoundingClientRect();
       const total = Math.max(1, root.offsetHeight - window.innerHeight);
-      paint(clamp(-rect.top / total, 0, 1));
+      paint(clamp(-rect.top / total, 0, 1) * timelineEnd);
     };
     raf = requestAnimationFrame(tick);
     return () => {
@@ -246,7 +266,7 @@ export default function EffaceIntro() {
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [paint, isMobile]);
+  }, [paint, isMobile, timelineEnd]);
 
   // Mobile: no pinning — the same timeline plays off the block's own position.
   const mobileFrame = useCallback(() => {
@@ -401,7 +421,7 @@ export default function EffaceIntro() {
       ref={rootRef}
       style={{
         position: "relative",
-        height: `${SCENE_LENGTH_VH}vh`,
+        height: `${sceneVh}vh`,
         background: "var(--color-bg)",
         color: "#EDEDEF",
       }}
