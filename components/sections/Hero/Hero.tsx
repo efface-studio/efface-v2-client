@@ -4,10 +4,18 @@ import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
+import { cn } from "@/lib/cn";
+import {
+  COPY_FADE_END,
+  COPY_LIFT,
+  CUE_FADE_END,
+  LEFT_SCRIM,
+  SCENE_BACKDROP,
+} from "./Hero.constants";
 
 // Live WebGL logo scene — client-only so three.js stays out of SSR and the
 // initial bundle, and only mounts once the hero is on the client.
-const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
+const HeroScene = dynamic(() => import("@/components/sections/HeroScene"), { ssr: false });
 
 export default function Hero() {
   const t = useTranslations("Hero");
@@ -19,28 +27,25 @@ export default function Hero() {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-24%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
-  const cueOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const contentY = useTransform(scrollYProgress, [0, 1], COPY_LIFT);
+  const contentOpacity = useTransform(scrollYProgress, [0, COPY_FADE_END], [1, 0]);
+  const cueOpacity = useTransform(scrollYProgress, [0, CUE_FADE_END], [1, 0]);
 
   return (
-    <section
-      ref={ref}
-      className="relative min-h-[100svh] w-full overflow-hidden bg-bg"
-    >
+    <section ref={ref} className="relative min-h-[100svh] w-full overflow-hidden bg-bg">
       {/* Background: live "glass squares" logo rendered in WebGL — stays crisp at
           any resolution (no fixed-res video to pixelate on large screens). The
           mark is framed to the right in the scene so the copy owns the lower-left.
           The placeholder behind it is the scene's own backdrop colour, so there's
           no visible swap when the canvas paints (a poster image would flash a
           different frame first). Reduced motion gets a single frozen frame. */}
-      <div className="pointer-events-none absolute inset-0 bg-[#0b0c10]">
+      <div className={cn("pointer-events-none absolute inset-0", SCENE_BACKDROP)}>
         <HeroScene className="block h-full w-full" still={!!reduce} />
       </div>
 
       {/* Left scrim for legibility — eased off so the backdrop's studio light
           still reads through behind the copy. */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,11,0.92)_0%,rgba(10,10,11,0.68)_28%,rgba(10,10,11,0.18)_52%,transparent_74%)]" />
+      <div className={cn("pointer-events-none absolute inset-0", LEFT_SCRIM)} />
       {/* Top scrim (nav) + bottom blend into the next section. */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg/45 via-transparent to-bg" />
 
@@ -71,9 +76,7 @@ export default function Hero() {
         className="absolute bottom-8 right-10 z-10 hidden items-center gap-3 md:flex"
         style={reduce ? undefined : { opacity: cueOpacity }}
       >
-        <span className="text-xs uppercase tracking-[0.2em] text-fg-faint">
-          {t("scroll")}
-        </span>
+        <span className="text-xs uppercase tracking-[0.2em] text-fg-faint">{t("scroll")}</span>
         <span className="scroll-bob inline-block h-8 w-px bg-fg-faint" aria-hidden />
       </motion.div>
     </section>

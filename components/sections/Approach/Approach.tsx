@@ -1,11 +1,11 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
-
-type Item = { no: string; title: string; desc: string };
+import { STAGGER } from "@/lib/motion";
+import type { ApproachItem } from "./Approach.types";
 
 export default function Approach() {
   const t = useTranslations("Approach");
-  const items = t.raw("items") as Item[];
+  const items = t.raw("items") as ApproachItem[];
   const stack = t.raw("stack") as string[];
 
   return (
@@ -30,7 +30,7 @@ export default function Approach() {
             <ul className="border-t border-line">
               {items.map((item, i) => (
                 <li key={item.no} className="border-b border-line">
-                  <Reveal delay={i * 0.06}>
+                  <Reveal delay={i * STAGGER.tight}>
                     <div className="group flex gap-6 py-7 md:gap-8 md:py-8">
                       <span className="font-mono text-sm text-accent">{item.no}</span>
                       <div>

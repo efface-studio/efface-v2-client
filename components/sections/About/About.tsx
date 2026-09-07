@@ -1,13 +1,13 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
 import LogoMark from "@/components/LogoMark";
-
-type Meta = { label: string; value: string };
+import { STAGGER } from "@/lib/motion";
+import type { AboutMeta } from "./About.types";
 
 export default function About() {
   const t = useTranslations("About");
   const paragraphs = t.raw("paragraphs") as string[];
-  const meta = t.raw("meta") as Meta[];
+  const meta = t.raw("meta") as AboutMeta[];
 
   return (
     <section id="about" className="relative border-t border-line bg-bg py-24 md:py-36">
@@ -30,7 +30,7 @@ export default function About() {
           <div className="md:col-span-7">
             <div className="space-y-6">
               {paragraphs.map((p, i) => (
-                <Reveal key={i} delay={i * 0.06}>
+                <Reveal key={i} delay={i * STAGGER.tight}>
                   <p className="text-base leading-relaxed text-fg-dim md:text-lg">{p}</p>
                 </Reveal>
               ))}
