@@ -9,13 +9,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
     "motion": "^12.38.0",
     "next": "^16.2.6",
     "next-intl": "^4.11.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "three": "^0.184.0"
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
