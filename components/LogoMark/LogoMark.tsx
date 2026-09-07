@@ -1,5 +1,7 @@
+import type { LogoMarkProps } from "./LogoMark.types";
+
 /** efface mark — two overlapping rounded squares (light back, blue front). */
-export default function LogoMark({ className = "" }: { className?: string }) {
+export default function LogoMark({ className = "" }: LogoMarkProps) {
   return (
     <svg
       viewBox="0 0 32 32"

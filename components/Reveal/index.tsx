@@ -1,0 +1,2 @@
+export { default } from "./Reveal";
+export type { RevealProps } from "./Reveal.types";
