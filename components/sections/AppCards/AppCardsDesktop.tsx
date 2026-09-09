@@ -2,7 +2,13 @@
 
 import type { CSSProperties } from "react";
 import CardFace from "./CardFace";
-import { CARDS, CFG, ICON_SIZE_DESKTOP, SCENE_LENGTH_VH } from "./AppCards.constants";
+import {
+  CARDS,
+  CFG,
+  ICON_SIZE_DESKTOP,
+  PERSPECTIVE,
+  SCENE_LENGTH_VH,
+} from "./AppCards.constants";
 import type { AppCardsDesktopProps } from "./AppCards.types";
 
 const WORD_STYLE: CSSProperties = {
@@ -77,6 +83,8 @@ export default function AppCardsDesktop({
           <DisplayWord text={word2} />
         </div>
 
+        {/* Perspective lives on the row, so every card is a real plane in one
+            shared space rather than a rectangle with a 2D rotation on it. */}
         <div
           ref={rowRef}
           style={{
@@ -86,6 +94,8 @@ export default function AppCardsDesktop({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            perspective: `${PERSPECTIVE}px`,
+            perspectiveOrigin: "50% 46%",
           }}
         >
           {CARDS.map((card, i) => (
@@ -99,10 +109,18 @@ export default function AppCardsDesktop({
                 zIndex: card.zIndex,
                 flex: "none",
                 marginLeft: card.marginLeft,
-                transform: `translateY(${CFG[i].oy}px) rotate(${CFG[i].rot}deg)`,
-                willChange: "transform, opacity",
+                transform: `translate3d(0px, ${CFG[i].oy}px, 0px) rotateZ(${CFG[i].rot}deg)`,
+                transformStyle: "preserve-3d",
+                // `opacity` is left out on purpose — hinting it makes the box a
+                // grouping context, which flattens the preserve-3d subtree and
+                // would park the cast shadow flat against the face.
+                willChange: "transform",
               }}
             >
+              {/* Sits behind the face in Z, so the perspective divide offsets and
+                  spreads it on its own as the card tilts — no shadow maths, and
+                  nothing here repaints. */}
+              <div className="app-card__shadow" aria-hidden />
               <CardFace card={card} copy={cards[i]} iconSize={ICON_SIZE_DESKTOP} />
             </div>
           ))}
