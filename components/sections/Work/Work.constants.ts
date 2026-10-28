@@ -12,6 +12,7 @@ export const WORK_ICONS: Record<string, WorkIcon> = {
   cutephoto: { src: "/work/cutephoto.png" },
   "design-system": { src: "/work/design-system.svg" },
   rooti: { src: "/work/rooti.png" },
+  "rooti-admin": { src: "/work/rooti-admin.png" },
   goms: { src: "/work/goms.svg", bg: "#ffa600" },
 };
 
@@ -29,5 +30,13 @@ export const WORK_FEATURED: WorkFeature[] = [
   {
     key: "hinest",
     shots: Array.from({ length: 7 }, (_, i) => `/work/hinest/shot-${i + 1}.webp`),
+  },
+  {
+    key: "rooti-admin",
+    shots: [
+      "/work/rooti-admin/shot-1.webp",
+      "/work/rooti-admin/shot-2.webp",
+      "/work/rooti-admin/shot-3.webp",
+    ],
   },
 ];

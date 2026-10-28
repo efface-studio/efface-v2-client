@@ -128,6 +128,13 @@
             "year": "2026"
           },
           {
+            "key": "rooti-admin",
+            "name": "Rooti Admin V2",
+            "desc": "근무 현황·휴가 승인·근로배치를 한곳에서 다루는 Rooti 관리자 앱",
+            "field": "앱",
+            "year": "2026"
+          },
+          {
             "key": "goms",
             "name": "GOMS",
             "desc": "학교 외출제를 간편하게 관리하는 서비스",
