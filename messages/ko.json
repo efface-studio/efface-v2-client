@@ -7,7 +7,7 @@
     "menu": "메뉴",
     "close": "닫기",
     "items": {
-      "apps": "만든 앱",
+      "work": "프로젝트",
       "capabilities": "기술 역량",
       "about": "소개",
       "contact": "연락처"
@@ -25,21 +25,97 @@
     "definition": "ef·face /ɪˈfeɪs/ — 동사 · 1. (글씨·자국을) 문질러 지우다 · 2. (기억·인상을) 흐리게 하다, 지우다 · 3. efface oneself — 자신을 내세우지 않다",
     "sentence": "우리는 더하는 대신 지웁니다. {orb1} 군더더기를 ~지우고,~ 마찰을 ~지워~ 본질만 {orb2} 남깁니다. 덜어낼수록 선명해지는 것, *efface*의 방식입니다."
   },
-  "AppCards": {
-    "word1": "INNOVATIVE",
-    "word2": "SERVICES",
-    "cards": [
+  "Work": {
+    "label": "WORK",
+    "title": "만들어 온 것들.",
+    "lead": "efface가 직접 만든 서비스와 클라이언트 작업, 그리고 함께 참여한 프로젝트입니다.",
+    "groups": [
       {
-        "title": "HiNest",
-        "sub": "사내 관리의 새로운 시작"
+        "key": "efface",
+        "title": "efface 작업",
+        "projects": [
+          {
+            "name": "HiNest",
+            "desc": "결재·사내톡·프로젝트를 한곳에 모은 사내 워크플레이스",
+            "field": "웹 · 데스크톱",
+            "year": "2026"
+          },
+          {
+            "name": "Hwaso",
+            "desc": "미술품·골동품 거래 마켓플레이스와 실시간 온라인 경매",
+            "field": "웹 · 앱 · 서버",
+            "year": "2026"
+          },
+          {
+            "name": "Luckgluck",
+            "desc": "말랑이·키링을 파는 브랜드 자사몰과 관리자 페이지",
+            "field": "웹 · 서버",
+            "year": "2026"
+          },
+          {
+            "name": "efface V1",
+            "desc": "efface의 첫 공식 사이트",
+            "field": "웹",
+            "year": "2026"
+          },
+          {
+            "name": "efface V2",
+            "desc": "지금 보고 있는 efface 공식 사이트",
+            "field": "웹",
+            "year": "2026"
+          },
+          {
+            "name": "치즈필름",
+            "desc": "웹드라마 스튜디오의 공식 팬·오디션 사이트와 운영 패널",
+            "field": "웹",
+            "year": "2026"
+          },
+          {
+            "name": "2Pick",
+            "desc": "토스증권 Open API 기반 주식 거래·분석 앱",
+            "field": "웹 · 서버",
+            "year": "2026"
+          },
+          {
+            "name": "킨카라멘"
+          },
+          {
+            "name": "Cute Photo",
+            "desc": "링크 하나로 모여 함께 찍는 실시간 웹 포토부스",
+            "field": "웹 · 데스크톱",
+            "year": "2026"
+          },
+          {
+            "name": "efface Design System",
+            "desc": "efface의 모든 화면이 공유하는 토큰과 컴포넌트",
+            "field": "디자인 시스템",
+            "year": "2026"
+          },
+          {
+            "name": "MOS",
+            "desc": "AI 서비스들의 공식 상태를 한곳에서 보는 대시보드",
+            "field": "웹",
+            "year": "2026"
+          }
+        ]
       },
       {
-        "title": "Muru",
-        "sub": "커플들의 순간을 연결하다"
-      },
-      {
-        "title": "QTO",
-        "sub": "일상을 사진으로 남기다"
+        "key": "joined",
+        "title": "참여한 프로젝트",
+        "projects": [
+          {
+            "name": "Rooti V2",
+            "desc": "기업용 근태·인력 관리 플랫폼",
+            "field": "웹 · 앱",
+            "year": "2026"
+          },
+          {
+            "name": "GOMS",
+            "desc": "학교 외출제를 간편하게 관리하는 서비스",
+            "field": "PM · iOS",
+            "year": "2024"
+          }
+        ]
       }
     ]
   },

@@ -1,6 +1,6 @@
 /** Overlay menu entries. `key` indexes into the `Nav.items` message namespace. */
 export const NAV_ITEMS = [
-  { key: "apps", href: "#apps" },
+  { key: "work", href: "#work" },
   { key: "capabilities", href: "#capabilities" },
   { key: "about", href: "#about" },
   { key: "contact", href: "#contact" },

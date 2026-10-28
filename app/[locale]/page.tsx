@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import Hero from "@/components/sections/Hero";
 import EffaceIntro from "@/components/sections/EffaceIntro";
-import AppCards from "@/components/sections/AppCards";
+import Work from "@/components/sections/Work";
 import CapabilitiesScene from "@/components/sections/CapabilitiesScene";
 import Approach from "@/components/sections/Approach";
 import About from "@/components/sections/About";
@@ -22,7 +22,7 @@ export default async function Home({
       <main>
         <Hero />
         <EffaceIntro />
-        <AppCards />
+        <Work />
         <CapabilitiesScene />
         <Approach />
         <About />
