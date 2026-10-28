@@ -132,14 +132,14 @@
           {
             "key": "rooti",
             "name": "Rooti V2",
-            "desc": "기업용 근태·인력 관리 플랫폼",
+            "desc": "중증장애인을 위한 AI 원솔루션, 루티",
             "field": "웹 · 앱",
             "year": "2026"
           },
           {
             "key": "rooti-admin",
             "name": "Rooti Admin V2",
-            "desc": "근무 현황·휴가 승인·근로배치를 한곳에서 다루는 Rooti 관리자 앱",
+            "desc": "루티 기업 관리자 및 관리자용 앱",
             "field": "앱",
             "year": "2026"
           },
