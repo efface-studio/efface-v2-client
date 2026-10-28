@@ -32,6 +32,10 @@ export const WORK_FEATURED: WorkFeature[] = [
     shots: Array.from({ length: 7 }, (_, i) => `/work/hinest/shot-${i + 1}.webp`),
   },
   {
+    key: "rooti",
+    shots: ["/work/rooti/shot-1.webp", "/work/rooti/shot-2.webp", "/work/rooti/shot-3.webp"],
+  },
+  {
     key: "rooti-admin",
     shots: [
       "/work/rooti-admin/shot-1.webp",
