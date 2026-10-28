@@ -59,12 +59,17 @@ export interface WorkFeaturedSceneProps {
   items: WorkFeaturedItem[];
 }
 
-/** DOM handles the pinned featured scene animates. `shotRefs` is per project,
- *  then per shot. */
-export interface WorkFeaturedSceneRefs {
+export interface WorkFeaturedPinnedProps {
+  item: WorkFeaturedItem;
+  index: number;
+  count: number;
+}
+
+/** DOM handles one pinned featured project animates. */
+export interface WorkFeaturedPinRefs {
   rootRef: RefObject<HTMLDivElement | null>;
-  counterRef: RefObject<HTMLSpanElement | null>;
-  articleRefs: RefObject<(HTMLElement | null)[]>;
-  trackRefs: RefObject<(HTMLUListElement | null)[]>;
-  shotRefs: RefObject<(HTMLLIElement | null)[][]>;
+  stickyRef: RefObject<HTMLElement | null>;
+  runwayRef: RefObject<HTMLDivElement | null>;
+  trackRef: RefObject<HTMLUListElement | null>;
+  shotRefs: RefObject<(HTMLLIElement | null)[]>;
 }

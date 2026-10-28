@@ -46,17 +46,15 @@ export const WORK_FEATURED: WorkFeature[] = [
 ];
 
 /* ── Pinned featured scene ───────────────────────────────────────────
-   The runway is measured in units: each screenshot takes one unit to slide
-   in, and each project gets HOLD more to sit still before handing over. */
+   Each featured project pins on its own runway, measured in units: every
+   screenshot takes one unit to slide in, then the project holds for
+   FEATURED_HOLD before the pin releases and the page scrolls on to the next. */
 
-/** Units a project rests after its last shot lands, before the next one. */
-export const FEATURED_HOLD = 1;
-
-/** Units over which one project fades out and the next fades in. */
-export const FEATURED_FADE = 0.5;
+/** Units a project rests after its last shot lands, before it scrolls away. */
+export const FEATURED_HOLD = 0.6;
 
 /** Scroll length (vh) per unit — sets the pace. */
-export const FEATURED_PACE_VH = 24;
+export const FEATURED_PACE_VH = 20;
 
 /** How far (px) a shot travels in from the right. */
 export const FEATURED_SLIDE = 520;
