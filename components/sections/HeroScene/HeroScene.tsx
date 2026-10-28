@@ -15,8 +15,20 @@ export default function HeroScene({ className, still = false }: HeroSceneProps) 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dispose = createGlassScene(canvas, { still });
-    return () => dispose();
+    // Building the scene (texture bake + shader compile) is one long task; wait
+    // for the first paint to land and the main thread to go quiet, so the copy
+    // shows and the page answers input before the glass appears.
+    let dispose: (() => void) | undefined;
+    const start = () => {
+      dispose = createGlassScene(canvas, { still });
+    };
+    const idle = window.requestIdleCallback?.(start, { timeout: 1500 });
+    const timer = idle === undefined ? window.setTimeout(start, 200) : undefined;
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      if (timer !== undefined) window.clearTimeout(timer);
+      dispose?.();
+    };
   }, [still]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
