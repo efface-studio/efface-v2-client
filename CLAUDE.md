@@ -221,6 +221,25 @@ PR이 올라가면 CI가 자동으로 돌고, **CI가 통과한 상태에서 `xi
 
 ---
 
+## 7-1. 배포 · 릴리스
+
+배포할 때는 **반드시 GitHub Release를 상세히 작성**한다. 릴리스 없이 배포하지 않는다.
+
+- **태그**: `vMAJOR.MINOR.PATCH` (SemVer). `package.json`의 `version`과 맞춘다.
+  - 새 기능·섹션 추가 → MINOR, 버그·문구·스타일 수정만 → PATCH, 구조를 뒤집는 개편 → MAJOR.
+- **제목**: `vX.Y.Z — <한 줄 요약>`
+- **본문** (빠짐없이):
+  - `## 요약` — 이번 배포로 사용자가 보게 되는 변화 2~4줄
+  - `## 변경 사항` — `✨ 기능` / `🐛 수정` / `🎨 디자인` / `⚡ 성능` / `🔧 기타`로 나눠 항목별로. 관련 이슈·PR 번호(`#N`)를 단다.
+  - `## 성능` — 성능에 영향을 준 배포면 전/후 수치(Lighthouse 점수·LCP·TBT 등)
+  - `## 검증` — typecheck · build · 브라우저(데스크톱/모바일) 확인 내역
+  - `## 배포` — 배포 대상(도메인), 배포 커밋 SHA, 배포 시각
+  - `## 알려진 이슈 / 후속` — 남은 과제 (없으면 "없음")
+- 배포 후 실제 도메인에서 동작을 확인하고, 문제가 있으면 릴리스 본문에 기록한다.
+- **자동 배포**: `main`에 병합되면 [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)이 Vercel CLI로 `v2.efface.dev`에 프로덕션 배포한다. (저장소 Secret `VERCEL_TOKEN`·`VERCEL_ORG_ID`·`VERCEL_PROJECT_ID` 필요) 배포 워크플로 수정은 `👷 (ci)` 커밋으로 분리한다.
+
+---
+
 ## 8. 작업 흐름 요약 (Checklist)
 
 작업할 때 매번 아래 순서를 따른다.
@@ -243,7 +262,7 @@ PR이 올라가면 CI가 자동으로 돌고, **CI가 통과한 상태에서 `xi
   - 빌드: `npm run build`
   - 타입체크: `npm run typecheck` (`tsc --noEmit`)
 - **기본 브랜치**: `main`
-- **배포**: Vercel (예정)
+- **배포**: Vercel → `v2.efface.dev`. `main` 병합 시 `deploy.yml`이 자동 배포. 배포 시 섹션 7-1의 GitHub Release 필수.
 - **기타 규칙**:
   - 다크 테마 고정 — 배경 `#0a0a0b`, 텍스트 화이트, 단일 accent `#3b62e5`(로고 블루).
   - 히어로 배경 영상은 `public/hero.mp4`(로고 애니메이션). 포스터 `public/hero-poster.jpg`.

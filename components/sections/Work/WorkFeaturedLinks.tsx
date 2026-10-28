@@ -4,7 +4,7 @@ import { BRAND_LOGOS, GITHUB_PATH } from "./brandIcons";
 import type { WorkIcon, WorkLinks } from "./Work.types";
 
 /** Render order for the link row. */
-const ORDER = ["appStore", "playStore", "github", "web"] as const;
+const ORDER = ["appStore", "playStore", "github", "githubServer", "web"] as const;
 
 interface WorkFeaturedLinksProps {
   links?: WorkLinks;
@@ -42,7 +42,7 @@ export default function WorkFeaturedLinks({ links, webIcon }: WorkFeaturedLinksP
                   />
                 </span>
               )
-            ) : key === "github" ? (
+            ) : key === "github" || key === "githubServer" ? (
               <svg aria-hidden viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-fg" fill="currentColor">
                 <path d={GITHUB_PATH} />
               </svg>

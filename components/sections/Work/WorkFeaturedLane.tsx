@@ -15,7 +15,7 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
   return (
     <article aria-label={project.name} className="row-span-2 grid min-w-0 grid-rows-subgrid">
       <div>
-        <WorkFeaturedInfo project={project} links={feature.links} />
+        <WorkFeaturedInfo project={project} links={feature.links} more />
       </div>
 
       {/* Capped by screen height (three shots ≈ 1.38 × their height, plus the
@@ -54,6 +54,8 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
                       width={720}
                       height={1565}
                       loading={eager ? "eager" : "lazy"}
+                      data-zoom
+                      tabIndex={0}
                       className="w-full rounded-2xl ring-1 ring-white/10"
                     />
                   </li>

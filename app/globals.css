@@ -32,6 +32,42 @@ html {
   background: var(--color-bg);
 }
 
+/* Scrollbars: a thin, quiet thumb on a clear track instead of the platform's
+   white bar — the page, the detail popup and any other scroller alike. In the
+   base layer so a utility (e.g. `[scrollbar-width:none]`) can still hide one. */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  }
+  *:hover {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16) padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Work image zoom: hint on hover, and hold the page still while it's open. */
+img[data-zoom] {
+  cursor: zoom-in;
+}
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 html,
 body {
   background: var(--color-bg);
