@@ -36,9 +36,9 @@ export const WORK_LINKS: Record<string, WorkLinks> = {
     github: "https://github.com/efface-studio/CheezeFilm-Client",
     web: "https://cheeze.efface.dev",
   },
-  // The app repo is private; its public support page is the outward link.
+  // The app repo is private, so the live booth is the only outward link.
   cutephoto: {
-    web: "https://efface-studio.github.io/cutephoto-site/",
+    web: "https://qto.efface.dev",
   },
   "design-system": {
     github: "https://github.com/efface-studio/efface-component",
