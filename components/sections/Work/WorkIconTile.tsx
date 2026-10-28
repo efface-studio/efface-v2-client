@@ -8,11 +8,12 @@ const TILE =
 const monogram = (name: string): string => name.slice(0, /^[A-Za-z0-9]/.test(name) ? 3 : 1);
 
 /** A home-screen style app icon. Falls back to a monogram when there's no art. */
-export default function WorkIconTile({ name, icon }: WorkIconTileProps) {
+export default function WorkIconTile({ name, icon, zoom }: WorkIconTileProps) {
   if (!icon) {
     return (
-      <div aria-hidden className={cn(TILE, "bg-surface-2")}>
-        <span className="text-2xl font-semibold tracking-tight text-fg-dim md:text-3xl">
+      <div aria-hidden className={cn(TILE, "@container bg-surface-2")}>
+        {/* Sized off the tile, so the monogram fits a 40px row icon and a 96px one alike. */}
+        <span className="text-[30cqw] font-semibold tracking-tight text-fg-dim">
           {monogram(name)}
         </span>
       </div>
@@ -25,6 +26,10 @@ export default function WorkIconTile({ name, icon }: WorkIconTileProps) {
         src={icon.src}
         alt=""
         draggable={false}
+        data-zoom={zoom || undefined}
+        data-zoom-tile
+        data-zoom-bg={icon.bg}
+        data-zoom-inset={icon.inset || undefined}
         className={cn("h-full w-full object-contain", icon.inset && "p-[18%]")}
       />
     </div>
