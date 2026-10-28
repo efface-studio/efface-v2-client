@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import CardFace from "./CardFace";
 import {
+  CARD_GAP,
   CARDS,
   CFG,
   ICON_SIZE_DESKTOP,
@@ -96,6 +97,7 @@ export default function AppCardsDesktop({
             justifyContent: "center",
             perspective: `${PERSPECTIVE}px`,
             perspectiveOrigin: "50% 46%",
+            gap: CARD_GAP,
           }}
         >
           {CARDS.map((card, i) => (
@@ -106,9 +108,7 @@ export default function AppCardsDesktop({
               }}
               style={{
                 position: "relative",
-                zIndex: card.zIndex,
                 flex: "none",
-                marginLeft: card.marginLeft,
                 transform: `translate3d(0px, ${CFG[i].oy}px, 0px) rotateZ(${CFG[i].rot}deg)`,
                 transformStyle: "preserve-3d",
                 // `opacity` is left out on purpose — hinting it makes the box a
