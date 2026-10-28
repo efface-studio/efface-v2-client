@@ -22,6 +22,10 @@ export const WORK_FEATURED: WorkFeature[] = [
   {
     key: "hwaso",
     shots: ["/work/hwaso/shot-1.webp", "/work/hwaso/shot-2.webp", "/work/hwaso/shot-3.webp"],
+    links: {
+      github: "https://github.com/efface-studio/hwaso",
+      web: "https://hwaso.efface.dev",
+    },
   },
   {
     key: "hinest",
