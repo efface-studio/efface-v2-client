@@ -1,14 +1,20 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
 import { STAGGER } from "@/lib/motion";
+import WorkFeatured from "./WorkFeatured";
 import WorkIconTile from "./WorkIconTile";
-import { WORK_ICONS } from "./Work.constants";
+import { WORK_FEATURED, WORK_ICONS } from "./Work.constants";
 import type { WorkGroup } from "./Work.types";
 
 /** Portfolio laid out like a home screen — efface's own work and the projects we joined. */
 export default function Work() {
   const t = useTranslations("Work");
   const groups = t.raw("groups") as WorkGroup[];
+  const projects = groups.flatMap((group) => group.projects);
+  const featured = WORK_FEATURED.flatMap((feature) => {
+    const project = projects.find((p) => p.key === feature.key);
+    return project ? [{ feature, project }] : [];
+  });
 
   return (
     <section id="work" className="relative border-t border-line bg-bg py-24 md:py-36">
@@ -23,7 +29,20 @@ export default function Work() {
           <p className="mt-6 max-w-xl text-fg-dim">{t("lead")}</p>
         </Reveal>
 
-        <div className="mt-16 space-y-20 md:mt-24 md:space-y-28">
+        {featured.length > 0 && (
+          <div className="mt-16 md:mt-24">
+            <Reveal>
+              <p className="label">{t("featured.label")}</p>
+            </Reveal>
+            <div className="mt-6 space-y-20 md:mt-8 md:space-y-28">
+              {featured.map(({ feature, project }) => (
+                <WorkFeatured key={feature.key} feature={feature} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-20 space-y-20 md:mt-28 md:space-y-28">
           {groups.map((group) => (
             <div key={group.key}>
               <Reveal>

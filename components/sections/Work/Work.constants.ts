@@ -1,4 +1,4 @@
-import type { WorkIcon } from "./Work.types";
+import type { WorkFeature, WorkIcon } from "./Work.types";
 
 /** Icon art per project `key`. Projects missing here get a monogram tile. */
 export const WORK_ICONS: Record<string, WorkIcon> = {
@@ -14,3 +14,13 @@ export const WORK_ICONS: Record<string, WorkIcon> = {
   rooti: { src: "/work/rooti.png" },
   goms: { src: "/work/goms.svg", bg: "#ffa600" },
 };
+
+/** Projects shown large above the grid, in this order. Add one when its store
+ *  art is ready. */
+export const WORK_FEATURED: WorkFeature[] = [
+  {
+    key: "hwaso",
+    banner: "/work/hwaso/banner.webp",
+    shots: ["/work/hwaso/shot-1.webp", "/work/hwaso/shot-2.webp", "/work/hwaso/shot-3.webp"],
+  },
+];

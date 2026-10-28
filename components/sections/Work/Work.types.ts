@@ -29,3 +29,15 @@ export interface WorkIconTileProps {
   name: string;
   icon?: WorkIcon;
 }
+
+/** Store art for a featured project: one wide banner and portrait screenshots. */
+export interface WorkFeature {
+  key: string;
+  banner: string;
+  shots: string[];
+}
+
+export interface WorkFeaturedProps {
+  feature: WorkFeature;
+  project: WorkProject;
+}

@@ -29,6 +29,11 @@
     "label": "WORK",
     "title": "만들어 온 것들.",
     "lead": "efface가 직접 만든 서비스와 클라이언트 작업, 그리고 함께 참여한 프로젝트입니다.",
+    "featured": {
+      "label": "대표작",
+      "bannerAlt": "{name} 소개 배너",
+      "shotAlt": "{name} 앱 화면 {n}"
+    },
     "groups": [
       {
         "key": "efface",
