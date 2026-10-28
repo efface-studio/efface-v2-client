@@ -1,9 +1,8 @@
 /** Per-card layout + scroll-entrance constants (from the source scene). */
 export const CFG = [
-  { oy: 16, rot: -8, dx: -260, xr: -22 },
-  { oy: -4, rot: -3.5, dx: -90, xr: 18 },
-  { oy: -4, rot: 3.5, dx: 90, xr: -16 },
-  { oy: 16, rot: 8, dx: 260, xr: 24 },
+  { oy: 14, rot: -6, dx: -200, xr: -22 },
+  { oy: -6, rot: 0, dx: 0, xr: 18 },
+  { oy: 14, rot: 6, dx: 200, xr: 24 },
 ] as const;
 
 /** Visual spec per card — gradients, stacking and 3D glyph parameters. */
@@ -12,7 +11,7 @@ export const CARDS = [
     key: "hinest",
     gradient: "linear-gradient(160deg, #4E8CFF 0%, #2563EB 55%, #1D46C8 100%)",
     sheen: 0.16,
-    zIndex: 3,
+    zIndex: 2,
     marginLeft: 0,
     icon: { src: "/logos/hinest.svg", color: "#F6F7FA", rx: 12, ry: 22, rz: -7 },
   },
@@ -20,7 +19,7 @@ export const CARDS = [
     key: "muru",
     gradient: "linear-gradient(160deg, #34E0D8 0%, #14B8B0 60%, #0C9A93 100%)",
     sheen: 0.16,
-    zIndex: 2,
+    zIndex: 3,
     marginLeft: -34,
     icon: { src: "/logos/muru.svg", color: "#FFFDF8", rx: 12, ry: -22, rz: 7 },
   },
@@ -28,17 +27,9 @@ export const CARDS = [
     key: "qto",
     gradient: "linear-gradient(160deg, #34343C 0%, #1D1D23 60%, #141418 100%)",
     sheen: 0.1,
-    zIndex: 4,
+    zIndex: 2,
     marginLeft: -34,
     icon: { src: "/logos/qto.svg", color: "#EF6553", rx: 11, ry: 20, rz: -6 },
-  },
-  {
-    key: "goms",
-    gradient: "linear-gradient(160deg, #9D6BFF 0%, #7C3AED 55%, #6425D0 100%)",
-    sheen: 0.16,
-    zIndex: 3,
-    marginLeft: -34,
-    icon: { src: "/logos/goms.svg", color: "#FFA600", rx: 13, ry: -22, rz: 8 },
   },
 ] as const;
 

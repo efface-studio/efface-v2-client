@@ -28,7 +28,7 @@ const LIGHT = { x: -0.3, y: -0.62, z: 1 };
  *
  * The face normal starts at +Z and is carried around by the card's yaw and
  * pitch; the half-vector between the fixed light and the viewer decides how
- * hard the highlight blooms. Four of these per frame costs nothing, and it is
+ * hard the highlight blooms. A few of these per frame costs nothing, and it is
  * what makes a tilt read as a surface catching light rather than a rotation.
  */
 function specular(pitch: number, yaw: number): number {
@@ -83,7 +83,7 @@ export function useAppCardsScene(enabled: boolean): AppCardsSceneRefs {
   const wordTopRef = useRef<HTMLDivElement>(null);
   const wordBottomRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>(Array(CARD_COUNT).fill(null));
 
   useEffect(() => {
     if (!enabled) return;
@@ -117,7 +117,7 @@ export function useAppCardsScene(enabled: boolean): AppCardsSceneRefs {
     // Hover is tracked by event rather than hit-testing so the loop never has
     // to measure a card. The rAF owns the lift, so nothing competes with it.
     let hovered = -1;
-    const hover = [0, 0, 0, 0];
+    const hover: number[] = Array(CARD_COUNT).fill(0);
     const bound: { el: HTMLElement; enter: () => void; leave: () => void }[] = [];
     for (let i = 0; i < CARD_COUNT; i++) {
       const el = cardRefs.current[i];
@@ -179,7 +179,7 @@ export function useAppCardsScene(enabled: boolean): AppCardsSceneRefs {
         const eb = easeOutBack(tt);
 
         // Nearer cards in the fan answer the cursor harder.
-        const depth = 1 + (3 - i) * 0.35;
+        const depth = 1 + (CARD_COUNT - 1 - i) * 0.35;
 
         hover[i] += ((hovered === i ? 1 : 0) - hover[i]) * 0.12;
 

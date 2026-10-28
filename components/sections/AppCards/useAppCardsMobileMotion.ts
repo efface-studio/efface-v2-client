@@ -3,6 +3,7 @@
 import { useCallback, useRef } from "react";
 import { easeOutCubic } from "@/lib/motion";
 import { elementProgress, useScrollMotion } from "@/lib/scrollMotion";
+import { CARD_COUNT } from "./AppCards.constants";
 import type { AppCardsMobileRefs } from "./AppCards.types";
 
 /**
@@ -11,7 +12,7 @@ import type { AppCardsMobileRefs } from "./AppCards.types";
  */
 export function useAppCardsMobileMotion(enabled: boolean): AppCardsMobileRefs {
   const rootRef = useRef<HTMLElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>(Array(CARD_COUNT).fill(null));
 
   const frame = useCallback(() => {
     cardRefs.current.forEach((el, i) => {
