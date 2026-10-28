@@ -1,3 +1,5 @@
+import type { RefObject } from "react";
+
 /** One project. Copy comes from messages; only `key` and `name` are required —
  *  empty fields are not rendered. */
 export interface WorkProject {
@@ -41,4 +43,28 @@ export interface WorkFeature {
 export interface WorkFeaturedProps {
   feature: WorkFeature;
   project: WorkProject;
+}
+
+export interface WorkFeaturedInfoProps {
+  project: WorkProject;
+}
+
+/** A featured project paired with its copy. */
+export interface WorkFeaturedItem {
+  feature: WorkFeature;
+  project: WorkProject;
+}
+
+export interface WorkFeaturedSceneProps {
+  items: WorkFeaturedItem[];
+}
+
+/** DOM handles the pinned featured scene animates. `shotRefs` is per project,
+ *  then per shot. */
+export interface WorkFeaturedSceneRefs {
+  rootRef: RefObject<HTMLDivElement | null>;
+  counterRef: RefObject<HTMLSpanElement | null>;
+  articleRefs: RefObject<(HTMLElement | null)[]>;
+  trackRefs: RefObject<(HTMLUListElement | null)[]>;
+  shotRefs: RefObject<(HTMLLIElement | null)[][]>;
 }
