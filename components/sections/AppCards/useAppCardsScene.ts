@@ -20,6 +20,10 @@ import type { AppCardsSceneRefs } from "./AppCards.types";
 
 const DEG = Math.PI / 180;
 
+/** Cursor parallax travel (px) — shared by every card so the row stays level. */
+const ROW_DEPTH = 19;
+const ROW_DEPTH_Y = 12;
+
 /** Key light: above and to the left, angled back toward the viewer. */
 const LIGHT = { x: -0.3, y: -0.62, z: 1 };
 
@@ -178,8 +182,6 @@ export function useAppCardsScene(enabled: boolean): AppCardsSceneRefs {
         const e = easeOutCubic(tt);
         const eb = easeOutBack(tt);
 
-        // Nearer cards in the fan answer the cursor harder.
-        const depth = 1 + (CARD_COUNT - 1 - i) * 0.35;
 
         hover[i] += ((hovered === i ? 1 : 0) - hover[i]) * 0.12;
 
@@ -188,9 +190,9 @@ export function useAppCardsScene(enabled: boolean): AppCardsSceneRefs {
         const yawDeg = sm.x * TILT_Y * e;
         const pitchDeg = -sm.y * TILT_X * e;
 
-        const x = c.dx * (1 - e) + sm.x * PARALLAX * 14 * depth;
+        const x = c.dx * (1 - e) + sm.x * PARALLAX * ROW_DEPTH;
         const y =
-          c.oy + (1 - e) * vh * 0.9 + sm.y * PARALLAX * 9 * depth - hover[i] * HOVER_LIFT;
+          c.oy + (1 - e) * vh * 0.9 + sm.y * PARALLAX * ROW_DEPTH_Y - hover[i] * HOVER_LIFT;
         const z = DEAL_Z * (1 - eb) + hover[i] * HOVER_Z;
 
         el.style.transform =
