@@ -82,4 +82,6 @@ export interface WorkFeaturedPinRefs {
   runwayRef: RefObject<HTMLDivElement | null>;
   trackRef: RefObject<HTMLUListElement | null>;
   shotRefs: RefObject<(HTMLLIElement | null)[]>;
+  edgeRef: RefObject<HTMLDivElement | null>;
+  blurRef: RefObject<HTMLDivElement | null>;
 }

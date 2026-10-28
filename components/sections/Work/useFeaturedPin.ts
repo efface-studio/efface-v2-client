@@ -3,14 +3,20 @@
 import { useCallback, useEffect, useRef } from "react";
 import { clamp, easeOutCubic } from "@/lib/motion";
 import { useScrollMotion } from "@/lib/scrollMotion";
-import { FEATURED_HOLD, FEATURED_SLIDE, FEATURED_VISIBLE } from "./Work.constants";
+import {
+  FEATURED_EDGE_REM,
+  FEATURED_HOLD,
+  FEATURED_SLIDE,
+  FEATURED_VISIBLE,
+} from "./Work.constants";
 import type { WorkFeaturedPinRefs } from "./Work.types";
 
 /**
  * Drives one pinned featured project. The block is only as tall as its content
  * and sticks at its own `top`; the runway spacer after it is what the pin
  * scrolls through. Across that runway the shots slide in from the right one at
- * a time and the track slides left once more than three are out.
+ * a time and the track slides left once more than three are out, fading and
+ * blurring out at the column edge as it goes.
  *
  * Only `transform` and `opacity` change per frame. The sticky offset, runway
  * length and shot stride are measured on resize, never inside the loop.
@@ -21,6 +27,8 @@ export function useFeaturedPin(shotCount: number, enabled: boolean): WorkFeature
   const runwayRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
   const shotRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const edgeRef = useRef<HTMLDivElement>(null);
+  const blurRef = useRef<HTMLDivElement>(null);
   const metrics = useRef({ top: 0, runway: 1, stride: 0 });
 
   useEffect(() => {
@@ -56,13 +64,18 @@ export function useFeaturedPin(shotCount: number, enabled: boolean): WorkFeature
       el.style.transform = `translate3d(${((1 - s) * FEATURED_SLIDE).toFixed(1)}px, 0, 0)`;
       el.style.opacity = s.toFixed(3);
     });
+    const over = Math.max(0, revealed - FEATURED_VISIBLE);
     if (trackRef.current) {
-      const shift = Math.max(0, revealed - FEATURED_VISIBLE) * stride;
-      trackRef.current.style.transform = `translate3d(${(-shift).toFixed(1)}px, 0, 0)`;
+      trackRef.current.style.transform = `translate3d(${(-over * stride).toFixed(1)}px, 0, 0)`;
     }
+    // The left-edge fade and blur grow in over the first shot's worth of
+    // slide, so nothing is softened while the first shot still sits flush.
+    const edge = Math.min(1, over);
+    edgeRef.current?.style.setProperty("--edge", `${(edge * FEATURED_EDGE_REM).toFixed(2)}rem`);
+    if (blurRef.current) blurRef.current.style.opacity = edge.toFixed(3);
   }, [shotCount]);
 
   useScrollMotion(rootRef, frame, enabled);
 
-  return { rootRef, stickyRef, runwayRef, trackRef, shotRefs };
+  return { rootRef, stickyRef, runwayRef, trackRef, shotRefs, edgeRef, blurRef };
 }
