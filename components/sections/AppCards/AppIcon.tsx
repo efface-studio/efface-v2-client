@@ -1,27 +1,29 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import type { AppIconProps } from "./AppCards.types";
 
-/** Renders one 3D app tile into a canvas (WebGL, client-only, drawn once). */
-export default function AppIcon({ src, color, rx, ry, rz, size = 300 }: AppIconProps) {
-  const hostRef = useRef<HTMLDivElement>(null);
+/** Share of the slot the tile fills, and of the tile the glyph fills. */
+const TILE_RATIO = 0.6;
+const GLYPH_RATIO = 0.6;
 
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-    let dispose: (() => void) | undefined;
-    let cancelled = false;
-    // Dynamic import keeps three.js + the SVG loader out of the initial bundle.
-    import("@/components/three/appIcon3d").then(({ createAppIcon }) => {
-      if (cancelled || !hostRef.current) return;
-      dispose = createAppIcon(hostRef.current, { src, color, rx, ry, rz, size });
-    });
-    return () => {
-      cancelled = true;
-      dispose?.();
-    };
-  }, [src, color, rx, ry, rz, size]);
+/** A flat app icon: a solid rounded tile with the SVG glyph laid on top. */
+export default function AppIcon({ src, color, size = 300 }: AppIconProps) {
+  const tile = Math.round(size * TILE_RATIO);
+  const glyph = Math.round(tile * GLYPH_RATIO);
 
-  return <div ref={hostRef} style={{ width: size, height: size }} aria-hidden="true" />;
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        width: tile,
+        height: tile,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "22.5%",
+        background: color,
+        boxShadow: "0 18px 36px rgba(0, 0, 0, 0.28)",
+      }}
+    >
+      <img src={src} alt="" width={glyph} height={glyph} draggable={false} />
+    </div>
+  );
 }
