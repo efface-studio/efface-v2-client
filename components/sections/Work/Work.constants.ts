@@ -83,7 +83,7 @@ export const WORK_FEATURED: WorkFeature[] = [
 export const FEATURED_HOLD = 0.6;
 
 /** Scroll length (vh) per unit — sets the pace. */
-export const FEATURED_PACE_VH = 20;
+export const FEATURED_PACE_VH = 34;
 
 /** How far (px) a shot travels in from the right. */
 export const FEATURED_SLIDE = 520;
