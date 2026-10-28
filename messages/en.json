@@ -35,63 +35,74 @@
         "title": "By efface",
         "projects": [
           {
+            "key": "hinest",
             "name": "HiNest",
             "desc": "A workplace hub for approvals, team chat and projects",
             "field": "Web · Desktop",
             "year": "2026"
           },
           {
+            "key": "hwaso",
             "name": "Hwaso",
             "desc": "A marketplace and live auctions for art and antiques",
             "field": "Web · App · Server",
             "year": "2026"
           },
           {
+            "key": "luckgluck",
             "name": "Luckgluck",
             "desc": "Online store and admin for a squishy-toy brand",
             "field": "Web · Server",
             "year": "2026"
           },
           {
+            "key": "efface-v1",
             "name": "efface V1",
             "desc": "efface's first official site",
             "field": "Web",
             "year": "2026"
           },
           {
+            "key": "efface-v2",
             "name": "efface V2",
             "desc": "The efface site you're on now",
             "field": "Web",
             "year": "2026"
           },
           {
+            "key": "cheezefilm",
             "name": "CheezeFilm",
             "desc": "Official fan and audition site, with ops panel, for a web-drama studio",
             "field": "Web",
             "year": "2026"
           },
           {
+            "key": "2pick",
             "name": "2Pick",
             "desc": "Stock trading and analysis on the Toss Securities Open API",
             "field": "Web · Server",
             "year": "2026"
           },
           {
+            "key": "kinkaramen",
             "name": "Kinkaramen"
           },
           {
+            "key": "cutephoto",
             "name": "Cute Photo",
             "desc": "A real-time web photo booth friends join with one link",
             "field": "Web · Desktop",
             "year": "2026"
           },
           {
+            "key": "design-system",
             "name": "efface Design System",
             "desc": "The tokens and components every efface screen shares",
             "field": "Design system",
             "year": "2026"
           },
           {
+            "key": "mos",
             "name": "MOS",
             "desc": "One dashboard for the official status of AI services",
             "field": "Web",
@@ -104,12 +115,14 @@
         "title": "Projects we joined",
         "projects": [
           {
+            "key": "rooti",
             "name": "Rooti V2",
             "desc": "Workforce and attendance management for companies",
             "field": "Web · App",
             "year": "2026"
           },
           {
+            "key": "goms",
             "name": "GOMS",
             "desc": "Making school leave passes easy to manage",
             "field": "PM · iOS",

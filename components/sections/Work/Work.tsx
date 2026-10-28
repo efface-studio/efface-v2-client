@@ -1,8 +1,11 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
+import { STAGGER } from "@/lib/motion";
+import WorkIconTile from "./WorkIconTile";
+import { WORK_ICONS } from "./Work.constants";
 import type { WorkGroup } from "./Work.types";
 
-/** Portfolio list — efface's own work and the projects we took part in. */
+/** Portfolio laid out like a home screen — efface's own work and the projects we joined. */
 export default function Work() {
   const t = useTranslations("Work");
   const groups = t.raw("groups") as WorkGroup[];
@@ -22,40 +25,43 @@ export default function Work() {
 
         <div className="mt-16 space-y-20 md:mt-24 md:space-y-28">
           {groups.map((group) => (
-            <Reveal key={group.key}>
-              <div className="flex items-baseline justify-between gap-6 border-b border-line-strong pb-4">
-                <h3 className="text-lg font-medium tracking-tight md:text-xl">{group.title}</h3>
-                <span className="font-mono text-sm text-fg-faint">
-                  {String(group.projects.length).padStart(2, "0")}
-                </span>
-              </div>
+            <div key={group.key}>
+              <Reveal>
+                <div className="flex items-baseline justify-between gap-6 border-b border-line pb-4">
+                  <h3 className="text-lg font-medium tracking-tight md:text-xl">{group.title}</h3>
+                  <span className="font-mono text-sm text-fg-faint">
+                    {String(group.projects.length).padStart(2, "0")}
+                  </span>
+                </div>
+              </Reveal>
 
-              <ol>
-                {group.projects.map((project) => (
-                  <li
-                    key={project.name}
-                    className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-1.5 border-b border-line py-5 md:grid-cols-12 md:items-baseline md:gap-x-8 md:py-6"
-                  >
-                    <h4 className="text-xl font-medium tracking-tight md:col-span-4 md:text-2xl">
-                      {project.name}
-                    </h4>
-                    <span className="text-right font-mono text-sm text-fg-faint md:order-last md:col-span-1">
-                      {project.year}
-                    </span>
-                    {project.desc && (
-                      <p className="col-span-2 text-sm leading-relaxed text-fg-dim md:col-span-5 md:text-base">
-                        {project.desc}
-                      </p>
-                    )}
-                    {project.field && (
-                      <p className="col-span-2 text-xs text-fg-faint md:col-span-2 md:col-start-10 md:text-sm">
-                        {project.field}
-                      </p>
-                    )}
+              <ul className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-4 md:mt-12 md:grid-cols-6 md:gap-x-8 md:gap-y-14">
+                {group.projects.map((project, i) => (
+                  <li key={project.key}>
+                    <Reveal delay={(i % 6) * STAGGER.tight}>
+                      <article className="flex flex-col items-center text-center">
+                        <div className="w-20 md:w-24">
+                          <WorkIconTile name={project.name} icon={WORK_ICONS[project.key]} />
+                        </div>
+                        <h4 className="mt-3.5 text-sm font-medium tracking-tight md:mt-4 md:text-base">
+                          {project.name}
+                        </h4>
+                        {project.desc && (
+                          <p className="mt-1.5 line-clamp-2 break-keep text-xs leading-relaxed text-fg-dim md:text-sm">
+                            {project.desc}
+                          </p>
+                        )}
+                        {(project.field || project.year) && (
+                          <p className="mt-2 text-xs text-fg-faint">
+                            {[project.field, project.year].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
+                      </article>
+                    </Reveal>
                   </li>
                 ))}
-              </ol>
-            </Reveal>
+              </ul>
+            </div>
           ))}
         </div>
       </div>
