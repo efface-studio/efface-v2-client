@@ -82,3 +82,6 @@ export const FEATURED_SLIDE = 520;
 
 /** Shots visible at once; past this the track slides left. */
 export const FEATURED_VISIBLE = 3;
+
+/** Width (rem) of the soft left edge once the track starts sliding. */
+export const FEATURED_EDGE_REM = 4.5;

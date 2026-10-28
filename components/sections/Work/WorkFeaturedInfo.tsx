@@ -24,7 +24,7 @@ export default function WorkFeaturedInfo({ project, links }: WorkFeaturedInfoPro
       {project.desc && (
         <p className="mt-5 max-w-sm break-keep leading-relaxed text-fg-dim">{project.desc}</p>
       )}
-      <WorkFeaturedLinks links={links} />
+      <WorkFeaturedLinks links={links} webIcon={WORK_ICONS[project.key]} />
     </>
   );
 }
