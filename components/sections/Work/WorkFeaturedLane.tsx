@@ -16,7 +16,9 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
     <article aria-label={project.name} className="min-w-0">
       <WorkFeaturedInfo project={project} links={feature.links} />
 
-      <div className="relative mt-8">
+      {/* Capped by screen height (three shots ≈ 1.38 × their height, plus the
+          gaps) so a wide lane never pushes the pinned row off screen. */}
+      <div className="relative mt-8 max-w-[calc((100vh-21rem)*1.38+2rem)]">
         {feature.page ? (
           <WorkPageFrame
             page={feature.page}
