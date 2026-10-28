@@ -198,7 +198,7 @@ export const EN: PolicyContent = {
       blocks: [
         {
           kind: "p",
-          text: "Copyright in all content of this website and the apps efface has built (GOMS, HiNest, Muru, QTO) — design, logos, text, images — belongs to efface.",
+          text: "Copyright in all content of this website and the apps efface has built (HiNest, Muru, QTO) — design, logos, text, images — belongs to efface.",
         },
         {
           kind: "p",

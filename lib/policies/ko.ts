@@ -198,7 +198,7 @@ export const KO: PolicyContent = {
       blocks: [
         {
           kind: "p",
-          text: "본 웹사이트와 efface가 만든 앱(GOMS, HiNest, Muru, QTO)의 디자인, 로고, 텍스트, 이미지 등 모든 콘텐츠의 저작권은 efface에 귀속됩니다.",
+          text: "본 웹사이트와 efface가 만든 앱(HiNest, Muru, QTO)의 디자인, 로고, 텍스트, 이미지 등 모든 콘텐츠의 저작권은 efface에 귀속됩니다.",
         },
         {
           kind: "p",
