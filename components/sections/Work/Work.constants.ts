@@ -53,6 +53,9 @@ export const WORK_FEATURED: WorkFeature[] = [
       "/work/rooti-admin/shot-2.webp",
       "/work/rooti-admin/shot-3.webp",
     ],
+    links: {
+      web: "https://dev.rooti.work",
+    },
   },
   {
     key: "goms",
