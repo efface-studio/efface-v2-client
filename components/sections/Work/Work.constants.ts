@@ -1,4 +1,4 @@
-import type { WorkFeature, WorkIcon } from "./Work.types";
+import type { WorkClient, WorkFeature, WorkIcon } from "./Work.types";
 
 /** Icon art per project `key`. Projects missing here get a monogram tile. */
 export const WORK_ICONS: Record<string, WorkIcon> = {
@@ -45,6 +45,7 @@ export const WORK_FEATURED: WorkFeature[] = [
       playStore: "https://play.google.com/store/apps/details?id=com.hivits.rooti&hl=ko",
       web: "https://v2.rooti.work/",
     },
+    clients: "rooti",
   },
   {
     key: "rooti-admin",
@@ -56,6 +57,7 @@ export const WORK_FEATURED: WorkFeature[] = [
     links: {
       web: "https://dev.rooti.work",
     },
+    clients: "rooti",
   },
   {
     key: "goms",
@@ -73,6 +75,26 @@ export const WORK_FEATURED: WorkFeature[] = [
     page: { src: "/work/2pick/home.webp", width: 1280, height: 2899 },
   },
 ];
+
+/** Companies using a featured product, from that product's own landing page
+ *  (Rooti: `Rooti-V2-Home` partners). Names are proper nouns, not translated.
+ *  The assets keep their colours; only the white backdrop around each mark is
+ *  removed, and black type is lifted to light grey so it reads on the dark page. */
+export const WORK_CLIENTS: Record<string, WorkClient[]> = {
+  rooti: [
+    { src: "/work/rooti/clients/sga.png", name: "SGA솔루션" },
+    { src: "/work/rooti/clients/yonsei.png", name: "연세올바른재활의학과의원" },
+    { src: "/work/rooti/clients/kcc.png", name: "KCC" },
+    { src: "/work/rooti/clients/bitplanet.png", name: "비트플래닛" },
+    { src: "/work/rooti/clients/kisca.png", name: "KISCA" },
+    { src: "/work/rooti/clients/kuh.png", name: "건국대학교병원" },
+    { src: "/work/rooti/clients/moez.png", name: "moez" },
+    { src: "/work/rooti/clients/useplace.png", name: "유즈플레이스" },
+    { src: "/work/rooti/clients/kpr.png", name: "KPR" },
+    { src: "/work/rooti/clients/ckd.png", name: "종근당" },
+    { src: "/work/rooti/clients/daiso.png", name: "다이소" },
+  ],
+};
 
 /* ── Pinned featured scene ───────────────────────────────────────────
    Each featured project pins on its own runway, measured in units: every

@@ -40,6 +40,18 @@ export interface WorkFeature {
   shots: string[];
   page?: WorkPage;
   links?: WorkLinks;
+  /** Key into `WORK_CLIENTS` — companies using the product. */
+  clients?: string;
+}
+
+/** A company logo shown in a featured project's "used by" strip. */
+export interface WorkClient {
+  src: string;
+  name: string;
+}
+
+export interface WorkClientsProps {
+  clients: WorkClient[];
 }
 
 /** A full-length desktop page capture, shown inside a browser frame. */

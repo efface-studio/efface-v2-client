@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useReducedMotion } from "motion/react";
 import Reveal from "@/components/Reveal";
 import { useIsMobile } from "@/lib/useIsMobile";
+import WorkClients from "./WorkClients";
 import WorkFeatured from "./WorkFeatured";
 import WorkFeaturedRow from "./WorkFeaturedRow";
-import { FEATURED_PER_ROW } from "./Work.constants";
+import { FEATURED_PER_ROW, WORK_CLIENTS } from "./Work.constants";
 import type { WorkFeaturedSceneProps } from "./Work.types";
 
 /**
@@ -32,8 +33,14 @@ export default function WorkFeaturedScene({ items }: WorkFeaturedSceneProps) {
           <p className="label">{t("label")}</p>
         </Reveal>
         <div className="mt-6 space-y-20 md:mt-8 md:space-y-28">
-          {items.map(({ feature, project }) => (
-            <WorkFeatured key={feature.key} feature={feature} project={project} />
+          {items.map(({ feature, project }, i) => (
+            <Fragment key={feature.key}>
+              <WorkFeatured feature={feature} project={project} />
+              {/* A shared client list shows once, after the last project using it. */}
+              {feature.clients && items[i + 1]?.feature.clients !== feature.clients && (
+                <WorkClients clients={WORK_CLIENTS[feature.clients] ?? []} />
+              )}
+            </Fragment>
           ))}
         </div>
       </div>
