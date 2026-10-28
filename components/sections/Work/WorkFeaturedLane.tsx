@@ -13,12 +13,14 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
   const strip = feature.shots.length > FEATURED_VISIBLE;
 
   return (
-    <article aria-label={project.name} className="min-w-0">
-      <WorkFeaturedInfo project={project} links={feature.links} />
+    <article aria-label={project.name} className="row-span-2 grid min-w-0 grid-rows-subgrid">
+      <div>
+        <WorkFeaturedInfo project={project} links={feature.links} />
+      </div>
 
       {/* Capped by screen height (three shots ≈ 1.38 × their height, plus the
           gaps) so a wide lane never pushes the pinned row off screen. */}
-      <div className="relative mt-8 max-w-[calc((100vh-21rem)*1.38+2rem)]">
+      <div className="relative max-w-[calc((100vh-21rem-var(--extra,0rem))*1.38+2rem)]">
         {feature.page ? (
           <WorkPageFrame
             page={feature.page}

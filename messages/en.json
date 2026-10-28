@@ -41,7 +41,8 @@
         "web": "Website",
         "newTab": "opens in a new tab"
       },
-      "pageAlt": "{name} web screen"
+      "pageAlt": "{name} web screen",
+      "clientsLabel": "Trusted by"
     },
     "groups": [
       {
