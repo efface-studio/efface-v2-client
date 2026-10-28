@@ -26,10 +26,21 @@ export const WORK_FEATURED: WorkFeature[] = [
   {
     key: "hinest",
     shots: Array.from({ length: 7 }, (_, i) => `/work/hinest/shot-${i + 1}.webp`),
+    links: {
+      appStore:
+        "https://apps.apple.com/kr/app/hinest-%ED%9A%8C%EC%82%AC%EC%9D%98-%EB%AA%A8%EB%93%A0-%EC%9D%BC%EC%9D%B4-%EC%82%AC%EB%8A%94-%EA%B3%B3/id6775715605",
+      github: "https://github.com/efface-studio/HiNest-Client",
+      web: "https://nest.hi-vits.com/",
+    },
   },
   {
     key: "rooti",
     shots: ["/work/rooti/shot-1.webp", "/work/rooti/shot-2.webp", "/work/rooti/shot-3.webp"],
+    links: {
+      appStore: "https://apps.apple.com/kr/app/%EB%A3%A8%ED%8B%B0-rooti/id6812195678",
+      playStore: "https://play.google.com/store/apps/details?id=com.hivits.rooti&hl=ko",
+      web: "https://v2.rooti.work/",
+    },
   },
   {
     key: "rooti-admin",
@@ -42,6 +53,12 @@ export const WORK_FEATURED: WorkFeature[] = [
   {
     key: "goms",
     shots: ["/work/goms/shot-1.webp", "/work/goms/shot-2.webp"],
+    links: {
+      appStore: "https://apps.apple.com/kr/app/goms/id6502936560",
+      playStore: "https://play.google.com/store/apps/details?id=com.goms.goms_android_v2&hl=ko",
+      github: "https://github.com/team-haribo",
+      web: "https://team-haribo.vercel.app/",
+    },
   },
 ];
 

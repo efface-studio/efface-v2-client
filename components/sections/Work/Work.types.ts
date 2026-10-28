@@ -38,6 +38,15 @@ export interface WorkFeature {
   key: string;
   banner?: string;
   shots: string[];
+  links?: WorkLinks;
+}
+
+/** Outbound links for a featured project — only the ones that exist. */
+export interface WorkLinks {
+  appStore?: string;
+  playStore?: string;
+  github?: string;
+  web?: string;
 }
 
 export interface WorkFeaturedProps {
@@ -47,6 +56,7 @@ export interface WorkFeaturedProps {
 
 export interface WorkFeaturedInfoProps {
   project: WorkProject;
+  links?: WorkLinks;
 }
 
 /** A featured project paired with its copy. */

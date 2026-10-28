@@ -35,7 +35,7 @@ export default function WorkFeaturedPinned({ item, index, count }: WorkFeaturedP
 
         <div className="mt-8 grid grid-cols-12 gap-10">
           <div className="col-span-4">
-            <WorkFeaturedInfo project={project} />
+            <WorkFeaturedInfo project={project} links={feature.links} />
           </div>
 
           <div className="col-span-8 overflow-hidden p-px lg:col-span-6 lg:col-start-7">
