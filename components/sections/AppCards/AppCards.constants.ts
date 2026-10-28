@@ -5,7 +5,7 @@ export const CFG = [
   { oy: 14, rot: 6, dx: 200, xr: 24 },
 ] as const;
 
-/** Visual spec per card — gradients, stacking and 3D glyph parameters. */
+/** Visual spec per card — gradients, stacking and app icon. */
 export const CARDS = [
   {
     key: "hinest",
@@ -13,7 +13,7 @@ export const CARDS = [
     sheen: 0.16,
     zIndex: 2,
     marginLeft: 0,
-    icon: { src: "/logos/hinest.svg", color: "#F6F7FA", rx: 12, ry: 22, rz: -7 },
+    icon: { src: "/logos/hinest.svg", color: "#F6F7FA" },
   },
   {
     key: "muru",
@@ -21,7 +21,7 @@ export const CARDS = [
     sheen: 0.16,
     zIndex: 3,
     marginLeft: -34,
-    icon: { src: "/logos/muru.svg", color: "#FFFDF8", rx: 12, ry: -22, rz: 7 },
+    icon: { src: "/logos/muru.svg", color: "#FFFDF8" },
   },
   {
     key: "qto",
@@ -29,7 +29,7 @@ export const CARDS = [
     sheen: 0.1,
     zIndex: 2,
     marginLeft: -34,
-    icon: { src: "/logos/qto.svg", color: "#EF6553", rx: 11, ry: 20, rz: -6 },
+    icon: { src: "/logos/qto.svg", color: "#EF6553" },
   },
 ] as const;
 

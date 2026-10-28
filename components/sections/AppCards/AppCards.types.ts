@@ -13,9 +13,6 @@ export interface AppCardCopy {
 export interface AppIconProps {
   src: string;
   color: string;
-  rx: number;
-  ry: number;
-  rz: number;
   size?: number;
 }
 
