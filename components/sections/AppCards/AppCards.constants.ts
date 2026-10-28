@@ -1,34 +1,32 @@
-/** Per-card layout + scroll-entrance constants (from the source scene). */
+/** Per-card layout + scroll-entrance constants. The row settles flat and level;
+ *  `dx`/`xr` only shape the deal-in. */
 export const CFG = [
-  { oy: 14, rot: -6, dx: -200, xr: -22 },
-  { oy: -6, rot: 0, dx: 0, xr: 18 },
-  { oy: 14, rot: 6, dx: 200, xr: 24 },
+  { oy: 0, rot: 0, dx: -200, xr: -22 },
+  { oy: 0, rot: 0, dx: 0, xr: 18 },
+  { oy: 0, rot: 0, dx: 200, xr: 24 },
 ] as const;
 
-/** Visual spec per card — gradients, stacking and app icon. */
+/** Gap between cards in the desktop row. */
+export const CARD_GAP = 32;
+
+/** Visual spec per card — gradients, app icon. */
 export const CARDS = [
   {
     key: "hinest",
     gradient: "linear-gradient(160deg, #4E8CFF 0%, #2563EB 55%, #1D46C8 100%)",
     sheen: 0.16,
-    zIndex: 2,
-    marginLeft: 0,
     icon: { src: "/logos/hinest.svg", color: "#F6F7FA" },
   },
   {
     key: "muru",
     gradient: "linear-gradient(160deg, #34E0D8 0%, #14B8B0 60%, #0C9A93 100%)",
     sheen: 0.16,
-    zIndex: 3,
-    marginLeft: -34,
     icon: { src: "/logos/muru.svg", color: "#FFFDF8" },
   },
   {
     key: "qto",
     gradient: "linear-gradient(160deg, #34343C 0%, #1D1D23 60%, #141418 100%)",
     sheen: 0.1,
-    zIndex: 2,
-    marginLeft: -34,
     icon: { src: "/logos/qto.svg", color: "#EF6553" },
   },
 ] as const;
