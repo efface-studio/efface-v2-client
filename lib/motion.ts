@@ -75,13 +75,6 @@ export const clamp = (v: number, min: number, max: number): number =>
 
 export const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
 
-/** Overshoots past 1 before settling — the "deal in" snap on the app cards. */
-export const easeOutBack = (t: number): number => {
-  const c1 = 1.70158;
-  const c3 = c1 + 1;
-  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-};
-
 /** Hermite smoothstep between two edges. */
 export const smoothstep = (a: number, b: number, x: number): number => {
   const t = clamp((x - a) / (b - a), 0, 1);
