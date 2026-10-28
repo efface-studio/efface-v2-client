@@ -29,6 +29,11 @@
     "label": "WORK",
     "title": "What we've built.",
     "lead": "Products efface built itself, work for clients, and projects we took part in.",
+    "featured": {
+      "label": "Featured",
+      "bannerAlt": "{name} promo banner",
+      "shotAlt": "{name} app screen {n}"
+    },
     "groups": [
       {
         "key": "efface",
