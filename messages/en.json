@@ -40,7 +40,8 @@
         "github": "GitHub",
         "web": "Website",
         "newTab": "opens in a new tab"
-      }
+      },
+      "pageAlt": "{name} web screen"
     },
     "groups": [
       {

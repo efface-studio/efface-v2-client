@@ -67,6 +67,11 @@ export const WORK_FEATURED: WorkFeature[] = [
       web: "https://team-haribo.vercel.app/",
     },
   },
+  {
+    key: "2pick",
+    shots: [],
+    page: { src: "/work/2pick/home.webp", width: 1280, height: 2899 },
+  },
 ];
 
 /* ── Pinned featured scene ───────────────────────────────────────────
@@ -88,3 +93,6 @@ export const FEATURED_VISIBLE = 3;
 
 /** Width (rem) of the soft left edge once the track starts sliding. */
 export const FEATURED_EDGE_REM = 4.5;
+
+/** Units a web page capture takes to scroll from top to bottom in its frame. */
+export const FEATURED_PAGE_UNITS = 4;

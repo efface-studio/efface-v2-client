@@ -3,6 +3,7 @@ import Reveal from "@/components/Reveal";
 import { cn } from "@/lib/cn";
 import { STAGGER } from "@/lib/motion";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
+import WorkPageFrame from "./WorkPageFrame";
 import type { WorkFeaturedProps } from "./Work.types";
 
 /** Screenshot column per shot count, sized so one shot is the same width
@@ -43,25 +44,31 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
           <WorkFeaturedInfo project={project} links={feature.links} />
         </Reveal>
 
-        <ul
-          className={cn("gap-3 md:gap-5", strip ? SHOT_STRIP : SHOT_LAYOUT[feature.shots.length])}
-          {...(strip && { tabIndex: 0, "aria-label": t("shotsLabel", { name: project.name }) })}
-        >
-          {feature.shots.map((src, i) => (
-            <li key={src} className={cn(strip && STRIP_ITEM)}>
-              <Reveal delay={Math.min(i, 2) * STAGGER.tight}>
-                <img
-                  src={src}
-                  alt={t("shotAlt", { name: project.name, n: i + 1 })}
-                  width={720}
-                  height={1565}
-                  loading="lazy"
-                  className="w-full rounded-xl ring-1 ring-white/10 md:rounded-2xl"
-                />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
+        {feature.page ? (
+          <Reveal className="md:col-span-8 lg:col-span-6 lg:col-start-7">
+            <WorkPageFrame page={feature.page} alt={t("pageAlt", { name: project.name })} />
+          </Reveal>
+        ) : (
+          <ul
+            className={cn("gap-3 md:gap-5", strip ? SHOT_STRIP : SHOT_LAYOUT[feature.shots.length])}
+            {...(strip && { tabIndex: 0, "aria-label": t("shotsLabel", { name: project.name }) })}
+          >
+            {feature.shots.map((src, i) => (
+              <li key={src} className={cn(strip && STRIP_ITEM)}>
+                <Reveal delay={Math.min(i, 2) * STAGGER.tight}>
+                  <img
+                    src={src}
+                    alt={t("shotAlt", { name: project.name, n: i + 1 })}
+                    width={720}
+                    height={1565}
+                    loading="lazy"
+                    className="w-full rounded-xl ring-1 ring-white/10 md:rounded-2xl"
+                  />
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </article>
   );
