@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-
-export const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
-export const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+import { clamp } from "@/lib/motion";
 
 /**
  * How far an element has travelled through its reveal window, 0 → 1.
@@ -69,4 +67,60 @@ export function useScrollMotion(
       document.removeEventListener("visibilitychange", onVis);
     };
   }, [ref, frame, enabled]);
+}
+
+/**
+ * The rAF gate the pinned desktop scenes share: runs `frame(progress)` only
+ * while `ref` is on screen and the tab is visible, where progress is how far
+ * the section has scrolled through its own pinned runway (0 → 1).
+ *
+ * `settleAt` is painted once and the loop never starts when the user has asked
+ * for reduced motion.
+ */
+export function usePinnedSceneMotion(
+  ref: React.RefObject<HTMLElement | null>,
+  frame: (progress: number) => void,
+  enabled: boolean,
+  settleAt = 1
+) {
+  useEffect(() => {
+    const root = ref.current;
+    if (!root || !enabled) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      frame(settleAt);
+      return;
+    }
+
+    let raf = 0;
+    let onScreen = true;
+    let hidden = document.hidden;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        onScreen = entries[0].isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    io.observe(root);
+
+    const onVis = () => {
+      hidden = document.hidden;
+    };
+    document.addEventListener("visibilitychange", onVis);
+
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      if (!onScreen || hidden) return;
+      const rect = root.getBoundingClientRect();
+      const total = Math.max(1, root.offsetHeight - window.innerHeight);
+      frame(clamp(-rect.top / total, 0, 1));
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, [ref, frame, enabled, settleAt]);
 }
