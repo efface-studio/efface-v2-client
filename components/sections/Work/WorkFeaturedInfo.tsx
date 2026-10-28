@@ -1,10 +1,11 @@
+import WorkFeaturedLinks from "./WorkFeaturedLinks";
 import WorkIconTile from "./WorkIconTile";
 import { WORK_ICONS } from "./Work.constants";
 import type { WorkFeaturedInfoProps } from "./Work.types";
 
-/** Icon, name, field · year and description — shared by the static list and
+/** Icon, name, field · year, description and links — shared by the static list and
  *  the pinned scene. */
-export default function WorkFeaturedInfo({ project }: WorkFeaturedInfoProps) {
+export default function WorkFeaturedInfo({ project, links }: WorkFeaturedInfoProps) {
   return (
     <>
       <div className="flex items-center gap-4">
@@ -23,6 +24,7 @@ export default function WorkFeaturedInfo({ project }: WorkFeaturedInfoProps) {
       {project.desc && (
         <p className="mt-5 max-w-sm break-keep leading-relaxed text-fg-dim">{project.desc}</p>
       )}
+      <WorkFeaturedLinks links={links} />
     </>
   );
 }

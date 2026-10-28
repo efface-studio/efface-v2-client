@@ -33,7 +33,14 @@
       "label": "Featured",
       "bannerAlt": "{name} promo banner",
       "shotAlt": "{name} app screen {n}",
-      "shotsLabel": "{name} app screens — scroll sideways"
+      "shotsLabel": "{name} app screens — scroll sideways",
+      "links": {
+        "appStore": "App Store",
+        "playStore": "Google Play",
+        "github": "GitHub",
+        "web": "Website",
+        "newTab": "opens in a new tab"
+      }
     },
     "groups": [
       {

@@ -40,7 +40,7 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
 
       <div className="grid gap-8 md:grid-cols-12 md:gap-10">
         <Reveal className="md:col-span-4">
-          <WorkFeaturedInfo project={project} />
+          <WorkFeaturedInfo project={project} links={feature.links} />
         </Reveal>
 
         <ul
