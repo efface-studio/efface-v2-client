@@ -20,7 +20,6 @@ export const WORK_ICONS: Record<string, WorkIcon> = {
 export const WORK_FEATURED: WorkFeature[] = [
   {
     key: "hwaso",
-    banner: "/work/hwaso/banner.webp",
     shots: ["/work/hwaso/shot-1.webp", "/work/hwaso/shot-2.webp", "/work/hwaso/shot-3.webp"],
   },
   {
