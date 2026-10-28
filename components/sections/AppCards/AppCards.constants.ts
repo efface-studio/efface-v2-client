@@ -57,3 +57,27 @@ export const ROW_FIT_HEIGHT = 780;
 
 export const ICON_SIZE_DESKTOP = 300;
 export const ICON_SIZE_MOBILE = 200;
+
+/* ── 3D deal-in + surface lighting ──────────────────────────────────
+   The row is a perspective container, so the cards are real planes in space
+   rather than rotated rectangles. These values tune that space. */
+
+/** Perspective depth on the row. Lower is a wider lens and a stronger tilt. */
+export const PERSPECTIVE = 1500;
+
+/** Max degrees a settled card yaws/pitches under the cursor. */
+export const TILT_Y = 11;
+export const TILT_X = 7;
+
+/** How far back a card starts along Z before it deals forward into place. */
+export const DEAL_Z = -540;
+
+/** Degrees the card is laid back by at the start of its deal-in. */
+export const DEAL_PITCH = 46;
+
+/** Blinn-Phong exponent for the specular hotspot. Higher is a tighter glint. */
+export const SHININESS = 12;
+
+/** Pixels a hovered card rises, and how far it comes forward along Z. */
+export const HOVER_LIFT = 18;
+export const HOVER_Z = 60;
