@@ -27,7 +27,7 @@ App Router 기준으로 **기본은 Server Component**, 아래 사유가 있을 
 | `Reveal` | Client | `whileInView` 뷰포트 관찰 (children은 RSC 그대로 통과) |
 | `Nav`, `LanguageToggle` | Client | 상호작용 상태 · 라우터 |
 | `Footer`, `PolicyIndex` | Client | rAF 모션 루프 |
-| `sections/Hero`, `Capabilities`, `EffaceIntro` | Client | 스크롤 바인딩 rAF 씬 |
+| `sections/Hero`, `Capabilities`, `EffaceIntro`, `Work/WorkFeaturedScene` | Client | 스크롤 바인딩 rAF 씬 |
 | `components/three/*` | Client 전용 모듈 | `next/dynamic(ssr:false)` 또는 동적 import로만 로드 |
 
 ### 1.3 데이터 페칭 전략
@@ -121,7 +121,7 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 | 용도 | 도구 | 실제 사용처 |
 | --- | --- | --- |
 | 컴포넌트 진입/전환 | **Framer Motion**(`motion`) | `Reveal`, `Nav` 오버레이, `Hero` 패럴랙스 |
-| 스크롤 바인딩 멀티요소 타임라인 | **자체 rAF 루프**(`lib/scrollMotion.ts`) | `EffaceIntro`, `Capabilities`, `Footer`, `PolicyIndex` |
+| 스크롤 바인딩 멀티요소 타임라인 | **자체 rAF 루프**(`lib/scrollMotion.ts`) | `EffaceIntro`, `Capabilities`, `Work` 대표작, `Footer`, `PolicyIndex` |
 | 3D / WebGL | **three.js** | `HeroScene`(glassScene) |
 | 마이크로 인터랙션 | Tailwind transition + CSS keyframes | 링크 밑줄, 캐럿, 마퀴 |
 
@@ -132,6 +132,7 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 
 - **Hero**: 배경 WebGL은 제자리에서 순환, 카피는 위로 -24% 이동하며 페이드 → 다음 씬으로 넘김
 - **EffaceIntro**: 중앙에서 원이 자라며 잡동사니를 지움 → 지우개가 그 원의 가장자리를 따라감 → 문장이 단어 단위로 점등
+- **Work 대표작**: 앱마다 고정된 채 미리보기가 오른쪽에서 한 장씩 슬라이드 인, 4장 이상이면 트랙이 왼쪽으로 밀림 → 홀드 후 다음 앱으로 교차 전환
 - **Capabilities**: 글자 흩어짐 → 조립, 카드가 중앙에서 사방으로 딜링, 착지 후에만 돋보기 렌즈 활성
 - **Footer**: 대각선 와이프로 진입, 커서 궤적이 대형 워드마크를 밝힘
 
