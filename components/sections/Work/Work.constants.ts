@@ -24,10 +24,6 @@ export const WORK_FEATURED: WorkFeature[] = [
     shots: ["/work/hwaso/shot-1.webp", "/work/hwaso/shot-2.webp", "/work/hwaso/shot-3.webp"],
   },
   {
-    key: "goms",
-    shots: ["/work/goms/shot-1.webp", "/work/goms/shot-2.webp"],
-  },
-  {
     key: "hinest",
     shots: Array.from({ length: 7 }, (_, i) => `/work/hinest/shot-${i + 1}.webp`),
   },
@@ -42,6 +38,10 @@ export const WORK_FEATURED: WorkFeature[] = [
       "/work/rooti-admin/shot-2.webp",
       "/work/rooti-admin/shot-3.webp",
     ],
+  },
+  {
+    key: "goms",
+    shots: ["/work/goms/shot-1.webp", "/work/goms/shot-2.webp"],
   },
 ];
 
