@@ -128,6 +128,13 @@
             "year": "2026"
           },
           {
+            "key": "rooti-admin",
+            "name": "Rooti Admin V2",
+            "desc": "The Rooti admin app for shifts, leave approvals and staffing in one place",
+            "field": "App",
+            "year": "2026"
+          },
+          {
             "key": "goms",
             "name": "GOMS",
             "desc": "Making school leave passes easy to manage",
