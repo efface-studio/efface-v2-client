@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
 import { STAGGER } from "@/lib/motion";
-import WorkFeatured from "./WorkFeatured";
+import WorkFeaturedScene from "./WorkFeaturedScene";
 import WorkIconTile from "./WorkIconTile";
 import { WORK_FEATURED, WORK_ICONS } from "./Work.constants";
 import type { WorkGroup } from "./Work.types";
@@ -29,18 +29,7 @@ export default function Work() {
           <p className="mt-6 max-w-xl text-fg-dim">{t("lead")}</p>
         </Reveal>
 
-        {featured.length > 0 && (
-          <div className="mt-16 md:mt-24">
-            <Reveal>
-              <p className="label">{t("featured.label")}</p>
-            </Reveal>
-            <div className="mt-6 space-y-20 md:mt-8 md:space-y-28">
-              {featured.map(({ feature, project }) => (
-                <WorkFeatured key={feature.key} feature={feature} project={project} />
-              ))}
-            </div>
-          </div>
-        )}
+        {featured.length > 0 && <WorkFeaturedScene items={featured} />}
 
         <div className="mt-20 space-y-20 md:mt-28 md:space-y-28">
           {groups.map((group) => (
