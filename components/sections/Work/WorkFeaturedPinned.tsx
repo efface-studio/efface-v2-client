@@ -6,9 +6,11 @@ import WorkFeaturedInfo from "./WorkFeaturedInfo";
 import {
   FEATURED_HOLD,
   FEATURED_PACE_VH,
+  FEATURED_PAGE_UNITS,
   FEATURED_SLIDE,
   FEATURED_VISIBLE,
 } from "./Work.constants";
+import WorkPageFrame from "./WorkPageFrame";
 import { useFeaturedPin } from "./useFeaturedPin";
 import type { WorkFeaturedPinnedProps } from "./Work.types";
 
@@ -16,17 +18,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
  * One featured project on its own runway: it pins near the middle of the
- * screen while its screenshots slide in from the right, holds a beat, then
+ * screen while its screenshots slide in from the right (or its web page
+ * capture scrolls inside a browser frame), holds a beat, then
  * releases so the page scrolls on to the next project below.
  */
 export default function WorkFeaturedPinned({ item, index, count }: WorkFeaturedPinnedProps) {
   const t = useTranslations("Work.featured");
   const { feature, project } = item;
   const shots = feature.shots.length;
-  const { rootRef, stickyRef, runwayRef, trackRef, shotRefs, edgeRef, blurRef } = useFeaturedPin(
-    shots,
-    true
-  );
+  const units = feature.page ? FEATURED_PAGE_UNITS : shots;
+  const { rootRef, stickyRef, runwayRef, trackRef, shotRefs, edgeRef, blurRef, frameRef, pageRef } =
+    useFeaturedPin(units, true);
 
   return (
     <div ref={rootRef} className="relative">
@@ -47,55 +49,67 @@ export default function WorkFeaturedPinned({ item, index, count }: WorkFeaturedP
             <WorkFeaturedInfo project={project} links={feature.links} />
           </div>
 
-          <div className="relative col-span-8 lg:col-span-6 lg:col-start-7">
-            {/* `--edge` is driven by the scroll loop: 0 while the first shot sits
-                flush, widening as the track slides left so shots fade out at
-                the column edge instead of being cut off. */}
-            <div
-              ref={edgeRef}
-              className={cn(
-                "overflow-hidden p-px",
-                shots > FEATURED_VISIBLE &&
-                  "[mask-image:linear-gradient(to_right,transparent,black_var(--edge,0rem))]"
-              )}
-            >
-              <ul ref={trackRef} className="flex gap-5 will-change-transform">
-                {feature.shots.map((src, k) => (
-                  <li
-                    key={src}
-                    ref={(el) => {
-                      shotRefs.current[k] = el;
-                    }}
-                    className="w-[calc((100%-2.5rem)/3)] shrink-0"
-                    style={{ opacity: 0, transform: `translate3d(${FEATURED_SLIDE}px, 0, 0)` }}
-                  >
-                    <img
-                      src={src}
-                      alt={t("shotAlt", { name: project.name, n: k + 1 })}
-                      width={720}
-                      height={1565}
-                      loading={index === 0 ? "eager" : "lazy"}
-                      className="w-full rounded-2xl ring-1 ring-white/10"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {shots > FEATURED_VISIBLE && (
-              <div
-                ref={blurRef}
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 left-0 w-16 backdrop-blur-[6px] [mask-image:linear-gradient(to_right,black,transparent)]"
-                style={{ opacity: 0 }}
+          {feature.page ? (
+            <div className="col-span-8 lg:col-span-6 lg:col-start-7">
+              <WorkPageFrame
+                page={feature.page}
+                alt={t("pageAlt", { name: project.name })}
+                eager={index === 0}
+                frameRef={frameRef}
+                imageRef={pageRef}
               />
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="relative col-span-8 lg:col-span-6 lg:col-start-7">
+              {/* `--edge` is driven by the scroll loop: 0 while the first shot sits
+                  flush, widening as the track slides left so shots fade out at
+                  the column edge instead of being cut off. */}
+              <div
+                ref={edgeRef}
+                className={cn(
+                  "overflow-hidden p-px",
+                  shots > FEATURED_VISIBLE &&
+                    "[mask-image:linear-gradient(to_right,transparent,black_var(--edge,0rem))]"
+                )}
+              >
+                <ul ref={trackRef} className="flex gap-5 will-change-transform">
+                  {feature.shots.map((src, k) => (
+                    <li
+                      key={src}
+                      ref={(el) => {
+                        shotRefs.current[k] = el;
+                      }}
+                      className="w-[calc((100%-2.5rem)/3)] shrink-0"
+                      style={{ opacity: 0, transform: `translate3d(${FEATURED_SLIDE}px, 0, 0)` }}
+                    >
+                      <img
+                        src={src}
+                        alt={t("shotAlt", { name: project.name, n: k + 1 })}
+                        width={720}
+                        height={1565}
+                        loading={index === 0 ? "eager" : "lazy"}
+                        className="w-full rounded-2xl ring-1 ring-white/10"
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {shots > FEATURED_VISIBLE && (
+                <div
+                  ref={blurRef}
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-0 left-0 w-16 backdrop-blur-[6px] [mask-image:linear-gradient(to_right,black,transparent)]"
+                  style={{ opacity: 0 }}
+                />
+              )}
+            </div>
+          )}
         </div>
       </article>
       <div
         ref={runwayRef}
         aria-hidden
-        style={{ height: `${Math.round(FEATURED_PACE_VH * (shots + FEATURED_HOLD))}vh` }}
+        style={{ height: `${Math.round(FEATURED_PACE_VH * (units + FEATURED_HOLD))}vh` }}
       />
     </div>
   );

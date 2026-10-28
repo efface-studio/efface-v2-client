@@ -32,13 +32,29 @@ export interface WorkIconTileProps {
   icon?: WorkIcon;
 }
 
-/** Store art for a featured project: an optional wide banner and two or more
- *  portrait screenshots. */
+/** Store art for a featured project: an optional wide banner and either two or
+ *  more portrait screenshots, or one long web page capture (`page`). */
 export interface WorkFeature {
   key: string;
   banner?: string;
   shots: string[];
+  page?: WorkPage;
   links?: WorkLinks;
+}
+
+/** A full-length desktop page capture, shown inside a browser frame. */
+export interface WorkPage {
+  src: string;
+  width: number;
+  height: number;
+}
+
+export interface WorkPageFrameProps {
+  page: WorkPage;
+  alt: string;
+  eager?: boolean;
+  frameRef?: RefObject<HTMLDivElement | null>;
+  imageRef?: RefObject<HTMLImageElement | null>;
 }
 
 /** Outbound links for a featured project — only the ones that exist. */
@@ -84,4 +100,6 @@ export interface WorkFeaturedPinRefs {
   shotRefs: RefObject<(HTMLLIElement | null)[]>;
   edgeRef: RefObject<HTMLDivElement | null>;
   blurRef: RefObject<HTMLDivElement | null>;
+  frameRef: RefObject<HTMLDivElement | null>;
+  pageRef: RefObject<HTMLImageElement | null>;
 }
