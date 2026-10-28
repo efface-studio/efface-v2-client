@@ -12,7 +12,7 @@
 | 계층 | 해당 모듈 |
 | --- | --- |
 | atoms | `LogoMark`, `LanguageToggle`, `Reveal` |
-| molecules | `Nav/NavOverlay`, `Footer/FooterMeta`, `Footer/FooterBar`, `sections/AppCards/CardFace`, `sections/Capabilities/CapabilityCard`, `sections/Capabilities/MagnifierLens`, `sections/EffaceIntro/ClutterField`, `sections/EffaceIntro/EraserPuck` |
+| molecules | `Nav/NavOverlay`, `Footer/FooterMeta`, `Footer/FooterBar`, `sections/Capabilities/CapabilityCard`, `sections/Capabilities/MagnifierLens`, `sections/EffaceIntro/ClutterField`, `sections/EffaceIntro/EraserPuck` |
 | organisms | `Nav`, `Footer`, `PolicyIndex`, `sections/*` |
 | templates | `app/[locale]/layout.tsx` |
 | pages | `app/[locale]/page.tsx`, `app/[locale]/policies/page.tsx` |
@@ -23,11 +23,11 @@ App Router 기준으로 **기본은 Server Component**, 아래 사유가 있을 
 
 | 컴포넌트 | 종류 | 사유 |
 | --- | --- | --- |
-| `sections/About`, `sections/Approach`, `sections/Contact` | Server | 번역 문자열 렌더만 수행 |
+| `sections/About`, `sections/Approach`, `sections/Contact`, `sections/Work` | Server | 번역 문자열 렌더만 수행 |
 | `Reveal` | Client | `whileInView` 뷰포트 관찰 (children은 RSC 그대로 통과) |
 | `Nav`, `LanguageToggle` | Client | 상호작용 상태 · 라우터 |
 | `Footer`, `PolicyIndex` | Client | rAF 모션 루프 |
-| `sections/Hero`, `AppCards`, `Capabilities`, `EffaceIntro` | Client | 스크롤 바인딩 rAF 씬 |
+| `sections/Hero`, `Capabilities`, `EffaceIntro` | Client | 스크롤 바인딩 rAF 씬 |
 | `components/three/*` | Client 전용 모듈 | `next/dynamic(ssr:false)` 또는 동적 import로만 로드 |
 
 ### 1.3 데이터 페칭 전략
@@ -96,7 +96,7 @@ Tailwind v4 `@theme` 블록(`app/globals.css`)이 단일 소스.
 
 Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 `@font-face`, `::selection`, keyframes(`rise-in`/`marquee`/`bob`/`caretBlink`/`scroll-bob`),
-의사요소 기반 장식(`.app-card::before` 시닌, `.cap-chip::before` 점), `prefers-reduced-motion` 오버라이드.
+의사요소 기반 장식(`.cap-chip::before` 점), `prefers-reduced-motion` 오버라이드.
 
 ---
 
@@ -112,7 +112,7 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 | `DURATION.slow` | `0.7` | 섹션 진입(Reveal) |
 | `STAGGER.tight` / `.base` | `0.06` / `0.07` | 리스트·메뉴 스태거 |
 | `fadeUp`, `overlayFade`, `menuItem` | Variants | 공유 Framer Motion variants |
-| `easeOutCubic`, `easeOutBack`, `smoothstep`, `clamp`, `fract` | 스칼라 이징 | rAF · WebGL 씬의 수동 보간 |
+| `easeOutCubic`, `smoothstep`, `clamp`, `fract` | 스칼라 이징 | rAF · WebGL 씬의 수동 보간 |
 
 수치를 컴포넌트에 하드코딩하지 않는다.
 
@@ -121,7 +121,7 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 | 용도 | 도구 | 실제 사용처 |
 | --- | --- | --- |
 | 컴포넌트 진입/전환 | **Framer Motion**(`motion`) | `Reveal`, `Nav` 오버레이, `Hero` 패럴랙스 |
-| 스크롤 바인딩 멀티요소 타임라인 | **자체 rAF 루프**(`lib/scrollMotion.ts`) | `EffaceIntro`, `AppCards`, `Capabilities`, `Footer`, `PolicyIndex` |
+| 스크롤 바인딩 멀티요소 타임라인 | **자체 rAF 루프**(`lib/scrollMotion.ts`) | `EffaceIntro`, `Capabilities`, `Footer`, `PolicyIndex` |
 | 3D / WebGL | **three.js** | `HeroScene`(glassScene) |
 | 마이크로 인터랙션 | Tailwind transition + CSS keyframes | 링크 밑줄, 캐럿, 마퀴 |
 
@@ -132,7 +132,6 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 
 - **Hero**: 배경 WebGL은 제자리에서 순환, 카피는 위로 -24% 이동하며 페이드 → 다음 씬으로 넘김
 - **EffaceIntro**: 중앙에서 원이 자라며 잡동사니를 지움 → 지우개가 그 원의 가장자리를 따라감 → 문장이 단어 단위로 점등
-- **AppCards**: 카드가 화면 아래에서 부채꼴로 딜링되고, 배경 워드마크는 반대 방향 패럴랙스
 - **Capabilities**: 글자 흩어짐 → 조립, 카드가 중앙에서 사방으로 딜링, 착지 후에만 돋보기 렌즈 활성
 - **Footer**: 대각선 와이프로 진입, 커서 궤적이 대형 워드마크를 밝힘
 
