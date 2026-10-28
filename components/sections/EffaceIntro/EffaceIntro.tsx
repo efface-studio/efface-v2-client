@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { useIsMobile } from "@/lib/useIsMobile";
 import ClutterField from "./ClutterField";
@@ -8,7 +8,9 @@ import EraserPuck from "./EraserPuck";
 import IntroBody from "./IntroBody";
 import { parseSentence } from "./parseSentence";
 import { useEffaceTimeline } from "./useEffaceTimeline";
-import { HOLD, PACE_VH, STEP, W0, WIN } from "./EffaceIntro.constants";
+import { HOLD, PACE_VH, STEP, W0, WIN, WINDOWS_PACE_SCALE } from "./EffaceIntro.constants";
+
+const noopSubscribe = () => () => {};
 
 /**
  * "efface, verb — to erase." The scene wipes a screenful of clutter away and
@@ -37,7 +39,14 @@ export default function EffaceIntro() {
     const wordCount = tokens.filter((tk) => tk.kind === "word").length;
     return W0 + Math.max(0, wordCount - 1) * STEP + WIN + HOLD;
   }, [tokens]);
-  const sceneVh = 100 + Math.round(PACE_VH * timelineEnd);
+  // Windows wheels step ~100px a notch with no momentum, so the tuned pace reads
+  // as a slog there; a shorter scene plays the same timeline in fewer notches.
+  const isWindows = useSyncExternalStore(
+    noopSubscribe,
+    () => /Windows/.test(navigator.userAgent),
+    () => false,
+  );
+  const sceneVh = 100 + Math.round(PACE_VH * (isWindows ? WINDOWS_PACE_SCALE : 1) * timelineEnd);
 
   const refs = useEffaceTimeline({
     tokens,
