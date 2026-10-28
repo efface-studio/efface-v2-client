@@ -9,13 +9,20 @@ import type { WorkFeaturedProps } from "./Work.types";
 /** Screenshot column per shot count, sized so one shot is the same width
  *  whether a project has two or three. */
 const SHOT_LAYOUT: Record<number, string> = {
-  2: "grid-cols-2 w-2/3 md:col-span-6 md:col-start-7 md:w-auto lg:col-span-4 lg:col-start-9",
-  3: "grid-cols-3 md:col-span-8 lg:col-span-6 lg:col-start-7",
+  2: "grid grid-cols-2 w-2/3 md:col-span-6 md:col-start-7 md:w-auto lg:col-span-4 lg:col-start-9",
+  3: "grid grid-cols-3 md:col-span-8 lg:col-span-6 lg:col-start-7",
 };
+
+/** Four or more shots scroll sideways inside the three-shot column, so each
+ *  shot keeps the same width. */
+const SHOT_STRIP =
+  "flex snap-x snap-mandatory overflow-x-auto p-px [scrollbar-width:thin] md:col-span-8 lg:col-span-6 lg:col-start-7";
+const STRIP_ITEM = "w-[calc((100%-1.5rem)/3)] shrink-0 snap-start md:w-[calc((100%-2.5rem)/3)]";
 
 /** A featured project: its store banner (if any) up top, details and screenshots below. */
 export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
   const t = useTranslations("Work.featured");
+  const strip = !(feature.shots.length in SHOT_LAYOUT);
 
   return (
     <article>
@@ -52,10 +59,13 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
           )}
         </Reveal>
 
-        <ul className={cn("grid gap-3 md:gap-5", SHOT_LAYOUT[feature.shots.length] ?? SHOT_LAYOUT[3])}>
+        <ul
+          className={cn("gap-3 md:gap-5", strip ? SHOT_STRIP : SHOT_LAYOUT[feature.shots.length])}
+          {...(strip && { tabIndex: 0, "aria-label": t("shotsLabel", { name: project.name }) })}
+        >
           {feature.shots.map((src, i) => (
-            <li key={src}>
-              <Reveal delay={i * STAGGER.tight}>
+            <li key={src} className={cn(strip && STRIP_ITEM)}>
+              <Reveal delay={Math.min(i, 2) * STAGGER.tight}>
                 <img
                   src={src}
                   alt={t("shotAlt", { name: project.name, n: i + 1 })}

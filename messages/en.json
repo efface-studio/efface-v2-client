@@ -32,7 +32,8 @@
     "featured": {
       "label": "Featured",
       "bannerAlt": "{name} promo banner",
-      "shotAlt": "{name} app screen {n}"
+      "shotAlt": "{name} app screen {n}",
+      "shotsLabel": "{name} app screens — scroll sideways"
     },
     "groups": [
       {

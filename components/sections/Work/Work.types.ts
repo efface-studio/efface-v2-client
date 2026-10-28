@@ -30,7 +30,7 @@ export interface WorkIconTileProps {
   icon?: WorkIcon;
 }
 
-/** Store art for a featured project: an optional wide banner and two or three
+/** Store art for a featured project: an optional wide banner and two or more
  *  portrait screenshots. */
 export interface WorkFeature {
   key: string;

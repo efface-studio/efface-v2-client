@@ -26,4 +26,8 @@ export const WORK_FEATURED: WorkFeature[] = [
     key: "goms",
     shots: ["/work/goms/shot-1.webp", "/work/goms/shot-2.webp"],
   },
+  {
+    key: "hinest",
+    shots: Array.from({ length: 7 }, (_, i) => `/work/hinest/shot-${i + 1}.webp`),
+  },
 ];
