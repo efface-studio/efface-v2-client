@@ -32,7 +32,8 @@
     "featured": {
       "label": "대표작",
       "bannerAlt": "{name} 소개 배너",
-      "shotAlt": "{name} 앱 화면 {n}"
+      "shotAlt": "{name} 앱 화면 {n}",
+      "shotsLabel": "{name} 앱 화면 — 옆으로 넘겨 보기"
     },
     "groups": [
       {
