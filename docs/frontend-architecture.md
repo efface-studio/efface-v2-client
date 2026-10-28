@@ -122,7 +122,7 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 | --- | --- | --- |
 | 컴포넌트 진입/전환 | **Framer Motion**(`motion`) | `Reveal`, `Nav` 오버레이, `Hero` 패럴랙스 |
 | 스크롤 바인딩 멀티요소 타임라인 | **자체 rAF 루프**(`lib/scrollMotion.ts`) | `EffaceIntro`, `AppCards`, `Capabilities`, `Footer`, `PolicyIndex` |
-| 3D / WebGL | **three.js** | `HeroScene`(glassScene), `AppCards`(appIcon3d) |
+| 3D / WebGL | **three.js** | `HeroScene`(glassScene) |
 | 마이크로 인터랙션 | Tailwind transition + CSS keyframes | 링크 밑줄, 캐럿, 마퀴 |
 
 > GSAP은 도입하지 않는다. 씬들이 이미 `IntersectionObserver` + `document.hidden` 게이트가 붙은
@@ -205,7 +205,6 @@ components/
   sections/[Name]/       # 페이지 섹션도 동일 규약
   three/                 # WebGL 씬 팩토리 — React 비의존
                          #   glassScene / glassLayout / glassMaterials / glassTextures
-                         #   appIcon3d
 i18n/                    # next-intl 라우팅 설정
 lib/                     # 공용 유틸 · 훅 (cn, motion, scrollMotion, useIsMobile)
   policies/              # 정책 문서 본문 (locale별 파일 + 타입)
