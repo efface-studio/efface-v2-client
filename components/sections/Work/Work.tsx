@@ -28,9 +28,16 @@ export default function Work() {
           </h2>
           <p className="mt-6 max-w-xl text-fg-dim">{t("lead")}</p>
         </Reveal>
+      </div>
 
-        {featured.length > 0 && <WorkFeaturedScene items={featured} />}
+      {/* Featured work gets a wider measure than the rest of the section. */}
+      {featured.length > 0 && (
+        <div className="mx-auto max-w-[1680px] px-6 md:px-10">
+          <WorkFeaturedScene items={featured} />
+        </div>
+      )}
 
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="mt-20 space-y-20 md:mt-28 md:space-y-28">
           {groups.map((group) => (
             <div key={group.key}>
