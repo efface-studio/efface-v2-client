@@ -1,28 +1,38 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
+import { cn } from "@/lib/cn";
 import { STAGGER } from "@/lib/motion";
 import WorkIconTile from "./WorkIconTile";
 import { WORK_ICONS } from "./Work.constants";
 import type { WorkFeaturedProps } from "./Work.types";
 
-/** A featured project: its store banner up top, details and screenshots below. */
+/** Screenshot column per shot count, sized so one shot is the same width
+ *  whether a project has two or three. */
+const SHOT_LAYOUT: Record<number, string> = {
+  2: "grid-cols-2 w-2/3 md:col-span-6 md:col-start-7 md:w-auto lg:col-span-4 lg:col-start-9",
+  3: "grid-cols-3 md:col-span-8 lg:col-span-6 lg:col-start-7",
+};
+
+/** A featured project: its store banner (if any) up top, details and screenshots below. */
 export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
   const t = useTranslations("Work.featured");
 
   return (
     <article>
-      <Reveal>
-        <img
-          src={feature.banner}
-          alt={t("bannerAlt", { name: project.name })}
-          width={2400}
-          height={1350}
-          loading="lazy"
-          className="aspect-[16/9] w-full rounded-2xl object-cover ring-1 ring-white/10 md:rounded-3xl"
-        />
-      </Reveal>
+      {feature.banner && (
+        <Reveal className="mb-8 md:mb-10">
+          <img
+            src={feature.banner}
+            alt={t("bannerAlt", { name: project.name })}
+            width={2400}
+            height={1350}
+            loading="lazy"
+            className="aspect-[16/9] w-full rounded-2xl object-cover ring-1 ring-white/10 md:rounded-3xl"
+          />
+        </Reveal>
+      )}
 
-      <div className="mt-8 grid gap-8 md:mt-10 md:grid-cols-12 md:gap-10">
+      <div className="grid gap-8 md:grid-cols-12 md:gap-10">
         <Reveal className="md:col-span-4">
           <div className="flex items-center gap-4">
             <div className="w-14 shrink-0 md:w-16">
@@ -42,7 +52,7 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
           )}
         </Reveal>
 
-        <ul className="grid grid-cols-3 gap-3 md:col-span-8 md:gap-5 lg:col-span-6 lg:col-start-7">
+        <ul className={cn("grid gap-3 md:gap-5", SHOT_LAYOUT[feature.shots.length] ?? SHOT_LAYOUT[3])}>
           {feature.shots.map((src, i) => (
             <li key={src}>
               <Reveal delay={i * STAGGER.tight}>
