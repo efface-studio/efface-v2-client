@@ -132,14 +132,14 @@
           {
             "key": "rooti",
             "name": "Rooti V2",
-            "desc": "Workforce and attendance management for companies",
+            "desc": "Rooti — an all-in-one AI solution for people with severe disabilities",
             "field": "Web · App",
             "year": "2026"
           },
           {
             "key": "rooti-admin",
             "name": "Rooti Admin V2",
-            "desc": "The Rooti admin app for shifts, leave approvals and staffing in one place",
+            "desc": "The Rooti app for company managers and administrators",
             "field": "App",
             "year": "2026"
           },
