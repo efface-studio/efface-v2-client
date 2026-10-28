@@ -96,3 +96,6 @@ export const FEATURED_EDGE_REM = 4.5;
 
 /** Units a web page capture takes to scroll from top to bottom in its frame. */
 export const FEATURED_PAGE_UNITS = 4;
+
+/** Featured projects pinned side by side in one row. */
+export const FEATURED_PER_ROW = 2;

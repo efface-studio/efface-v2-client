@@ -85,21 +85,33 @@ export interface WorkFeaturedSceneProps {
   items: WorkFeaturedItem[];
 }
 
-export interface WorkFeaturedPinnedProps {
-  item: WorkFeaturedItem;
+export interface WorkFeaturedRowProps {
+  items: WorkFeaturedItem[];
   index: number;
   count: number;
 }
 
-/** DOM handles one pinned featured project animates. */
-export interface WorkFeaturedPinRefs {
-  rootRef: RefObject<HTMLDivElement | null>;
-  stickyRef: RefObject<HTMLElement | null>;
-  runwayRef: RefObject<HTMLDivElement | null>;
+/** DOM handles for one project (lane) inside a pinned row. */
+export interface WorkLaneRefs {
   trackRef: RefObject<HTMLUListElement | null>;
   shotRefs: RefObject<(HTMLLIElement | null)[]>;
   edgeRef: RefObject<HTMLDivElement | null>;
   blurRef: RefObject<HTMLDivElement | null>;
+  blurRightRef: RefObject<HTMLDivElement | null>;
   frameRef: RefObject<HTMLDivElement | null>;
   pageRef: RefObject<HTMLImageElement | null>;
+}
+
+export interface WorkFeaturedLaneProps {
+  item: WorkFeaturedItem;
+  refs: WorkLaneRefs;
+  eager: boolean;
+}
+
+/** DOM handles one pinned row animates. */
+export interface WorkFeaturedRowRefs {
+  rootRef: RefObject<HTMLDivElement | null>;
+  stickyRef: RefObject<HTMLElement | null>;
+  runwayRef: RefObject<HTMLDivElement | null>;
+  lanes: WorkLaneRefs[];
 }
