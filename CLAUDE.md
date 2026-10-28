@@ -236,6 +236,7 @@ PR이 올라가면 CI가 자동으로 돌고, **CI가 통과한 상태에서 `xi
   - `## 배포` — 배포 대상(도메인), 배포 커밋 SHA, 배포 시각
   - `## 알려진 이슈 / 후속` — 남은 과제 (없으면 "없음")
 - 배포 후 실제 도메인에서 동작을 확인하고, 문제가 있으면 릴리스 본문에 기록한다.
+- **자동 배포**: `main`에 병합되면 [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)이 Vercel CLI로 `v2.efface.dev`에 프로덕션 배포한다. (저장소 Secret `VERCEL_TOKEN`·`VERCEL_ORG_ID`·`VERCEL_PROJECT_ID` 필요) 배포 워크플로 수정은 `👷 (ci)` 커밋으로 분리한다.
 
 ---
 
@@ -261,7 +262,7 @@ PR이 올라가면 CI가 자동으로 돌고, **CI가 통과한 상태에서 `xi
   - 빌드: `npm run build`
   - 타입체크: `npm run typecheck` (`tsc --noEmit`)
 - **기본 브랜치**: `main`
-- **배포**: Vercel → `v2.efface.dev` (Vercel CLI `vercel deploy --prod`). 배포 시 섹션 7-1의 GitHub Release 필수.
+- **배포**: Vercel → `v2.efface.dev`. `main` 병합 시 `deploy.yml`이 자동 배포. 배포 시 섹션 7-1의 GitHub Release 필수.
 - **기타 규칙**:
   - 다크 테마 고정 — 배경 `#0a0a0b`, 텍스트 화이트, 단일 accent `#3b62e5`(로고 블루).
   - 히어로 배경 영상은 `public/hero.mp4`(로고 애니메이션). 포스터 `public/hero-poster.jpg`.
