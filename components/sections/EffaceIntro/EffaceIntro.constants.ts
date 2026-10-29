@@ -4,6 +4,10 @@
 export const PACE_VH = 600;
 /** Pace multiplier on Windows (notched wheels, no momentum) — lower is faster. */
 export const WINDOWS_PACE_SCALE = 0.55;
+/** Pace multiplier on phones — the same scene, pinned, over less scroll. */
+export const MOBILE_PACE_SCALE = 0.5;
+/** Clutter pieces shrink to this on phones so the field stays a field. */
+export const CLUTTER_COMPACT_SCALE = 0.68;
 
 /** Word-lighting timeline: first word starts at W0, each next word STEP later,
  *  each takes WIN to light. Shared by the paint pass and the scene-length maths. */

@@ -8,7 +8,15 @@ import EraserPuck from "./EraserPuck";
 import IntroBody from "./IntroBody";
 import { parseSentence } from "./parseSentence";
 import { useEffaceTimeline } from "./useEffaceTimeline";
-import { HOLD, PACE_VH, STEP, W0, WIN, WINDOWS_PACE_SCALE } from "./EffaceIntro.constants";
+import {
+  HOLD,
+  MOBILE_PACE_SCALE,
+  PACE_VH,
+  STEP,
+  W0,
+  WIN,
+  WINDOWS_PACE_SCALE,
+} from "./EffaceIntro.constants";
 
 const noopSubscribe = () => () => {};
 
@@ -46,7 +54,9 @@ export default function EffaceIntro() {
     () => /Windows/.test(navigator.userAgent),
     () => false,
   );
-  const sceneVh = 100 + Math.round(PACE_VH * (isWindows ? WINDOWS_PACE_SCALE : 1) * timelineEnd);
+  // Touch flicks carry momentum too, so phones get a shorter scene as well.
+  const paceScale = isMobile ? MOBILE_PACE_SCALE : isWindows ? WINDOWS_PACE_SCALE : 1;
+  const sceneVh = 100 + Math.round(PACE_VH * paceScale * timelineEnd);
 
   const refs = useEffaceTimeline({
     tokens,
@@ -67,14 +77,6 @@ export default function EffaceIntro() {
     />
   );
 
-  if (isMobile) {
-    return (
-      <section id="efface" ref={refs.rootRef} className="bg-bg px-6 py-24">
-        {body}
-      </section>
-    );
-  }
-
   return (
     <section
       id="efface"
@@ -90,7 +92,8 @@ export default function EffaceIntro() {
         style={{
           position: "sticky",
           top: 0,
-          height: "100vh",
+          // svh on phones, so the pinned frame doesn't jump as the URL bar hides.
+          height: isMobile ? "100svh" : "100vh",
           overflow: "hidden",
           display: "flex",
           alignItems: "center",
@@ -98,7 +101,7 @@ export default function EffaceIntro() {
           boxSizing: "border-box",
         }}
       >
-        <ClutterField hostRef={refs.clutterRef} />
+        <ClutterField hostRef={refs.clutterRef} compact={isMobile} />
         <EraserPuck hostRef={refs.puckRef} />
         {body}
       </div>
