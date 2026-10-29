@@ -30,4 +30,12 @@ export const LENS_RX = 180;
 export const LENS_RY = 60;
 export const LENS_ZOOM = 2.0;
 
+/* Phone card stack — each card owns one unit of the pinned runway. */
+/** Runway (vh) per card. */
+export const STACK_STEP_VH = 80;
+/** Share of a card's unit spent dealing it up onto the stack. */
+export const STACK_ENTER = 0.3;
+/** Share of a card's unit the lens takes to sweep its rows. */
+export const STACK_SWEEP = 0.6;
+
 export const MONO = "'JetBrains Mono', ui-monospace, monospace";
