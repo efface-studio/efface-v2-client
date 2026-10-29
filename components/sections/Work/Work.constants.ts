@@ -227,6 +227,8 @@ export const FEATURED_SLIDE = 520;
 
 /** Shots visible at once; past this the track slides left. */
 export const FEATURED_VISIBLE = 3;
+/** Shots visible at once on phones, where three would be thumbnail-sized. */
+export const FEATURED_VISIBLE_COMPACT = 2;
 
 /** Width (rem) of the soft left edge once the track starts sliding. */
 export const FEATURED_EDGE_REM = 4.5;
@@ -234,5 +236,5 @@ export const FEATURED_EDGE_REM = 4.5;
 /** Units a web page capture takes to scroll from top to bottom in its frame. */
 export const FEATURED_PAGE_UNITS = 4;
 
-/** Featured projects pinned side by side in one row. */
+/** Featured projects pinned side by side in one row (one per row on phones). */
 export const FEATURED_PER_ROW = 2;

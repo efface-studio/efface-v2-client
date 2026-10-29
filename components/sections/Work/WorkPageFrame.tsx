@@ -13,7 +13,7 @@ export default function WorkPageFrame({ page, alt, eager, full, frameRef, imageR
         <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
         <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
       </div>
-      <div ref={frameRef} className={full ? undefined : "aspect-[16/10] overflow-hidden"}>
+      <div ref={frameRef} className={full ? undefined : "aspect-[4/5] overflow-hidden md:aspect-[16/10]"}>
         <img
           ref={imageRef}
           src={page.src}

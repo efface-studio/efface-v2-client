@@ -124,6 +124,8 @@ export interface WorkFeaturedRowProps {
   items: WorkFeaturedItem[];
   index: number;
   count: number;
+  /** Phone layout: one project per row, two shots in view. */
+  compact: boolean;
 }
 
 /** DOM handles for one project (lane) inside a pinned row. */
@@ -141,6 +143,8 @@ export interface WorkFeaturedLaneProps {
   item: WorkFeaturedItem;
   refs: WorkLaneRefs;
   eager: boolean;
+  /** Shots in view at once — sets each shot's width. */
+  visible: number;
 }
 
 /** DOM handles one pinned row animates. */

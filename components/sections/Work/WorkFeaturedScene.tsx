@@ -13,20 +13,22 @@ import type { WorkFeaturedSceneProps } from "./Work.types";
 
 /**
  * Featured projects. On desktop they pin two to a row, side by side, while
- * their screenshots play; then the page scrolls down to the next row. Mobile and reduced motion
- * get the plain stacked list.
+ * their screenshots play; then the page scrolls down to the next row. Phones
+ * pin one project at a time the same way. Reduced motion gets the plain
+ * stacked list.
  */
 export default function WorkFeaturedScene({ items }: WorkFeaturedSceneProps) {
   const t = useTranslations("Work.featured");
   const isMobile = useIsMobile();
   const reduce = useReducedMotion();
+  const perRow = isMobile ? 1 : FEATURED_PER_ROW;
   const rows = useMemo(() => {
     const out: (typeof items)[] = [];
-    for (let i = 0; i < items.length; i += FEATURED_PER_ROW) out.push(items.slice(i, i + FEATURED_PER_ROW));
+    for (let i = 0; i < items.length; i += perRow) out.push(items.slice(i, i + perRow));
     return out;
-  }, [items]);
+  }, [items, perRow]);
 
-  if (isMobile || reduce) {
+  if (reduce) {
     return (
       <div className="mt-16 md:mt-24">
         <Reveal>
@@ -48,13 +50,14 @@ export default function WorkFeaturedScene({ items }: WorkFeaturedSceneProps) {
   }
 
   return (
-    <div className="mt-16 space-y-24 md:mt-24">
+    <div className="mt-16 space-y-16 md:mt-24 md:space-y-24">
       {rows.map((row, i) => (
         <WorkFeaturedRow
           key={row.map((it) => it.feature.key).join("+")}
           items={row}
           index={i}
           count={rows.length}
+          compact={isMobile}
         />
       ))}
     </div>
