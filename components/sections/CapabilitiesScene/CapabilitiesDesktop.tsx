@@ -53,21 +53,33 @@ export default function CapabilitiesDesktop({
           boxSizing: "border-box",
         }}
       >
+        {/* The spotlight roams the whole pinned frame; feathering the frame's top
+            and bottom keeps it from ending in a hard line where the frame meets
+            the section above while it slides into view. */}
         <div
-          ref={spotRef}
           aria-hidden
           style={{
             position: "absolute",
-            left: 0,
-            top: 0,
-            width: 900,
-            height: 900,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(59,130,246,0.06), rgba(0,0,0,0) 65%)",
+            inset: 0,
+            overflow: "hidden",
             pointerEvents: "none",
-            willChange: "transform",
+            maskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)",
           }}
-        />
+        >
+          <div
+            ref={spotRef}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 900,
+              height: 900,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(59,130,246,0.06), rgba(0,0,0,0) 65%)",
+              willChange: "transform",
+            }}
+          />
+        </div>
 
         <div
           ref={fitRef}

@@ -41,7 +41,7 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
 
       <div className="grid gap-8 md:grid-cols-12 md:gap-10">
         <Reveal className="md:col-span-4">
-          <WorkFeaturedInfo project={project} links={feature.links} />
+          <WorkFeaturedInfo project={project} links={feature.links} more />
         </Reveal>
 
         {feature.page ? (
@@ -62,6 +62,8 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
                     width={720}
                     height={1565}
                     loading="lazy"
+                    data-zoom
+                    tabIndex={0}
                     className="w-full rounded-xl ring-1 ring-white/10 md:rounded-2xl"
                   />
                 </Reveal>

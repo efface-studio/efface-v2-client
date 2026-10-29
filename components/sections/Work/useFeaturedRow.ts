@@ -8,7 +8,6 @@ import {
   FEATURED_HOLD,
   FEATURED_PAGE_UNITS,
   FEATURED_SLIDE,
-  FEATURED_VISIBLE,
 } from "./Work.constants";
 import type { WorkFeature, WorkFeaturedRowRefs, WorkLaneRefs } from "./Work.types";
 
@@ -31,7 +30,7 @@ const makeLane = (): WorkLaneRefs => ({
  * content and sticks at its own `top`; the runway spacer after it is what the
  * pin scrolls through. Every lane runs across that same runway, so the two
  * projects finish together:
- * - phone shots slide in from the right one at a time, and past three the
+ * - phone shots slide in from the right one at a time, and past `visible` the
  *   track slides left. Both lane edges fade and blur instead of cutting shots
  *   off — the left once the track moves, the right while a shot slides in;
  * - a web page capture scrolls from top to bottom inside its browser frame.
@@ -39,7 +38,11 @@ const makeLane = (): WorkLaneRefs => ({
  * Only `transform`, `opacity` and the edge variable change per frame. The sticky
  * offset, runway length, shot stride and page travel are measured on resize.
  */
-export function useFeaturedRow(units: number[], enabled: boolean): WorkFeaturedRowRefs {
+export function useFeaturedRow(
+  units: number[],
+  visible: number,
+  enabled: boolean
+): WorkFeaturedRowRefs {
   const rootRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLElement>(null);
   const runwayRef = useRef<HTMLDivElement>(null);
@@ -106,7 +109,7 @@ export function useFeaturedRow(units: number[], enabled: boolean): WorkFeaturedR
         el.style.transform = `translate3d(${((1 - s) * FEATURED_SLIDE).toFixed(1)}px, 0, 0)`;
         el.style.opacity = s.toFixed(3);
       });
-      const over = Math.max(0, revealed - FEATURED_VISIBLE);
+      const over = Math.max(0, revealed - visible);
       if (lane.trackRef.current) {
         lane.trackRef.current.style.transform = `translate3d(${(-over * stride[i]).toFixed(1)}px, 0, 0)`;
       }
@@ -120,7 +123,7 @@ export function useFeaturedRow(units: number[], enabled: boolean): WorkFeaturedR
       if (lane.blurRef.current) lane.blurRef.current.style.opacity = left.toFixed(3);
       if (lane.blurRightRef.current) lane.blurRightRef.current.style.opacity = arriving.toFixed(3);
     });
-  }, [lanes, units]);
+  }, [lanes, units, visible]);
 
   useScrollMotion(rootRef, frame, enabled);
 

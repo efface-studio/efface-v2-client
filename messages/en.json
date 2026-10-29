@@ -14,7 +14,6 @@
     }
   },
   "Hero": {
-    "eyebrow": "AI · Web · App Studio",
     "titleLine1": "Erase the complexity.",
     "titleLine2": "Keep the effect.",
     "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up.",
@@ -27,8 +26,9 @@
   },
   "Work": {
     "label": "WORK",
-    "title": "What we've built.",
-    "lead": "Products efface built itself, work for clients, and projects we took part in.",
+    "title": "Projects",
+    "lead": "Products efface built itself, work for clients, and projects we took part in. We design and build every piece ourselves.",
+    "more": "More projects",
     "featured": {
       "label": "Featured",
       "bannerAlt": "{name} promo banner",
@@ -39,10 +39,24 @@
         "playStore": "Google Play",
         "github": "GitHub",
         "web": "Website",
-        "newTab": "opens in a new tab"
+        "newTab": "opens in a new tab",
+        "githubServer": "GitHub · Server"
       },
       "pageAlt": "{name} web screen",
-      "clientsLabel": "Trusted by"
+      "more": "View details",
+      "zoomClose": "Close",
+      "clientsLabel": "Trusted by",
+      "detail": {
+        "features": "What it does",
+        "info": "Information",
+        "field": "Field",
+        "year": "Year",
+        "more": "more",
+        "less": "less",
+        "prev": "Previous screens",
+        "next": "Next screens"
+      },
+      "screenAlt": "{name} screen {n}"
     },
     "groups": [
       {
@@ -52,76 +66,163 @@
           {
             "key": "hinest",
             "name": "HiNest",
-            "desc": "A workplace hub for approvals, team chat and projects",
+            "desc": "Where all of a company's work lives — HiNest",
             "field": "Web · Desktop",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "The workplace hub HIVITS staff use every day. Approvals, team chat and project and document management live in one place, replacing a scatter of internal tools.",
+              "One web codebase ships to iOS and Android (Capacitor) and to macOS and Windows desktop apps (Electron), with a native Swift widget for macOS."
+            ],
+            "features": [
+              "E-approvals with drafts, approval lines and approve / reject flow",
+              "Team chat with mentions, real-time notifications and push",
+              "Rich-text documents on Tiptap (mentions, checklists, code highlighting)",
+              "Passkey (WebAuthn) sign-in with JWT sessions",
+              "Excel and PDF export, S3 file uploads",
+              "OTA updates for the mobile app and auto-update on desktop"
+            ]
           },
           {
             "key": "hwaso",
             "name": "Hwaso (畫所)",
             "desc": "A marketplace and live auctions for art and antiques",
             "field": "Web · App · Server",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "A marketplace and live online auction platform for art, historical objects, antiques and collectibles. Web (Next.js), iOS and Android apps (Expo) and the API (NestJS) live in one pnpm monorepo.",
+              "The server decides every price, bid eligibility, end time and leading bidder. Bids and buy-now purchases are serialised with DB transactions and row locks, and a separate worker moves auctions through their states."
+            ],
+            "features": [
+              "Live auctions over Socket.IO, syncing price, leader and time left",
+              "Anti-sniping extensions and an auction-closing worker (SKIP LOCKED)",
+              "Listings and search, buy-now, orders and payment deadlines",
+              "OTP and social sign-in, per-device sessions, role-based access",
+              "Design tokens, Zod schemas and a typed API client shared by web and app",
+              "S3-compatible storage behind a CDN, Redis cache and rate limiting"
+            ]
           },
           {
             "key": "luckgluck",
             "name": "Luckgluck",
             "desc": "Online store and admin for a squishy-toy brand",
             "field": "Web · Server",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "The own-brand store for Luckgluck, which sells squishies, slime, keyrings and small goods. We built the mobile-first storefront, the desktop-first admin and the API both of them use.",
+              "Typed API hooks are generated with Orval from the server's OpenAPI spec, so the client and server contract never drifts."
+            ],
+            "features": [
+              "Product list and detail, cart, orders and bank-transfer checkout",
+              "Admin for products, orders and members, with a Tiptap product editor",
+              "S3 image uploads resized with sharp, email via SES",
+              "argon2 password hashing, JWT auth, rate limiting and helmet headers",
+              "A standard response envelope and Swagger API docs",
+              "Tests with Vitest, Testing Library and supertest"
+            ]
           },
           {
             "key": "efface-v1",
             "name": "efface V1",
             "desc": "efface's first official site",
             "field": "Web",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "efface's first official site: a Korean and English landing site with services, process, FAQ and an enquiry form."
+            ],
+            "features": [
+              "Hero, Services, Process and FAQ landing sections",
+              "React Hook Form + Zod form, validated with one schema on client and server",
+              "Enquiry emails sent with Resend",
+              "Korean / English via next-intl, scroll motion with motion"
+            ]
           },
           {
             "key": "efface-v2",
             "name": "efface V2",
             "desc": "The efface site you're on now",
             "field": "Web",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "The efface site you're on now. True to the name — erase the complexity, keep the effect — it introduces the studio as one page that unfolds as you scroll."
+            ],
+            "features": [
+              "Scroll-driven scenes with pinned sections and timeline motion",
+              "A glass logo scene in three.js",
+              "Portfolio detail popups and image zoom",
+              "Korean / English via next-intl, with reduced-motion support"
+            ]
           },
           {
             "key": "cheezefilm",
             "name": "CheezeFilm",
             "desc": "Official fan and audition site, with ops panel, for a web-drama studio",
             "field": "Web",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "The official fan and audition site for CheezeFilm, a web-drama studio with 3.45M subscribers. One build covers the public site — story, cast, films, careers — and the studio's operations panel.",
+              "Every public route is cached with ISR and tag-based revalidation, and the slow YouTube data streams in behind Suspense so the first screen paints fast."
+            ],
+            "features": [
+              "Channel stats, videos and shorts from the YouTube Data API (RSS fallback)",
+              "Cast gallery with per-member pages",
+              "Audition application and fan-letter forms",
+              "Ops panel with KPI dashboard, applicant workflow and CSV export",
+              "Covers, listings, members and site copy editable in Korean and English",
+              "Supabase Postgres and Storage, cookie-session admin login"
+            ]
           },
           {
             "key": "2pick",
             "name": "2Pick",
             "desc": "Stock trading and analysis on the Toss Securities Open API",
             "field": "Web · Server",
-            "year": "2026"
-          },
-          {
-            "key": "kinkaramen",
-            "name": "Kinkaramen"
+            "year": "2026",
+            "overview": [
+              "A personal stock trading and analysis app on the Toss Securities Open API, bringing quotes, portfolio, orders, conditional orders, automation and AI analysis into one app.",
+              "Real money moves through it, so safety comes first. AI never places orders — it only produces intents — and every order passes the risk engine with no bypass. Amounts never use floats, and anything undecidable is blocked."
+            ],
+            "features": [
+              "Live quotes, holdings and portfolio",
+              "Orders and conditional orders, scheduled automation with a kill switch",
+              "Risk engine as the single gate on every order path (fail-closed)",
+              "AI analysis: a deterministic engine computes, AI only interprets",
+              "A mock broker for dev and tests, with mock mode as the default",
+              "A Toss API client package handling tokens, rate limits and errors"
+            ]
           },
           {
             "key": "cutephoto",
             "name": "Cute Photo",
             "desc": "A real-time web photo booth friends join with one link",
             "field": "Web · Desktop",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "A web photo booth: shoot with your camera in the browser, pull friends into the same session with one link, and take photos together over live video and chat. Also shipped as a desktop app."
+            ],
+            "features": [
+              "Camera preview, 3 / 5 / 10 s timer, burst mode, PNG / JPEG export",
+              "Live filters: mono, sepia, vintage, neon, beauty and more",
+              "Draggable text overlays with font, colour, rotation and outline",
+              "Up to four people per invite link, WebRTC video in 2- or 4-up layouts",
+              "Live chat and host-triggered group shots with a shared countdown"
+            ]
           },
           {
             "key": "design-system",
             "name": "efface Design System",
             "desc": "The tokens and components every efface screen shares",
             "field": "Design system",
-            "year": "2026"
-          },
-          {
-            "key": "mos",
-            "name": "MOS",
-            "desc": "One dashboard for the official status of AI services",
-            "field": "Web",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "The design system — and its docs site — that packs the colour, type, spacing and motion every efface screen shares into one set of tokens and components, extracted straight from efface V1, V2 and our banner and footer sources."
+            ],
+            "features": [
+              "Design tokens for paired light and dark themes",
+              "Brand pieces: logo mark, glass logo 3D scene, 3D app icons",
+              "UI, motion and layout components with easing and spring tokens",
+              "Deployed on Cloudflare Workers with security headers, CSP and redirects",
+              "Pure functions and Worker routing tested on Node's built-in runner"
+            ]
           }
         ]
       },
@@ -134,25 +235,58 @@
             "name": "Rooti V2",
             "desc": "Rooti — an all-in-one AI solution for people with severe disabilities",
             "field": "Web · App",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "V2 of Rooti, an all-in-one AI solution for people with severe disabilities: a work-management platform connecting workers, caregivers and companies, on the web and on iOS and Android.",
+              "The Spring Boot server was moved to FastAPI while keeping the same schema and API contract, alongside an AI server that classifies and reads documents such as disability certificates with OCR and AI."
+            ],
+            "features": [
+              "Worker, caregiver and company accounts with jobs, shifts and documents",
+              "OCR (Google Cloud Vision) auto-classifying five document types",
+              "pgvector search plus an AI agent to correct disability type and grade",
+              "FCM push, transactional email, generated PDF and Excel documents",
+              "An accessible mobile app with spoken guidance (TTS) and haptics",
+              "JWT with refresh tokens, Redis-backed rate limiting"
+            ]
           },
           {
             "key": "rooti-admin",
             "name": "Rooti Admin V2",
             "desc": "The Rooti app for company managers and administrators",
             "field": "App",
-            "year": "2026"
+            "year": "2026",
+            "overview": [
+              "The app for managers and administrators at companies using Rooti. It puts worker status, shifts and documents on their phone, running on the same server as Rooti V2."
+            ],
+            "features": [
+              "Worker roster and shift records",
+              "Review and approve submitted documents",
+              "Notices and push notifications",
+              "Shares the Rooti V2 API and auth"
+            ]
           },
           {
             "key": "goms",
             "name": "GOMS",
             "desc": "Making school leave passes easy to manage",
             "field": "PM · iOS",
-            "year": "2024"
+            "year": "2024",
+            "overview": [
+              "Team.GOMS's leave-pass service at Gwangju Software Meister High School. Sign-outs the student council used to tick off by hand became QR scans, so who is out and who is late is visible at a glance.",
+              "I led it as PM — planning and schedule — and built the iOS app."
+            ],
+            "features": [
+              "QR codes generated and scanned for sign-out, invalid codes rejected",
+              "Who is out right now, and the top three late returners",
+              "Automatic blacklist for anyone not back by curfew",
+              "Student search and role changes for admins",
+              "Push reminders on leave days"
+            ]
           }
         ]
       }
-    ]
+    ],
+    "moreClose": "Close"
   },
   "Capabilities": {
     "label": "CAPABILITIES",
@@ -280,10 +414,6 @@
       {
         "label": "Founder",
         "value": "Seojiwan Suh"
-      },
-      {
-        "label": "Focus",
-        "value": "AI · Web · Apps"
       },
       {
         "label": "Contact",

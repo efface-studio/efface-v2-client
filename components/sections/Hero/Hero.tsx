@@ -55,12 +55,7 @@ export default function Hero() {
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div className="max-w-2xl">
-          <p className="rise-in flex items-center gap-3 text-xs font-medium uppercase tracking-[0.16em] text-fg-dim md:text-sm">
-            <span className="inline-block h-px w-8 bg-accent" aria-hidden />
-            {t("eyebrow")}
-          </p>
-
-          <h1 className="mt-6 text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
+          <h1 className="text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
             <span className="rise-in rise-d1 block">{t("titleLine1")}</span>
             <span className="rise-in rise-d2 block">{t("titleLine2")}</span>
           </h1>

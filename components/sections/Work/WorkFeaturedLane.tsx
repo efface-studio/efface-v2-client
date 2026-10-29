@@ -1,21 +1,28 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/cn";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
 import WorkPageFrame from "./WorkPageFrame";
-import { FEATURED_SLIDE, FEATURED_VISIBLE } from "./Work.constants";
+import { FEATURED_SLIDE } from "./Work.constants";
 import type { WorkFeaturedLaneProps } from "./Work.types";
 
+/** Shot width per count in view, net of the `gap-4` between them. */
+const SHOT_WIDTH: Record<number, string> = {
+  2: "w-[calc((100%-1rem)/2)]",
+  3: "w-[calc((100%-2rem)/3)]",
+};
+
 /** One project inside a pinned row: details on top, its shots or page below. */
-export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLaneProps) {
+export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFeaturedLaneProps) {
   const t = useTranslations("Work.featured");
   const { feature, project } = item;
-  const strip = feature.shots.length > FEATURED_VISIBLE;
+  const strip = feature.shots.length > visible;
 
   return (
     <article aria-label={project.name} className="row-span-2 grid min-w-0 grid-rows-subgrid">
       <div>
-        <WorkFeaturedInfo project={project} links={feature.links} />
+        <WorkFeaturedInfo project={project} links={feature.links} more />
       </div>
 
       {/* Capped by screen height (three shots ≈ 1.38 × their height, plus the
@@ -45,7 +52,7 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
                     ref={(el) => {
                       refs.shotRefs.current[k] = el;
                     }}
-                    className="w-[calc((100%-2rem)/3)] shrink-0"
+                    className={cn(SHOT_WIDTH[visible], "shrink-0")}
                     style={{ opacity: 0, transform: `translate3d(${FEATURED_SLIDE}px, 0, 0)` }}
                   >
                     <img
@@ -54,6 +61,8 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
                       width={720}
                       height={1565}
                       loading={eager ? "eager" : "lazy"}
+                      data-zoom
+                      tabIndex={0}
                       className="w-full rounded-2xl ring-1 ring-white/10"
                     />
                   </li>

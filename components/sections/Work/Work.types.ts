@@ -8,6 +8,15 @@ export interface WorkProject {
   desc?: string;
   field?: string;
   year?: string;
+  /** Detail popup copy: paragraphs, then key features. */
+  overview?: string[];
+  features?: string[];
+}
+
+/** One layer of a project's tech stack (Web, Server, …). */
+export interface WorkStackGroup {
+  label: string;
+  items: string[];
 }
 
 /** A titled group of projects (efface's own work / projects we joined). */
@@ -25,11 +34,15 @@ export interface WorkIcon {
   src: string;
   bg?: string;
   inset?: boolean;
+  /** The icon's key colour — tints the detail popup's backdrop gradient. */
+  tint?: string;
 }
 
 export interface WorkIconTileProps {
   name: string;
   icon?: WorkIcon;
+  /** Let the art open large in `WorkZoom`. */
+  zoom?: boolean;
 }
 
 /** Store art for a featured project: an optional wide banner and either two or
@@ -65,6 +78,8 @@ export interface WorkPageFrameProps {
   page: WorkPage;
   alt: string;
   eager?: boolean;
+  /** Show the whole page instead of cropping it to the 16:10 viewport. */
+  full?: boolean;
   frameRef?: RefObject<HTMLDivElement | null>;
   imageRef?: RefObject<HTMLImageElement | null>;
 }
@@ -74,6 +89,8 @@ export interface WorkLinks {
   appStore?: string;
   playStore?: string;
   github?: string;
+  /** A second repo when client and server are split. */
+  githubServer?: string;
   web?: string;
 }
 
@@ -85,6 +102,12 @@ export interface WorkFeaturedProps {
 export interface WorkFeaturedInfoProps {
   project: WorkProject;
   links?: WorkLinks;
+  /** Show a "view details" button that opens `WorkDetail`. */
+  more?: boolean;
+}
+
+export interface WorkDetailProps {
+  projects: WorkProject[];
 }
 
 /** A featured project paired with its copy. */
@@ -101,6 +124,8 @@ export interface WorkFeaturedRowProps {
   items: WorkFeaturedItem[];
   index: number;
   count: number;
+  /** Phone layout: one project per row, two shots in view. */
+  compact: boolean;
 }
 
 /** DOM handles for one project (lane) inside a pinned row. */
@@ -118,6 +143,8 @@ export interface WorkFeaturedLaneProps {
   item: WorkFeaturedItem;
   refs: WorkLaneRefs;
   eager: boolean;
+  /** Shots in view at once — sets each shot's width. */
+  visible: number;
 }
 
 /** DOM handles one pinned row animates. */

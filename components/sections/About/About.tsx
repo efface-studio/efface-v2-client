@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
 import LogoMark from "@/components/LogoMark";
+import SectionBackdrop from "@/components/SectionBackdrop";
 import { STAGGER } from "@/lib/motion";
 import type { AboutMeta } from "./About.types";
 
@@ -10,7 +11,8 @@ export default function About() {
   const meta = t.raw("meta") as AboutMeta[];
 
   return (
-    <section id="about" className="relative border-t border-line bg-bg py-24 md:py-36">
+    <section id="about" className="relative isolate overflow-hidden border-t border-line bg-bg py-24 md:py-36">
+      <SectionBackdrop src="/about/office.webp" width={1536} height={1024} />
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
           {/* Left: label + heading + mark */}
@@ -37,7 +39,7 @@ export default function About() {
             </div>
 
             <Reveal delay={0.2}>
-              <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
+              <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
                 {meta.map((m) => (
                   <div key={m.label} className="bg-bg p-6">
                     <dt className="label">{m.label}</dt>

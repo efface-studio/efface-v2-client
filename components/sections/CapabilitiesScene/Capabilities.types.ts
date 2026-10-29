@@ -32,11 +32,12 @@ export interface CapabilitiesSceneRefs {
   capRefs: RefObject<(HTMLDivElement | null)[]>;
 }
 
-/** DOM handles the stacked mobile layout animates. */
+/** DOM handles the pinned phone card stack animates. */
 export interface CapabilitiesMobileRefs {
-  labelRef: RefObject<HTMLSpanElement | null>;
-  headRef: RefObject<HTMLHeadingElement | null>;
-  groupRefs: RefObject<(HTMLDivElement | null)[]>;
+  cardRefs: RefObject<(HTMLDivElement | null)[]>;
+  /** Shade over each card, deepening as more cards stack on top. */
+  dimRefs: RefObject<(HTMLDivElement | null)[]>;
+  lensRefs: RefObject<(HTMLDivElement | null)[]>;
 }
 
 export interface CapabilitiesDesktopProps extends CapabilitiesCopy {
@@ -46,7 +47,10 @@ export interface CapabilitiesDesktopProps extends CapabilitiesCopy {
 
 export interface CapabilitiesMobileProps extends CapabilitiesCopy {
   rootRef: RefObject<HTMLElement | null>;
+  stackRef: RefObject<HTMLDivElement | null>;
   refs: CapabilitiesMobileRefs;
+  /** Reduced motion: the cards lie flat in the flow, fully shown. */
+  still: boolean;
 }
 
 export interface CapabilityCardProps {

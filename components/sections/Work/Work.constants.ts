@@ -1,19 +1,131 @@
-import type { WorkClient, WorkFeature, WorkIcon } from "./Work.types";
+import type { WorkClient, WorkFeature, WorkIcon, WorkLinks, WorkStackGroup } from "./Work.types";
 
 /** Icon art per project `key`. Projects missing here get a monogram tile. */
 export const WORK_ICONS: Record<string, WorkIcon> = {
-  hinest: { src: "/work/hinest.png" },
-  hwaso: { src: "/work/hwaso.png" },
-  luckgluck: { src: "/work/luckgluck.png" },
-  "efface-v1": { src: "/work/efface-v1.svg", bg: "#f6f6f7", inset: true },
-  "efface-v2": { src: "/work/efface-v2.svg" },
-  cheezefilm: { src: "/work/cheezefilm.png" },
-  "2pick": { src: "/work/2pick.svg" },
-  cutephoto: { src: "/work/cutephoto.png" },
-  "design-system": { src: "/work/design-system.svg" },
-  rooti: { src: "/work/rooti.png" },
-  "rooti-admin": { src: "/work/rooti-admin.png" },
-  goms: { src: "/work/goms.svg", bg: "#ffa600" },
+  hinest: { src: "/work/hinest.webp", tint: "#2f5bea" },
+  hwaso: { src: "/work/hwaso.webp", tint: "#1fae5b" },
+  luckgluck: { src: "/work/luckgluck.webp", tint: "#c8913f" },
+  "efface-v1": { src: "/work/efface-v1.svg", bg: "#f6f6f7", inset: true, tint: "#3b62e5" },
+  "efface-v2": { src: "/work/efface-v2.svg", tint: "#3b62e5" },
+  cheezefilm: { src: "/work/cheezefilm.webp", tint: "#6b2fc4" },
+  "2pick": { src: "/work/2pick.svg", tint: "#b6f03c" },
+  cutephoto: { src: "/work/cutephoto.webp", tint: "#ef4f4f" },
+  "design-system": { src: "/work/design-system.svg", tint: "#3b62e5" },
+  rooti: { src: "/work/rooti.webp", tint: "#2cc7a0" },
+  "rooti-admin": { src: "/work/rooti-admin.webp", tint: "#7a3fd1" },
+  goms: { src: "/work/goms.svg", bg: "#ffa600", tint: "#ffa600" },
+};
+
+/** Outbound links for projects that aren't featured (featured ones carry theirs
+ *  on `WORK_FEATURED`), shown in the detail popup. */
+export const WORK_LINKS: Record<string, WorkLinks> = {
+  luckgluck: {
+    github: "https://github.com/efface-studio/Luckgluck-Client",
+    githubServer: "https://github.com/efface-studio/Luckgluck-Server",
+    web: "https://luckgluck.efface.dev",
+  },
+  "efface-v1": {
+    github: "https://github.com/efface-studio/efface-v1-client",
+    web: "https://efface.dev",
+  },
+  "efface-v2": {
+    github: "https://github.com/efface-studio/efface-v2-client",
+    web: "https://v2.efface.dev",
+  },
+  cheezefilm: {
+    github: "https://github.com/efface-studio/CheezeFilm-Client",
+    web: "https://cheeze.efface.dev",
+  },
+  // The app repo is private, so the live booth is the only outward link.
+  cutephoto: {
+    web: "https://qto.efface.dev",
+  },
+  "design-system": {
+    github: "https://github.com/efface-studio/efface-component",
+    web: "https://ds.efface.dev",
+  },
+};
+
+/** Desktop screen captures (1440×900 @2×) for projects without store shots,
+ *  shown in the detail popup. Captured from each project's live site or local repo. */
+const screens = (key: string, count: number): string[] =>
+  Array.from({ length: count }, (_, i) => `/work/${key}/screen-${i + 1}.webp`);
+
+export const WORK_SCREENS: Record<string, string[]> = {
+  luckgluck: screens("luckgluck", 4),
+  "efface-v1": screens("efface-v1", 4),
+  "efface-v2": screens("efface-v2", 4),
+  cheezefilm: screens("cheezefilm", 4),
+  cutephoto: screens("cutephoto", 3),
+  "design-system": screens("design-system", 4),
+};
+
+/** Tech stack per project `key`, grouped by layer, for the detail popup. Taken
+ *  from each project's own repo; tool names are not translated. */
+export const WORK_STACKS: Record<string, WorkStackGroup[]> = {
+  hinest: [
+    { label: "Web · App", items: ["React", "TypeScript", "React Router", "Tiptap", "Capacitor"] },
+    { label: "Desktop", items: ["Electron", "electron-updater", "Swift (macOS widget)"] },
+    { label: "Server", items: ["Node.js", "Express", "Prisma", "PostgreSQL", "Supabase", "Zod"] },
+    { label: "Infra", items: ["AWS S3", "AWS SES", "WebAuthn", "Vercel"] },
+  ],
+  hwaso: [
+    { label: "Web", items: ["Next.js 16", "TypeScript", "Tailwind CSS 4", "TanStack Query", "Zustand"] },
+    { label: "App", items: ["Expo", "React Native", "React Navigation", "expo-notifications"] },
+    { label: "Server", items: ["NestJS 11", "Prisma 6", "PostgreSQL 16", "Redis 7", "Socket.IO"] },
+    { label: "Infra", items: ["pnpm workspaces", "Docker", "S3 (RustFS)", "CDN", "Zod"] },
+  ],
+  luckgluck: [
+    { label: "Web", items: ["Next.js 16", "TypeScript", "Tailwind CSS 4", "TanStack Query", "Tiptap", "Orval"] },
+    { label: "Server", items: ["NestJS 11", "Prisma", "PostgreSQL 16", "Swagger", "argon2", "sharp"] },
+    { label: "Infra", items: ["AWS S3", "AWS SES"] },
+    { label: "Test", items: ["Vitest", "Testing Library", "supertest"] },
+  ],
+  "efface-v1": [
+    { label: "Web", items: ["Next.js 15", "TypeScript", "Tailwind CSS 4", "next-intl", "motion"] },
+    { label: "Form · Mail", items: ["React Hook Form", "Zod", "Resend", "Supabase"] },
+    { label: "Infra", items: ["Vercel"] },
+  ],
+  "efface-v2": [
+    { label: "Web", items: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS 4", "next-intl"] },
+    { label: "Motion · 3D", items: ["motion", "three.js"] },
+    { label: "Infra", items: ["Vercel", "GitHub Actions"] },
+  ],
+  cheezefilm: [
+    { label: "Web", items: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS 4"] },
+    { label: "Data", items: ["Supabase Postgres", "Supabase Storage", "YouTube Data API v3", "ExcelJS"] },
+    { label: "Infra", items: ["Vercel", "ISR", "jose"] },
+  ],
+  "2pick": [
+    { label: "Web", items: ["React 19", "Vite", "TanStack Query", "Zustand"] },
+    { label: "Server", items: ["Node.js 22", "Fastify 5", "Drizzle", "PostgreSQL 16", "Redis 7", "Zod 4", "pino", "decimal.js"] },
+    { label: "Integration", items: ["Toss Securities Open API"] },
+    { label: "Test", items: ["Vitest", "fast-check"] },
+  ],
+  cutephoto: [
+    { label: "Web", items: ["Next.js 15", "React 19", "TypeScript", "Tailwind CSS 4"] },
+    { label: "Real-time", items: ["WebRTC", "Socket.IO", "Canvas API", "MediaPipe"] },
+    { label: "Desktop", items: ["Tauri"] },
+  ],
+  "design-system": [
+    { label: "Web", items: ["React 19", "TypeScript", "Vite", "Tailwind CSS 4", "React Router"] },
+    { label: "Motion · 3D", items: ["motion", "three.js"] },
+    { label: "Infra", items: ["Cloudflare Workers", "oxlint", "node:test"] },
+  ],
+  rooti: [
+    { label: "Web", items: ["React 18", "Vite", "TypeScript", "React Router", "TanStack Query", "Zustand", "Tailwind CSS", "Radix UI"] },
+    { label: "App", items: ["Expo", "React Native", "expo-router", "Reanimated", "expo-notifications"] },
+    { label: "Server", items: ["Python 3.12", "FastAPI", "SQLAlchemy", "PostgreSQL", "Redis", "Firebase (FCM)"] },
+    { label: "AI", items: ["Google Cloud Vision", "pgvector", "OpenAI", "pydantic-ai"] },
+  ],
+  "rooti-admin": [
+    { label: "App", items: ["Expo", "React Native", "expo-router", "TanStack Query"] },
+    { label: "Server", items: ["Python 3.12", "FastAPI", "PostgreSQL", "Firebase (FCM)"] },
+  ],
+  goms: [
+    { label: "iOS", items: ["Swift", "Tuist", "Swift Package Manager"] },
+    { label: "Role", items: ["PM", "iOS"] },
+  ],
 };
 
 /** Projects shown large above the grid, in this order. Add one when its store
@@ -72,6 +184,9 @@ export const WORK_FEATURED: WorkFeature[] = [
   {
     key: "2pick",
     shots: [],
+    links: {
+      github: "https://github.com/efface-studio/2Pick",
+    },
     page: { src: "/work/2pick/home.webp", width: 1280, height: 2899 },
   },
 ];
@@ -112,6 +227,8 @@ export const FEATURED_SLIDE = 520;
 
 /** Shots visible at once; past this the track slides left. */
 export const FEATURED_VISIBLE = 3;
+/** Shots visible at once on phones, where three would be thumbnail-sized. */
+export const FEATURED_VISIBLE_COMPACT = 2;
 
 /** Width (rem) of the soft left edge once the track starts sliding. */
 export const FEATURED_EDGE_REM = 4.5;
@@ -119,5 +236,5 @@ export const FEATURED_EDGE_REM = 4.5;
 /** Units a web page capture takes to scroll from top to bottom in its frame. */
 export const FEATURED_PAGE_UNITS = 4;
 
-/** Featured projects pinned side by side in one row. */
+/** Featured projects pinned side by side in one row (one per row on phones). */
 export const FEATURED_PER_ROW = 2;
