@@ -13,7 +13,7 @@
 | --- | --- |
 | atoms | `LogoMark`, `LanguageToggle`, `Reveal` |
 | molecules | `Nav/NavOverlay`, `Footer/FooterMeta`, `Footer/FooterBar`, `sections/Capabilities/CapabilityCard`, `sections/Capabilities/MagnifierLens`, `sections/EffaceIntro/ClutterField`, `sections/EffaceIntro/EraserPuck` |
-| organisms | `Nav`, `Footer`, `PolicyIndex`, `sections/*` |
+| organisms | `Nav`, `Footer`, `PolicyIndex`, `LogoParticle`, `sections/*` |
 | templates | `app/[locale]/layout.tsx` |
 | pages | `app/[locale]/page.tsx`, `app/[locale]/policies/page.tsx` |
 
@@ -27,6 +27,7 @@ App Router 기준으로 **기본은 Server Component**, 아래 사유가 있을 
 | `Reveal` | Client | `whileInView` 뷰포트 관찰 (children은 RSC 그대로 통과) |
 | `Nav`, `LanguageToggle` | Client | 상호작용 상태 · 라우터 |
 | `Footer`, `PolicyIndex` | Client | rAF 모션 루프 |
+| `LogoParticle` | Client | 캔버스 입자 로고 · 오로라 · 가짜 커서 (efface-component에서 이식, 화면 밖이면 언마운트) |
 | `sections/Hero`, `Capabilities`, `EffaceIntro`, `Work/WorkFeaturedScene`·`WorkFeaturedRow` | Client | 스크롤 바인딩 rAF 씬 |
 | `components/three/*` | Client 전용 모듈 | `next/dynamic(ssr:false)` 또는 동적 import로만 로드 |
 
