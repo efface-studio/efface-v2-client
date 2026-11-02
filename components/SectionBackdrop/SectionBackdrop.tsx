@@ -16,7 +16,7 @@ export default function SectionBackdrop({ src, width, height }: SectionBackdropP
         width={width}
         height={height}
         loading="lazy"
-        className="h-full w-full scale-110 object-cover blur-md brightness-[0.38] saturate-[0.7]"
+        className="h-full w-full scale-110 object-cover blur-sm brightness-[0.38] saturate-[0.7]"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-bg via-transparent to-bg" />
       <div className="absolute inset-0 bg-gradient-to-r from-bg/80 via-bg/30 to-transparent" />
