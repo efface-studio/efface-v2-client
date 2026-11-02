@@ -38,14 +38,14 @@ export default function Work() {
 
       {/* Featured work gets a wider measure than the rest of the section. */}
       {featured.length > 0 && (
-        <div className="mx-auto max-w-[1680px] px-6 md:px-10">
+        <div data-tour="featured" className="mx-auto max-w-[1680px] px-6 md:px-10">
           <WorkFeaturedScene items={featured} />
         </div>
       )}
 
       {/* The rest of the work stays folded behind "more"; each card opens its detail popup. */}
       {rest.length > 0 && (
-        <details className="group/more mx-auto mt-20 max-w-[1400px] px-6 md:mt-28 md:px-10">
+        <details data-tour="more" className="group/more mx-auto mt-20 max-w-[1400px] px-6 md:mt-28 md:px-10">
           {/* A home-screen folder: closed, a tile of the hidden apps in miniature;
               open, those apps laid out on a frosted folder page. */}
           <summary className="mx-auto flex w-fit cursor-pointer list-none flex-col items-center gap-4 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-accent [&::-webkit-details-marker]:hidden">

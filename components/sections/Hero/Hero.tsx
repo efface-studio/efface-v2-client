@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/cn";
+import Tour from "@/components/Tour";
 import {
   COPY_FADE_END,
   COPY_LIFT,
@@ -55,7 +56,7 @@ export default function Hero() {
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div className="max-w-2xl">
-          <h1 className="text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
+          <h1 id="hero-title" className="text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
             <span className="rise-in rise-d1 block">{t("titleLine1")}</span>
             <span className="rise-in rise-d2 block">{t("titleLine2")}</span>
           </h1>
@@ -63,6 +64,8 @@ export default function Hero() {
           <p className="rise-in rise-d3 mt-7 max-w-md text-base leading-relaxed text-fg-dim md:text-lg">
             {t("sub")}
           </p>
+
+          <Tour />
         </div>
       </motion.div>
 
