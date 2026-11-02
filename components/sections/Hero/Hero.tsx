@@ -48,7 +48,7 @@ export default function Hero() {
   const contentOpacity = useTransform(scrollYProgress, [0, COPY_FADE_END], [1, 0]);
 
   return (
-    <section ref={ref} className="relative min-h-[100svh] w-full overflow-hidden bg-bg">
+    <section ref={ref} className="relative min-h-[calc(var(--svh,1svh)*100)] w-full overflow-hidden bg-bg">
       {/* Background: live "glass squares" logo rendered in WebGL — stays crisp at
           any resolution (no fixed-res video to pixelate on large screens). The
           mark is framed to the right in the scene so the copy owns the lower-left.
@@ -67,7 +67,7 @@ export default function Hero() {
 
       {/* Copy — anchored lower-left. */}
       <motion.div
-        className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-end px-6 pb-[15svh] md:px-10 md:pb-[12vh]"
+        className="relative z-10 mx-auto flex min-h-[calc(var(--svh,1svh)*100)] max-w-[1400px] flex-col justify-end px-6 pb-[calc(var(--svh,1svh)*15)] md:px-10 md:pb-[12vh]"
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div className="max-w-2xl">

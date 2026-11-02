@@ -44,7 +44,7 @@ export default function WorkFeaturedRow({ items, index, count, compact, showClie
         className={cn(
           "sticky overflow-hidden",
           compact
-            ? "top-[max(4.5rem,calc(50svh-20rem))]"
+            ? "top-[max(4.5rem,calc(var(--svh,1svh)*50-20rem))]"
             : "top-[max(4.5rem,calc(50vh-22rem-var(--extra)/2))]"
         )}
         style={{ ["--extra" as string]: clientKeys.length && !compact ? "11rem" : "0rem" }}
@@ -80,7 +80,7 @@ export default function WorkFeaturedRow({ items, index, count, compact, showClie
       <div
         ref={runwayRef}
         aria-hidden
-        style={{ height: `${Math.round(FEATURED_PACE_VH * (Math.max(...units) + FEATURED_HOLD))}svh` }}
+        style={{ height: `calc(var(--svh, 1svh) * ${Math.round(FEATURED_PACE_VH * (Math.max(...units) + FEATURED_HOLD))})` }}
       />
     </div>
     {/* On a phone the strip would push the pinned row off screen, so it
