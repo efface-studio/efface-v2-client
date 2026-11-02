@@ -10,6 +10,7 @@ import {
   COPY_FADE_END,
   COPY_LIFT,
   LEFT_SCRIM,
+  PHONE_SCENE_DELAY_MS,
   SCENE_BACKDROP,
 } from "./Hero.constants";
 
@@ -27,14 +28,33 @@ export default function Hero() {
   const [sceneReady, setSceneReady] = useState(false);
   useEffect(() => {
     let idle: number | undefined;
+    let timer: number | undefined;
+    // Phones have the least CPU to spare while the page boots: wait for the
+    // first touch or scroll, or a few quiet seconds, before compiling the scene.
+    const phone = window.matchMedia("(max-width: 767px)").matches;
+    const kinds = ["pointerdown", "touchstart", "scroll", "keydown"] as const;
+    const start = () => {
+      kinds.forEach((k) => window.removeEventListener(k, start));
+      setSceneReady(true);
+    };
     const go = () => {
-      idle = window.requestIdleCallback?.(() => setSceneReady(true), { timeout: 2000 });
-      if (idle === undefined) setSceneReady(true);
+      if (phone) {
+        kinds.forEach((k) => window.addEventListener(k, start, { once: true, passive: true }));
+        timer = window.setTimeout(() => {
+          idle = window.requestIdleCallback?.(start, { timeout: 2000 });
+          if (idle === undefined) start();
+        }, PHONE_SCENE_DELAY_MS);
+        return;
+      }
+      idle = window.requestIdleCallback?.(start, { timeout: 2000 });
+      if (idle === undefined) start();
     };
     if (document.readyState === "complete") go();
     else window.addEventListener("load", go, { once: true });
     return () => {
       window.removeEventListener("load", go);
+      kinds.forEach((k) => window.removeEventListener(k, start));
+      if (timer !== undefined) window.clearTimeout(timer);
       if (idle !== undefined) window.cancelIdleCallback(idle);
     };
   }, []);
