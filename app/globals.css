@@ -126,8 +126,11 @@ body {
 
 /* Above-the-fold rise, runs on stylesheet parse (no hydration wait). */
 @keyframes rise-in {
+  /* 0.01, not 0: fully transparent text isn't an LCP candidate, so the hero
+     headline only counted once its animation got a frame — seconds late on a
+     busy phone. Visually the same. */
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(14px);
   }
   to {
