@@ -67,7 +67,7 @@ export default function Hero() {
 
       {/* Copy — anchored lower-left. */}
       <motion.div
-        className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-end px-6 pb-[15vh] md:px-10 md:pb-[12vh]"
+        className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-end px-6 pb-[15svh] md:px-10 md:pb-[12vh]"
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div className="max-w-2xl">
