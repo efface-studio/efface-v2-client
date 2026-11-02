@@ -2,6 +2,8 @@
 export const COPY_LIFT: [string, string] = ["0%", "-24%"];
 /** Scroll fraction over which the copy fades out entirely. */
 export const COPY_FADE_END = 0.55;
+/** On phones the WebGL scene waits for the first input, or this long after load (ms). */
+export const PHONE_SCENE_DELAY_MS = 4000;
 
 /** Left scrim — keeps the copy legible without flattening the studio light. */
 export const LEFT_SCRIM =
