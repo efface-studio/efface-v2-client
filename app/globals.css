@@ -567,6 +567,13 @@ body {
   gap: 3px;
   height: 18px;
 }
+/* Phones keep the caption bar slim. (Here, not as a utility: this unlayered
+   rule would outrank Tailwind's `hidden`.) */
+@media (max-width: 767px) {
+  .tour-eq {
+    display: none;
+  }
+}
 .tour-eq span {
   width: 3px;
   height: 100%;
