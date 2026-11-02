@@ -5,6 +5,7 @@ import Work from "@/components/sections/Work";
 import CapabilitiesScene from "@/components/sections/CapabilitiesScene";
 import Approach from "@/components/sections/Approach";
 import About from "@/components/sections/About";
+import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/Footer";
 
@@ -26,6 +27,7 @@ export default async function Home({
         <CapabilitiesScene />
         <Approach />
         <About />
+        <Testimonials />
         <Contact />
       </main>
       <Footer />
