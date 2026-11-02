@@ -16,25 +16,33 @@
   "Hero": {
     "titleLine1": "Erase the complexity.",
     "titleLine2": "Keep the effect.",
-    "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up.",
-    "scroll": "Scroll"
+    "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up."
   },
   "Tour": {
     "start": "Auto tour",
     "pause": "Pause",
     "resume": "Resume",
     "close": "End tour",
+    "speed": "Speed",
+    "volume": "Volume",
+    "mixer": "Speed & volume — drag sideways for speed, up or down for volume, tap to mute",
+    "muted": "Mute",
     "steps": {
       "hero": "Hi, this is efface — an AI, web and app team that erases the complexity and keeps only what works. Let me show you around.",
       "efface": "Efface means to erase. Instead of adding, we strip away clutter and friction until only the essence is left, sharp and clear.",
       "work": "This is our work: services we built ourselves, client projects, and the projects we joined.",
       "detail": "Open any project to see what we made and the stack behind it.",
       "featured": "Featured work unfolds screen by screen as you scroll — Hwaso, an art auction marketplace; HiNest, a company work hub; Rooti, an AI one-stop solution for people with severe disabilities; then GOMS and 2Pick.",
-      "more": "The rest of our work lives in this folder.",
+      "more": "The rest of our work is listed below. Open any of them for the details.",
       "capabilities": "AI, web, apps and infrastructure — here is exactly what we take responsibility for in each.",
       "approach": "Less, but exact. Proven tools over trends, and ownership well past launch.",
       "about": "Small team, deep work. One team handles everything from planning and design to building, shipping and running it.",
-      "contact": "If there is something you would like to build together, drop us a line at the email below. Thanks for listening."
+      "clients": "Rooti is already in daily use. SGA Solution, KCC, Konkuk University Hospital and the rest of these companies all run on it.",
+      "testimonials": "These are in our clients' own words. Names and companies stay hidden to protect their privacy.",
+      "contact": "If there is something you would like to build together, get in touch. There are separate inboxes for general questions, business and support.",
+      "footer": "Down at the bottom are our company details, every way to reach us, and the live sites of the services we run.",
+      "policies": "Next to them, every policy is out in the open, from privacy and terms of service to reporting a security issue.",
+      "privacy": "Inside, each one is laid out section by section, ready whenever you want to read it in full. Thanks for listening all the way through."
     }
   },
   "Efface": {
@@ -46,7 +54,7 @@
     "label": "WORK",
     "title": "Projects",
     "lead": "Products efface built itself, work for clients, and projects we took part in. We design and build every piece ourselves.",
-    "more": "More projects",
+    "otherLabel": "OTHER WORK",
     "featured": {
       "label": "Featured",
       "bannerAlt": "{name} promo banner",
@@ -270,7 +278,7 @@
           {
             "key": "rooti-admin",
             "name": "Rooti Admin V2",
-            "desc": "The Rooti app for company managers and administrators",
+            "desc": "The Rooti service for company managers and administrators",
             "field": "App",
             "year": "2026",
             "overview": [
@@ -303,8 +311,7 @@
           }
         ]
       }
-    ],
-    "moreClose": "Close"
+    ]
   },
   "Capabilities": {
     "label": "CAPABILITIES",
@@ -431,20 +438,44 @@
     "meta": [
       {
         "label": "Founder",
-        "value": "Seojiwan Suh"
+        "value": "Seojiwan Suh",
+        "href": "https://www.linkedin.com/in/xixn2"
       },
       {
         "label": "Contact",
-        "value": "contact@efface.dev"
+        "value": "contact@efface.dev",
+        "href": "mailto:contact@efface.dev"
       }
+    ]
+  },
+  "Testimonials": {
+    "label": "TESTIMONIALS",
+    "title": "In our clients' words.",
+    "badge": "Privacy protected",
+    "note": "Names and companies are kept private.",
+    "items": [
+      { "quote": "Nailed the tone I'd only vaguely described. Hardly any design back-and-forth.", "metric": "3.2× inquiries in launch month", "role": "Marketing Director" },
+      { "quote": "The handover was incredibly clean. Our in-house dev took it over and ran with it right away.", "metric": "70% lower maintenance cost", "role": "CTO" },
+      { "quote": "I was worried at first, but decisions were fast and every detail was looked after.", "metric": "Shipped a week early", "role": "Founder" },
+      { "quote": "One planning meeting pulled the essentials together, and nothing slipped after that.", "metric": "Kickoff → designs in 5 days", "role": "Product Owner" },
+      { "quote": "Payments and account integrations were handled end to end — ops had almost nothing left to do at handover.", "metric": "Payment failures < 0.4%", "role": "Ops Manager" },
+      { "quote": "The site feels noticeably faster after the redesign, and the SEO score climbed with it.", "metric": "Lighthouse 92 → 99", "role": "Marketer" },
+      { "quote": "With design and development in one team, our communication overhead dropped. Meetings halved.", "metric": "Meetings down 50%", "role": "Startup Founder" },
+      { "quote": "Small requests after launch got a quick turnaround. That trust is why we came back.", "metric": "Re-hired for 3 projects", "role": "Brand Manager" },
+      { "quote": "The internal admin is genuinely easy to use. Our ops team picked it up on day one.", "metric": "Data processing time down 60%", "role": "Biz Dev Lead" },
+      { "quote": "It was my first time handing off a build, and clear progress at every step kept me at ease.", "metric": "First build handed off", "role": "Business Owner" }
     ]
   },
   "Contact": {
     "label": "contact",
     "title": "Ready to build something?",
     "lead": "A new product, a rough idea, or a partnership — whatever it is, send it our way.",
-    "cta": "Say hello",
-    "email": "contact@efface.dev"
+    "email": "contact@efface.dev",
+    "channels": [
+      { "label": "General", "note": "Questions, ideas, anything at all", "email": "contact@efface.dev" },
+      { "label": "Business", "note": "Projects and partnerships", "email": "sales@efface.dev" },
+      { "label": "Support", "note": "Help with a service we run", "email": "support@efface.dev" }
+    ]
   },
   "Footer": {
     "tagline": "Erase the complexity. ~Keep~ the effect.",
@@ -454,16 +485,19 @@
         "rows": [
           {
             "k": "Name",
-            "v": "efface"
+            "v": "efface",
+            "mark": "logo"
           },
           {
             "k": "Founder",
-            "v": "Seojiwan Suh ↗",
-            "href": "https://www.linkedin.com/in/xixn2"
+            "v": "Seojiwan Suh",
+            "href": "https://www.linkedin.com/in/xixn2",
+            "mark": "linkedin"
           },
           {
             "k": "Based in",
-            "v": "Seoul, Korea"
+            "v": "Seoul, Korea",
+            "mark": "kr"
           }
         ]
       },
@@ -503,6 +537,52 @@
           {
             "k": "Response",
             "v": "Within 24h on weekdays"
+          }
+        ]
+      },
+      {
+        "label": "SITES",
+        "plain": true,
+        "rows": [
+          {
+            "k": "Previous",
+            "v": "shop.efface.dev ↗",
+            "href": "https://shop.efface.dev"
+          },
+          {
+            "k": "Design",
+            "v": "ds.efface.dev ↗",
+            "href": "https://ds.efface.dev"
+          },
+          {
+            "k": "Hwaso",
+            "v": "hwaso.efface.dev ↗",
+            "href": "https://hwaso.efface.dev"
+          },
+          {
+            "k": "CheezeFilm",
+            "v": "cheeze.efface.dev ↗",
+            "href": "https://cheeze.efface.dev"
+          },
+          {
+            "k": "Luckgluck",
+            "v": "luckgluck.efface.dev ↗",
+            "href": "https://luckgluck.efface.dev"
+          },
+          {
+            "k": "Cute Photo",
+            "v": "qto.efface.dev ↗",
+            "href": "https://qto.efface.dev"
+          },
+          {
+            "k": "Rooti",
+            "v": "v2.rooti.work ↗",
+            "href": "https://v2.rooti.work/"
+          },
+          {
+            "k": "GOMS",
+            "v": "team-haribo.vercel.app ↗",
+            "href": "https://team-haribo.vercel.app/"
           }
         ]
       }
@@ -553,7 +633,6 @@
         "t": "Terms",
         "href": "/policies#terms"
       }
-    ],
-    "toTop": "Back to top ↑"
+    ]
   }
 }
