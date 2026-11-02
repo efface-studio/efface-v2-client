@@ -58,6 +58,11 @@ export default function WorkFeaturedScene({ items }: WorkFeaturedSceneProps) {
           index={i}
           count={rows.length}
           compact={isMobile}
+          // A shared client list shows once, after the last row that uses it
+          // (on phones Rooti and its admin app are separate rows).
+          showClients={
+            !rows[i + 1]?.some((next) => row.some((it) => it.feature.clients && it.feature.clients === next.feature.clients))
+          }
         />
       ))}
     </div>
