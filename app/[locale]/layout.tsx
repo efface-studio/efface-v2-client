@@ -10,12 +10,14 @@ export function generateStaticParams() {
 }
 
 // Canonical origin for metadata (canonical links, hreflang, OG/Twitter URLs).
-// Set NEXT_PUBLIC_SITE_URL per environment; falls back to the v2 host.
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://v2.efface.dev").replace(
+// Set NEXT_PUBLIC_SITE_URL per environment; falls back to the production host.
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://efface.dev").replace(
   /\/$/,
   ""
 );
-const OG_IMAGE = `${SITE_URL}/og.jpg`;
+// Bump `v` whenever og.jpg changes: link-preview caches (Kakao, Slack, X) key
+// on the URL and would keep showing the old image.
+const OG_IMAGE = `${SITE_URL}/og.jpg?v=2`;
 
 export async function generateMetadata({
   params,
