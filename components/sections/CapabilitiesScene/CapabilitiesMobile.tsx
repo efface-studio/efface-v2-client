@@ -36,7 +36,7 @@ export default function CapabilitiesMobile({
       )}
       style={{
         ["--acc" as string]: ACCENTS[c].hex,
-        ...(!still && c > 0 && { transform: "translate3d(0, 100vh, 0)" }),
+        ...(!still && c > 0 && { transform: "translate3d(0, 100svh, 0)" }),
       }}
     >
       <div className="flex items-baseline gap-4">
@@ -128,7 +128,7 @@ export default function CapabilitiesMobile({
         <div
           ref={stackRef}
           className="relative"
-          style={{ height: `calc(100svh + ${cards.length * STACK_STEP_VH}vh)` }}
+          style={{ height: `calc(100svh + ${cards.length * STACK_STEP_VH}svh)` }}
         >
           <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden px-6 pb-6 pt-20">
             <div className="grid w-full">{deck}</div>
