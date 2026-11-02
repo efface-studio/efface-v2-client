@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { MONO, ORB_SHADOW, ORB_STYLES } from "./EffaceIntro.constants";
 import type { IntroBodyProps } from "./EffaceIntro.types";
 
@@ -82,8 +83,11 @@ export default function IntroBody({
       >
         {tokens.map((tk, i) =>
           tk.kind === "orb" ? (
+            // The orb keeps its room before it pops in; it stays on the line of
+            // the word before it (a no-break space there), and the line may
+            // break after it — so it never opens a line as a blank indent.
+            <Fragment key={i}>
             <span
-              key={i}
               ref={(el) => {
                 orbRefs.current[i] = el;
               }}
@@ -100,6 +104,8 @@ export default function IntroBody({
                 transform: "scale(0)",
               }}
             />
+            {"​"}
+            </Fragment>
           ) : (
             <span key={i}>
               <span
@@ -133,7 +139,8 @@ export default function IntroBody({
                     }}
                   />
                 )}
-              </span>{" "}
+              </span>
+              {tokens[i + 1]?.kind === "orb" ? " " : " "}
             </span>
           )
         )}
