@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
-import LogoMark from "@/components/LogoMark";
+import LogoParticle from "@/components/LogoParticle";
 import SectionBackdrop from "@/components/SectionBackdrop";
 import { STAGGER } from "@/lib/motion";
 import type { AboutMeta } from "./About.types";
@@ -24,7 +24,7 @@ export default function About() {
               <h2 className="mt-5 text-3xl font-semibold leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">
                 {t("title")}
               </h2>
-              <LogoMark className="mt-10 hidden h-12 w-12 text-fg-faint md:block" />
+              <LogoParticle className="mt-10 h-64 md:h-80" />
             </Reveal>
           </div>
 

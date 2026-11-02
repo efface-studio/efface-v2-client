@@ -480,3 +480,33 @@ body {
     transform: none;
   }
 }
+
+/* Pretend cursor on the About logo — a ring pulses out when it "presses". */
+.ghost-pointer {
+  transition: opacity 0.3s;
+}
+.ghost-pointer__ring {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-accent);
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+}
+.ghost-pointer.is-down .ghost-pointer__ring {
+  animation: ghost-ring 0.45s ease-out;
+}
+@keyframes ghost-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
