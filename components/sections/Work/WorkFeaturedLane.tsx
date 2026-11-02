@@ -27,7 +27,7 @@ export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFea
 
       {/* Capped by screen height (three shots ≈ 1.38 × their height, plus the
           gaps) so a wide lane never pushes the pinned row off screen. */}
-      <div className="relative max-w-[calc((100svh-21rem-var(--extra,0rem))*1.38+2rem)]">
+      <div className="relative max-w-[calc((var(--svh,1svh)*100-21rem-var(--extra,0rem))*1.38+2rem)]">
         {feature.page ? (
           <WorkPageFrame
             page={feature.page}

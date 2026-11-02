@@ -89,6 +89,15 @@ export default async function LocaleLayout({
     <html lang={locale} className="dark">
       <head>
         <meta name="theme-color" content="#0a0a0b" />
+        {/* A viewport height that holds still: phone browsers (in-app ones
+            especially, where svh tracks the live height) resize the viewport
+            as their bars show on scroll-up, and every pinned scene sized off it
+            jumped. Measured once, re-measured only when the width changes. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var w=0;function s(){if(innerWidth!==w){w=innerWidth;document.documentElement.style.setProperty("--svh",innerHeight/100+"px")}}s();addEventListener("resize",s)})();`,
+          }}
+        />
       </head>
       <body className="min-h-screen bg-bg text-fg antialiased">
         <NextIntlClientProvider>

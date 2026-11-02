@@ -83,7 +83,7 @@ export default function EffaceIntro() {
       ref={refs.rootRef}
       style={{
         position: "relative",
-        height: `${sceneVh}svh`,
+        height: `calc(var(--svh, 1svh) * ${sceneVh})`,
         background: "var(--color-bg)",
         color: "#EDEDEF",
       }}
@@ -93,7 +93,7 @@ export default function EffaceIntro() {
           position: "sticky",
           top: 0,
           // svh on phones, so the pinned frame doesn't jump as the URL bar hides.
-          height: isMobile ? "100svh" : "100vh",
+          height: isMobile ? "calc(var(--svh, 1svh) * 100)" : "100vh",
           overflow: "hidden",
           display: "flex",
           alignItems: "center",
