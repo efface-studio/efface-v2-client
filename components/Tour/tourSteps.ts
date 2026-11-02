@@ -19,8 +19,8 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: "clients",
     focus: "[data-tour='clients']",
+    // The logo strip keeps drifting while it's framed.
     scroll: { target: "[data-tour='clients-row']", mode: "start" },
-    expand: true,
   },
   {
     id: "more",
@@ -87,5 +87,8 @@ export const TOUR_SPEED_MIN = 0.5;
 export const TOUR_SPEED_MAX = 2;
 /** Time the cursor takes to read across one title, left to right (ms). */
 export const TOUR_READ_MS = 1300;
+/** Screens the tour treats as phones, and how much slower it scrolls there. */
+export const TOUR_MOBILE_QUERY = "(max-width: 767px)";
+export const TOUR_MOBILE_SCROLL_SLOWDOWN = 3;
 /** Cursor glide time (ms). */
 export const TOUR_GLIDE_MS = 900;
