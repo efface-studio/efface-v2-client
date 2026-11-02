@@ -43,7 +43,9 @@ export function createGlassScene(
     alpha: false,
     preserveDrawingBuffer: false,
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+  // Transmission renders the scene twice; on a phone's small, dense screen the
+  // extra pixels cost far more than they show.
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 1.25));
   if ("transmissionResolutionScale" in renderer) renderer.transmissionResolutionScale = 0.5;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
