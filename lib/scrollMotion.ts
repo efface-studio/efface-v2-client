@@ -3,6 +3,25 @@
 import { useEffect } from "react";
 import { clamp } from "@/lib/motion";
 
+let probe: HTMLDivElement | null = null;
+
+/**
+ * The small viewport height (100svh) in px. Unlike `innerHeight`, it does not
+ * change as a phone browser (in-app ones especially) shows and hides its bars
+ * on scroll — scroll-bound motion measured against `innerHeight` jumped every
+ * time the bars toggled.
+ */
+export function viewportHeight(): number {
+  if (!probe) {
+    probe = document.createElement("div");
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText =
+      "position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none";
+    document.body.appendChild(probe);
+  }
+  return probe.offsetHeight || window.innerHeight;
+}
+
 /**
  * How far an element has travelled through its reveal window, 0 → 1.
  * 0 while its top is still below `startAt` of the viewport, 1 once it has risen
@@ -11,7 +30,7 @@ import { clamp } from "@/lib/motion";
  * play-once.
  */
 export function elementProgress(el: Element, startAt = 0.92, windowFrac = 0.55) {
-  const vh = window.innerHeight;
+  const vh = viewportHeight();
   const top = el.getBoundingClientRect().top;
   return clamp((vh * startAt - top) / (vh * windowFrac), 0, 1);
 }
@@ -112,7 +131,8 @@ export function usePinnedSceneMotion(
       raf = requestAnimationFrame(tick);
       if (!onScreen || hidden) return;
       const rect = root.getBoundingClientRect();
-      const total = Math.max(1, root.offsetHeight - window.innerHeight);
+      // The pinned frame is 100svh tall, so that is the travel to subtract.
+      const total = Math.max(1, root.offsetHeight - viewportHeight());
       frame(clamp(-rect.top / total, 0, 1));
     };
     raf = requestAnimationFrame(tick);
