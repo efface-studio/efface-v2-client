@@ -83,7 +83,7 @@ export default function EffaceIntro() {
       ref={refs.rootRef}
       style={{
         position: "relative",
-        height: `${sceneVh}vh`,
+        height: `${sceneVh}svh`,
         background: "var(--color-bg)",
         color: "#EDEDEF",
       }}

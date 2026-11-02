@@ -80,7 +80,7 @@ export default function WorkFeaturedRow({ items, index, count, compact, showClie
       <div
         ref={runwayRef}
         aria-hidden
-        style={{ height: `${Math.round(FEATURED_PACE_VH * (Math.max(...units) + FEATURED_HOLD))}vh` }}
+        style={{ height: `${Math.round(FEATURED_PACE_VH * (Math.max(...units) + FEATURED_HOLD))}svh` }}
       />
     </div>
     {/* On a phone the strip would push the pinned row off screen, so it
