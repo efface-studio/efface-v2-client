@@ -19,6 +19,24 @@
     "sub": "An engineering team working across AI, web, and apps. We go deep on the tech and ship products that hold up.",
     "scroll": "Scroll"
   },
+  "Tour": {
+    "start": "Auto tour",
+    "pause": "Pause",
+    "resume": "Resume",
+    "close": "End tour",
+    "steps": {
+      "hero": "Hi, this is efface — an AI, web and app team that erases the complexity and keeps only what works. Let me show you around.",
+      "efface": "Efface means to erase. Instead of adding, we strip away clutter and friction until only the essence is left, sharp and clear.",
+      "work": "This is our work: services we built ourselves, client projects, and the projects we joined.",
+      "detail": "Open any project to see what we made and the stack behind it.",
+      "featured": "Featured work unfolds screen by screen as you scroll — Hwaso, an art auction marketplace; HiNest, a company work hub; Rooti, an AI one-stop solution for people with severe disabilities; then GOMS and 2Pick.",
+      "more": "The rest of our work lives in this folder.",
+      "capabilities": "AI, web, apps and infrastructure — here is exactly what we take responsibility for in each.",
+      "approach": "Less, but exact. Proven tools over trends, and ownership well past launch.",
+      "about": "Small team, deep work. One team handles everything from planning and design to building, shipping and running it.",
+      "contact": "If there is something you would like to build together, drop us a line at the email below. Thanks for listening."
+    }
+  },
   "Efface": {
     "label": "EFFACE",
     "definition": "ef·face /ɪˈfeɪs/ — verb · 1. to rub out or erase (writing, marks) · 2. to blur or wipe away (memories, impressions) · 3. efface oneself — to keep oneself in the background",

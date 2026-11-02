@@ -27,6 +27,7 @@ App Router 기준으로 **기본은 Server Component**, 아래 사유가 있을 
 | `Reveal` | Client | `whileInView` 뷰포트 관찰 (children은 RSC 그대로 통과) |
 | `Nav`, `LanguageToggle` | Client | 상호작용 상태 · 라우터 |
 | `Footer`, `PolicyIndex` | Client | rAF 모션 루프 |
+| `Tour` | Client | 자동 설명 — 자동 스크롤·가짜 커서·스포트라이트·미리 생성한 내레이션(`public/tour`)과 글자 단위 자막. 대본은 `messages`의 `Tour.steps`, 대본을 바꾸면 `scripts/generate-tour-audio.py`로 음성·시간표를 다시 생성 |
 | `LogoParticle` | Client | 캔버스 입자 로고 (efface-component에서 이식, 화면 밖이면 언마운트) |
 | `sections/Hero`, `Capabilities`, `EffaceIntro`, `Work/WorkFeaturedScene`·`WorkFeaturedRow` | Client | 스크롤 바인딩 rAF 씬 |
 | `components/three/*` | Client 전용 모듈 | `next/dynamic(ssr:false)` 또는 동적 import로만 로드 |
