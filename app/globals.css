@@ -154,21 +154,6 @@ body {
   animation-delay: 0.52s;
 }
 
-/* Slow vertical bob for the scroll cue. */
-@keyframes scroll-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-.scroll-bob {
-  animation: scroll-bob 1.8s ease-in-out infinite;
-}
 
 /* Tech marquee. */
 @keyframes marquee {
@@ -181,6 +166,28 @@ body {
 }
 .animate-marquee {
   animation: marquee 38s linear infinite;
+}
+
+/* Auto tour: the client marquee stops and lays every logo out, enlarged. */
+[data-tour-expanded] .animate-marquee {
+  animation: none;
+  width: auto;
+  justify-content: center;
+}
+[data-tour-expanded] .animate-marquee > [aria-hidden] {
+  display: none;
+}
+[data-tour-expanded] .animate-marquee > ul {
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-right: 0;
+}
+[data-tour-expanded] > div {
+  mask-image: none;
+}
+[data-tour-expanded] img {
+  height: 2.5rem;
+  max-width: 200px;
 }
 
 /* Slow float for the clutter pieces in the efface intro scene. */
@@ -260,7 +267,7 @@ body {
    column is pulled up on wide screens to sit level with the others. */
 .footer-meta {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, auto));
+  grid-template-columns: repeat(5, minmax(0, auto));
   justify-content: space-between;
   gap: 36px min(108px, 5vw);
   margin-top: 34px;
@@ -286,12 +293,12 @@ body {
 .footer-link {
   position: relative;
   display: inline-block;
+  white-space: nowrap;
   transition: color 0.2s;
 }
 .footer-link:hover {
   color: #ededef !important;
-}
-.footer-hl {
+}.footer-hl {
   position: absolute;
   left: 0;
   right: 0;
@@ -306,22 +313,6 @@ body {
 .footer-link:hover .footer-hl {
   transform: scaleX(1);
   transform-origin: left;
-}
-.footer-totop {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: #8a8a93;
-  background: transparent;
-  border: 1px solid #26262e;
-  border-radius: 8px;
-  padding: 9px 15px;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, transform 0.2s;
-}
-.footer-totop:hover {
-  color: #ededef;
-  border-color: #3b82f6;
-  transform: translateY(-2px);
 }
 
 @media (max-width: 1023px) {
@@ -341,8 +332,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer-hl,
-  .footer-totop {
+  .footer-hl {
     transition: none;
   }
 }
@@ -485,7 +475,6 @@ body {
     scroll-behavior: auto;
   }
   .rise-in,
-  .scroll-bob,
   .animate-marquee {
     animation: none;
     opacity: 1;
