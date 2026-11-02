@@ -2,8 +2,6 @@
 export const COPY_LIFT: [string, string] = ["0%", "-24%"];
 /** Scroll fraction over which the copy fades out entirely. */
 export const COPY_FADE_END = 0.55;
-/** Scroll fraction over which the scroll cue fades out. */
-export const CUE_FADE_END = 0.15;
 
 /** Left scrim — keeps the copy legible without flattening the studio light. */
 export const LEFT_SCRIM =

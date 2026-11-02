@@ -9,7 +9,6 @@ import Tour from "@/components/Tour";
 import {
   COPY_FADE_END,
   COPY_LIFT,
-  CUE_FADE_END,
   LEFT_SCRIM,
   SCENE_BACKDROP,
 } from "./Hero.constants";
@@ -47,7 +46,6 @@ export default function Hero() {
   });
   const contentY = useTransform(scrollYProgress, [0, 1], COPY_LIFT);
   const contentOpacity = useTransform(scrollYProgress, [0, COPY_FADE_END], [1, 0]);
-  const cueOpacity = useTransform(scrollYProgress, [0, CUE_FADE_END], [1, 0]);
 
   return (
     <section ref={ref} className="relative min-h-[100svh] w-full overflow-hidden bg-bg">
@@ -86,14 +84,6 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Scroll cue (desktop) — fades on first scroll. */}
-      <motion.div
-        className="absolute bottom-8 right-10 z-10 hidden items-center gap-3 md:flex"
-        style={reduce ? undefined : { opacity: cueOpacity }}
-      >
-        <span className="text-xs uppercase tracking-[0.2em] text-fg-faint">{t("scroll")}</span>
-        <span className="scroll-bob inline-block h-8 w-px bg-fg-faint" aria-hidden />
-      </motion.div>
     </section>
   );
 }
