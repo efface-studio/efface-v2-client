@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
 import WorkPageFrame from "./WorkPageFrame";
-import { FEATURED_SLIDE, FEATURED_VISIBLE } from "./Work.constants";
+import { FEATURED_SLIDE, FEATURED_VISIBLE, shotSrcSet } from "./Work.constants";
 import type { WorkFeaturedLaneProps } from "./Work.types";
 
 /** One project inside a pinned row: details on top, its shots or page below. */
@@ -50,6 +50,9 @@ export default function WorkFeaturedLane({ item, refs, eager }: WorkFeaturedLane
                   >
                     <img
                       src={src}
+                      srcSet={shotSrcSet(src)}
+                      // A third of a lane: about a sixth of the viewport on desktop.
+                      sizes="(max-width: 767px) 33vw, 17vw"
                       alt={t("shotAlt", { name: project.name, n: k + 1 })}
                       width={720}
                       height={1565}
