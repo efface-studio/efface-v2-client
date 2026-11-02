@@ -20,33 +20,39 @@ VOICES = {"ko": "ko-KR-SunHiNeural", "en": "en-US-AvaMultilingualNeural"}
 TICKS_PER_MS = 10_000  # edge-tts offsets are in 100ns units
 # How the voice should say words it would otherwise mispronounce. The captions
 # keep the written form; only the synthesized text changes.
-SAY_AS = {"ko": {"efface": "이페이스"}, "en": {"efface": "E-face"}}
+SAY_AS = {
+    "ko": {"efface": "이페이스", "HiNest": "하이네스트"},
+    "en": {"efface": "E-face", "Efface": "E-face", "HiNest": "Hi Nest"},
+}
 
 
 def spoken_form(text: str, locale: str):
-    """The text to synthesize, plus a map from each of its characters back to
-    the caption character it stands for."""
-    out, index = [], []
+    """The text to synthesize, plus maps from each of its characters back to
+    the caption: the caption index it starts at, and the one it ends before."""
+    out, index, end = [], [], []
     i = 0
     while i < len(text):
         for written, said in SAY_AS[locale].items():
             if text.startswith(written, i):
                 out.append(said)
                 # Spread the spoken characters across the written ones.
-                index += [i + k * len(written) // len(said) for k in range(len(said))]
+                n, m = len(written), len(said)
+                index += [i + k * n // m for k in range(m)]
+                end += [i + -(-(k + 1) * n // m) for k in range(m)]
                 i += len(written)
                 break
         else:
             out.append(text[i])
             index.append(i)
+            end.append(i + 1)
             i += 1
-    return "".join(out), index
+    return "".join(out), index, end
 
 
 async def render(caption: str, locale: str, out: Path):
     """Synthesize `caption` into `out`, returning its word timings as caption
     character ranges."""
-    text, to_caption = spoken_form(caption, locale)
+    text, to_caption, to_caption_end = spoken_form(caption, locale)
     communicate = edge_tts.Communicate(text, VOICES[locale], boundary="WordBoundary")
     words = []
     cursor = 0
@@ -65,7 +71,7 @@ async def render(caption: str, locale: str, out: Path):
                         "t": round(chunk["offset"] / TICKS_PER_MS),
                         "d": round(chunk["duration"] / TICKS_PER_MS),
                         "s": to_caption[start],
-                        "e": to_caption[cursor - 1] + 1,
+                        "e": to_caption_end[cursor - 1],
                     }
                 )
     return words
