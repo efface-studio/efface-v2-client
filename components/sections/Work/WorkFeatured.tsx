@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 import { STAGGER } from "@/lib/motion";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
 import WorkPageFrame from "./WorkPageFrame";
+import { shotSrcSet } from "./Work.constants";
 import type { WorkFeaturedProps } from "./Work.types";
 
 /** Screenshot column per shot count, sized so one shot is the same width
@@ -41,7 +42,7 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
 
       <div className="grid gap-8 md:grid-cols-12 md:gap-10">
         <Reveal className="md:col-span-4">
-          <WorkFeaturedInfo project={project} links={feature.links} />
+          <WorkFeaturedInfo project={project} links={feature.links} more />
         </Reveal>
 
         {feature.page ? (
@@ -58,10 +59,14 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
                 <Reveal delay={Math.min(i, 2) * STAGGER.tight}>
                   <img
                     src={src}
+                    srcSet={shotSrcSet(src)}
+                    sizes="(max-width: 767px) 33vw, 17vw"
                     alt={t("shotAlt", { name: project.name, n: i + 1 })}
                     width={720}
                     height={1565}
                     loading="lazy"
+                    data-zoom
+                    tabIndex={0}
                     className="w-full rounded-xl ring-1 ring-white/10 md:rounded-2xl"
                   />
                 </Reveal>

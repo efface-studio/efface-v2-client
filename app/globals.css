@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Pretendard Variable, dynamic subset — bundled and served from our own origin
+   (no third-party CSS on the critical path); each unicode-range file is only
+   fetched when the page uses it. */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 /* ─────────────────────────────────────────────────────────────
    efface — v2 design tokens (dark)
@@ -32,6 +36,42 @@ html {
   background: var(--color-bg);
 }
 
+/* Scrollbars: a thin, quiet thumb on a clear track instead of the platform's
+   white bar — the page, the detail popup and any other scroller alike. In the
+   base layer so a utility (e.g. `[scrollbar-width:none]`) can still hide one. */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  }
+  *:hover {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16) padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Work image zoom: hint on hover, and hold the page still while it's open. */
+img[data-zoom] {
+  cursor: zoom-in;
+}
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 html,
 body {
   background: var(--color-bg);
@@ -51,14 +91,22 @@ body {
   color: #fff;
 }
 
-/* JetBrains Mono — one variable file, only for small mono labels. */
+/* JetBrains Mono — one variable latin file, only for small mono labels. */
 @font-face {
   font-family: "JetBrains Mono";
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTOlOV.woff2")
-    format("woff2");
+  src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
+}
+
+/* Space Grotesk — the footer and policy wordmarks (also drawn into a canvas). */
+@font-face {
+  font-family: "Space Grotesk";
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/space-grotesk-latin.woff2") format("woff2");
 }
 
 .font-mono {
@@ -106,21 +154,6 @@ body {
   animation-delay: 0.52s;
 }
 
-/* Slow vertical bob for the scroll cue. */
-@keyframes scroll-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-.scroll-bob {
-  animation: scroll-bob 1.8s ease-in-out infinite;
-}
 
 /* Tech marquee. */
 @keyframes marquee {
@@ -133,6 +166,28 @@ body {
 }
 .animate-marquee {
   animation: marquee 38s linear infinite;
+}
+
+/* Auto tour: the client marquee stops and lays every logo out, enlarged. */
+[data-tour-expanded] .animate-marquee {
+  animation: none;
+  width: auto;
+  justify-content: center;
+}
+[data-tour-expanded] .animate-marquee > [aria-hidden] {
+  display: none;
+}
+[data-tour-expanded] .animate-marquee > ul {
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-right: 0;
+}
+[data-tour-expanded] > div {
+  mask-image: none;
+}
+[data-tour-expanded] img {
+  height: 2.5rem;
+  max-width: 200px;
 }
 
 /* Slow float for the clutter pieces in the efface intro scene. */
@@ -212,7 +267,7 @@ body {
    column is pulled up on wide screens to sit level with the others. */
 .footer-meta {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, auto));
+  grid-template-columns: repeat(5, minmax(0, auto));
   justify-content: space-between;
   gap: 36px min(108px, 5vw);
   margin-top: 34px;
@@ -238,12 +293,12 @@ body {
 .footer-link {
   position: relative;
   display: inline-block;
+  white-space: nowrap;
   transition: color 0.2s;
 }
 .footer-link:hover {
   color: #ededef !important;
-}
-.footer-hl {
+}.footer-hl {
   position: absolute;
   left: 0;
   right: 0;
@@ -258,22 +313,6 @@ body {
 .footer-link:hover .footer-hl {
   transform: scaleX(1);
   transform-origin: left;
-}
-.footer-totop {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: #8a8a93;
-  background: transparent;
-  border: 1px solid #26262e;
-  border-radius: 8px;
-  padding: 9px 15px;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, transform 0.2s;
-}
-.footer-totop:hover {
-  color: #ededef;
-  border-color: #3b82f6;
-  transform: translateY(-2px);
 }
 
 @media (max-width: 1023px) {
@@ -293,8 +332,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer-hl,
-  .footer-totop {
+  .footer-hl {
     transition: none;
   }
 }
@@ -437,10 +475,148 @@ body {
     scroll-behavior: auto;
   }
   .rise-in,
-  .scroll-bob,
   .animate-marquee {
     animation: none;
     opacity: 1;
     transform: none;
   }
+}
+
+/* Auto tour cursor — a ring pulses out each time it presses. */
+.tour-cursor__ring {
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-accent);
+  opacity: 0;
+  transform: scale(0.4);
+}
+.tour-cursor.is-down .tour-cursor__ring {
+  animation: tour-ring 0.5s ease-out;
+}
+@keyframes tour-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+/* Liquid glass — the tour's caption bar and buttons. A frosted, saturated
+   backdrop; a specular sheen from the top-left; and a rim that catches light
+   on two opposite corners, as a curved glass edge would. */
+.tour-glass,
+.tour-glass-button {
+  isolation: isolate;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035));
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -12px 28px rgba(255, 255, 255, 0.035),
+    0 22px 60px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.tour-glass-button {
+  position: relative;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.tour-glass-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.tour-glass::before,
+.tour-glass-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 18% -30%, rgba(255, 255, 255, 0.2), transparent 55%);
+}
+.tour-glass::after,
+.tour-glass-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.04) 65%,
+    rgba(255, 255, 255, 0.35)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Speaking indicator — four bars that bounce while a line plays. */
+.tour-eq {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+.tour-eq span {
+  width: 3px;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-accent-bright);
+  transform-origin: center;
+  animation: tour-eq 0.9s ease-in-out infinite;
+}
+.tour-eq span:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.tour-eq span:nth-child(3) {
+  animation-delay: -0.6s;
+}
+.tour-eq span:nth-child(4) {
+  animation-delay: -0.15s;
+}
+.tour-eq.is-idle span {
+  animation: none;
+  transform: scaleY(0.25);
+  opacity: 0.5;
+}
+@keyframes tour-eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-eq span {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+}
+
+/* Tour caption — unsaid characters start dim; the fill is painted per frame. */
+.tour-caption > span {
+  color: rgba(246, 246, 247, 0.3);
+}
+
+/* Tour spotlight — the frame's shadow dims everything around it. */
+.tour-focus {
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(97, 131, 255, 0.55),
+    0 0 32px rgba(59, 98, 229, 0.35),
+    0 0 0 200vmax rgba(6, 6, 9, 0.55);
+  opacity: 0;
+  will-change: transform, width, height, opacity;
 }

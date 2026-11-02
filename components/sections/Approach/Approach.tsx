@@ -1,5 +1,7 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
+import SectionBackdrop from "@/components/SectionBackdrop";
+import StackMark from "@/components/StackMark";
 import { STAGGER } from "@/lib/motion";
 import type { ApproachItem } from "./Approach.types";
 
@@ -9,7 +11,8 @@ export default function Approach() {
   const stack = t.raw("stack") as string[];
 
   return (
-    <section id="approach" className="relative border-t border-line bg-bg-soft py-24 md:py-36">
+    <section id="approach" className="relative isolate overflow-hidden border-t border-line bg-bg py-24 md:py-36">
+      <SectionBackdrop src="/approach/code.webp" width={2400} height={1602} />
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
           {/* Left: heading */}
@@ -57,7 +60,10 @@ export default function Approach() {
                 key={`${s}-${i}`}
                 className="flex items-center gap-8 whitespace-nowrap font-mono text-sm text-fg-faint md:gap-12"
               >
-                {s}
+                <span className="flex items-center gap-2.5">
+                  <StackMark item={s} />
+                  {s}
+                </span>
                 <span className="h-1 w-1 rounded-full bg-fg-faint/40" aria-hidden />
               </span>
             ))}

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { clamp, easeOutCubic } from "@/lib/motion";
-import { elementProgress, usePinnedSceneMotion, useScrollMotion } from "@/lib/scrollMotion";
+import { usePinnedSceneMotion } from "@/lib/scrollMotion";
 import { BODY_FIT_HEIGHT, STEP, W0, WIN } from "./EffaceIntro.constants";
 import type { EffaceIntroRefs, EffaceTimelineParams } from "./EffaceIntro.types";
 
@@ -146,17 +146,9 @@ export function useEffaceTimeline({
     [tokens, wordIndex, isMobile]
   );
 
-  // Desktop: pinned scene driven by how far the section has scrolled.
+  // Pinned on every screen size, driven by how far the section has scrolled.
   const pinnedFrame = useCallback((p: number) => paint(p * timelineEnd), [paint, timelineEnd]);
-  usePinnedSceneMotion(rootRef, pinnedFrame, !isMobile);
-
-  // Mobile: no pinning — the same timeline plays off the block's own position.
-  const mobileFrame = useCallback(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    paint(elementProgress(el, 0.95, 0.9));
-  }, [paint]);
-  useScrollMotion(rootRef, mobileFrame, isMobile);
+  usePinnedSceneMotion(rootRef, pinnedFrame, true);
 
   return {
     rootRef,

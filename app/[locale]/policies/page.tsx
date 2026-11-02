@@ -41,7 +41,7 @@ export default async function PoliciesPage({
   return (
     <main className="min-h-screen bg-bg text-fg">
       {/* sticky page header */}
-      <div className="sticky top-0 z-10 border-b border-line bg-bg/[0.86] backdrop-blur-[14px]">
+      <div className="sticky top-0 z-10 border-b border-line bg-bg/55 backdrop-blur-md backdrop-saturate-150">
         <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-6 px-6 md:px-12">
           <div className="flex items-center gap-[11px]">
             <LogoMark className="h-[22px] w-[22px] text-fg" />

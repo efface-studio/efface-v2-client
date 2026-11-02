@@ -145,7 +145,6 @@ export default function Footer() {
           hostRef={barRef}
           rights={t("rights")}
           links={bottomLinks}
-          toTopLabel={t("toTop")}
         />
       </div>
     </footer>

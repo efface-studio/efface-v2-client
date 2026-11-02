@@ -6,6 +6,11 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // Ship the (small, single) stylesheet inside the HTML instead of as a
+    // render-blocking request — one less round trip before first paint.
+    inlineCss: true,
+  },
   async headers() {
     return [
       {

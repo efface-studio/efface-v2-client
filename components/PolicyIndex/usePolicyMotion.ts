@@ -71,6 +71,10 @@ export function usePolicyMotion(initialId: string): string {
       for (const s of secs) {
         if (s.getBoundingClientRect().top <= ACTIVE_OFFSET) current = s.id;
       }
+      // The last sections are too short for their tops ever to reach the
+      // offset, so at the bottom of the page the last one is current.
+      const root = document.documentElement;
+      if (secs.length && window.scrollY + vh >= root.scrollHeight - 2) current = secs[secs.length - 1].id;
       if (current && current !== lastActive) {
         lastActive = current;
         setActive(current);

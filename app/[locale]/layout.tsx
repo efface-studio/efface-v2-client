@@ -10,12 +10,14 @@ export function generateStaticParams() {
 }
 
 // Canonical origin for metadata (canonical links, hreflang, OG/Twitter URLs).
-// Set NEXT_PUBLIC_SITE_URL per environment; falls back to the v2 host.
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://v2.efface.dev").replace(
+// Set NEXT_PUBLIC_SITE_URL per environment; falls back to the production host.
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://efface.dev").replace(
   /\/$/,
   ""
 );
-const OG_IMAGE = `${SITE_URL}/og.jpg`;
+// Bump `v` whenever og.jpg changes: link-preview caches (Kakao, Slack, X) key
+// on the URL and would keep showing the old image.
+const OG_IMAGE = `${SITE_URL}/og.jpg?v=2`;
 
 export async function generateMetadata({
   params,
@@ -86,24 +88,6 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className="dark">
       <head>
-        {/* Preconnect so first paint isn't blocked by font DNS/TLS. */}
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        {/* Archivo Black — the oversized display word behind the app cards.
-           Space Grotesk — the footer wordmark (also drawn into a canvas). */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@500;700&display=swap"
-        />
-        {/* Pretendard Variable dynamic-subset — only the unicode ranges used on
-           the page are fetched (~200KB vs 2MB). SRI pinned to 1.3.9. */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
-          integrity="sha384-2nNKoOPayicGa+aRguOQuiZP+RqQ4G3jalfDeOgftkKD7zBM2gJXTwcFqCZltdv0"
-          crossOrigin="anonymous"
-        />
         <meta name="theme-color" content="#0a0a0b" />
       </head>
       <body className="min-h-screen bg-bg text-fg antialiased">

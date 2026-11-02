@@ -65,6 +65,8 @@ export function createLensController(els: LensElements) {
   /** Lens position, previous position, scale and scale velocity. */
   const lp = { x: 0, y: 0, px: 0, py: 0, s: 0, v: 0 };
   let lensFor = -1;
+  /** Grid width the current snapshot was taken at. */
+  let snapWidth = -1;
 
   return {
     /** True once the lens has faded up enough to hide the real cursor. */
@@ -90,13 +92,23 @@ export function createLensController(els: LensElements) {
         if (lensFor !== over && els.gridRef.current) {
           lensFor = over;
           // Snapshot the grid so the lens shows a settled, untransformed copy.
-          const clone = els.gridRef.current.cloneNode(true) as HTMLElement;
-          for (const card of Array.from(clone.children) as HTMLElement[]) {
-            card.style.transform = "none";
-            card.style.opacity = "1";
+          // The content never changes, so a copy is reused until the grid's
+          // width does — cloning the whole grid on the frame the lens arms
+          // was a visible hitch.
+          const width = gridWrap.offsetWidth;
+          if (width !== snapWidth) {
+            snapWidth = width;
+            const clone = els.gridRef.current.cloneNode(true) as HTMLElement;
+            for (const card of Array.from(clone.children) as HTMLElement[]) {
+              card.style.transform = "none";
+              card.style.opacity = "1";
+            }
+            // `zoom` lays the text out at full size, so it stays sharp where
+            // `scale()` would stretch a 1× raster.
+            clone.style.width = `${width}px`;
+            clone.style.zoom = String(LENS_ZOOM);
+            inner.replaceChildren(clone);
           }
-          inner.replaceChildren(clone);
-          inner.style.width = `${gridWrap.offsetWidth}px`;
         }
       } else if (lp.s < 0.03) {
         lensFor = -1;
@@ -120,9 +132,7 @@ export function createLensController(els: LensElements) {
       const sky = clamp(vy * 0.5, -6, 6);
       lens.style.opacity = String(clamp(lp.s * 1.25, 0, 1));
       lens.style.transform = `translate(${lp.x - LENS_RX}px, ${lp.y - LENS_RY}px) scale(${s}) skew(${skx}deg, ${sky * 0.5}deg)`;
-      inner.style.transform = `translate(${LENS_RX - lp.x * LENS_ZOOM}px, ${
-        LENS_RY - lp.y * LENS_ZOOM
-      }px) scale(${LENS_ZOOM})`;
+      inner.style.transform = `translate(${LENS_RX - lp.x * LENS_ZOOM}px, ${LENS_RY - lp.y * LENS_ZOOM}px)`;
 
       const dot = els.cursorDotRef.current;
       if (dot) {

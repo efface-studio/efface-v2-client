@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { AnimatePresence } from "motion/react";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useUIStore } from "@/store/ui.store";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -18,8 +18,13 @@ export default function Nav() {
   const toggleNav = useUIStore((s) => s.toggleNav);
   const closeNav = useUIStore((s) => s.closeNav);
   const scrolled = useScrolledPast(HIDE_BAR_AFTER);
+  const pathname = usePathname();
 
   useNavOverlay();
+
+  // The policy page has its own sticky header (logo + back home); this bar
+  // would stack on top of it.
+  if (pathname.startsWith("/policies")) return null;
 
   return (
     <>

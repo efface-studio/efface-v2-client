@@ -13,7 +13,7 @@
 | --- | --- |
 | atoms | `LogoMark`, `LanguageToggle`, `Reveal` |
 | molecules | `Nav/NavOverlay`, `Footer/FooterMeta`, `Footer/FooterBar`, `sections/Capabilities/CapabilityCard`, `sections/Capabilities/MagnifierLens`, `sections/EffaceIntro/ClutterField`, `sections/EffaceIntro/EraserPuck` |
-| organisms | `Nav`, `Footer`, `PolicyIndex`, `sections/*` |
+| organisms | `Nav`, `Footer`, `PolicyIndex`, `LogoParticle`, `sections/*` |
 | templates | `app/[locale]/layout.tsx` |
 | pages | `app/[locale]/page.tsx`, `app/[locale]/policies/page.tsx` |
 
@@ -27,6 +27,8 @@ App Router 기준으로 **기본은 Server Component**, 아래 사유가 있을 
 | `Reveal` | Client | `whileInView` 뷰포트 관찰 (children은 RSC 그대로 통과) |
 | `Nav`, `LanguageToggle` | Client | 상호작용 상태 · 라우터 |
 | `Footer`, `PolicyIndex` | Client | rAF 모션 루프 |
+| `Tour` | Client | 자동 설명 — 자동 스크롤·가짜 커서·스포트라이트·미리 생성한 내레이션(`public/tour`)과 글자 단위 자막. 대본은 `messages`의 `Tour.steps`, 대본을 바꾸면 `scripts/generate-tour-audio.py`로 음성·시간표를 다시 생성 |
+| `LogoParticle` | Client | 캔버스 입자 로고 (efface-component에서 이식, 화면 밖이면 언마운트) |
 | `sections/Hero`, `Capabilities`, `EffaceIntro`, `Work/WorkFeaturedScene`·`WorkFeaturedRow` | Client | 스크롤 바인딩 rAF 씬 |
 | `components/three/*` | Client 전용 모듈 | `next/dynamic(ssr:false)` 또는 동적 import로만 로드 |
 
@@ -88,8 +90,9 @@ Tailwind v4 `@theme` 블록(`app/globals.css`)이 단일 소스.
 
 ### 2.3 반응형
 
-모바일 퍼스트. `md`(768px)가 이 사이트의 핵심 분기점이며, 그 아래에서는
-핀 고정 스크롤 씬을 **정적 스택 레이아웃으로 교체**한다(축소하면 본문이 5~9px로 깨짐).
+모바일 퍼스트. `md`(768px)가 이 사이트의 핵심 분기점이다. 데스크톱 씬을 그대로 축소하면
+본문이 5~9px로 깨지므로, 그 아래에서는 **같은 안무를 폰 크기로 다시 짠 고정(pin) 씬**을 쓴다
+(3.3의 "폰" 항목). 고정 높이는 주소창 변화에 흔들리지 않게 `svh`를 쓴다.
 분기는 `lib/useIsMobile.ts` 하나로 통일하고, SSR 시에는 데스크톱 마크업을 렌더한다.
 
 ### 2.4 전역 CSS를 쓰는 경우
@@ -134,6 +137,11 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 - **EffaceIntro**: 중앙에서 원이 자라며 잡동사니를 지움 → 지우개가 그 원의 가장자리를 따라감 → 문장이 단어 단위로 점등
 - **Work 대표작**: 2개씩 한 줄로 콘텐츠 높이만큼 화면 중앙에 고정 → 두 앱의 미리보기가 같은 런웨이에서 함께 진행(폰 미리보기는 오른쪽에서 슬라이드 인, 4장 이상은 트랙 이동, 웹 캡처는 프레임 안에서 위→아래 스크롤), 가장자리는 페이드·블러 → 홀드 후 고정이 풀리며 다음 줄로 스크롤
 - **Capabilities**: 글자 흩어짐 → 조립, 카드가 중앙에서 사방으로 딜링, 착지 후에만 돋보기 렌즈 활성
+- **폰(`md` 미만)**:
+  - EffaceIntro — 데스크톱과 같은 고정 씬(잡동사니 축소, 런웨이 `MOBILE_PACE_SCALE`배)
+  - Work 대표작 — 한 줄에 1개씩 고정, 미리보기 2장씩 보이며 같은 슬라이드 인. 사용 기업 띠는 고정 아래로
+  - Capabilities — 4개 카드를 한 스택에 고정해 한 장씩 위로 쌓음 → 착지한 카드의 줄을 렌즈가 위→아래로 훑으며 확대·점등 → 도구 칩 등장 (`useCapabilitiesStack`)
+  - `Reveal` — 페이드업 대신 부드러운 가장자리 마스크가 스크롤에 맞춰 쓸고 지나가며 내용을 드러냄(지우개 모티프)
 - **Footer**: 대각선 와이프로 진입, 커서 궤적이 대형 워드마크를 밝힘
 
 ### 3.4 성능 규칙
@@ -184,8 +192,8 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 `next.config.ts`의 `headers()`가 `X-Content-Type-Options: nosniff`,
 `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`를 전송한다.
 인라인 `<script>`를 두지 않아 스크립트 CSP를 조일 수 있는 상태이며,
-외부 리소스 출처는 `fonts.googleapis.com` / `fonts.gstatic.com` / `cdn.jsdelivr.net` 세 곳뿐이다.
-Pretendard CDN 링크에는 SRI(`integrity`)가 걸려 있다.
+글꼴을 포함한 모든 리소스를 같은 출처에서 서빙한다(외부 리소스 0곳). Pretendard는 `pretendard` 패키지의 dynamic-subset CSS를 번들하고,
+JetBrains Mono·Space Grotesk는 `public/fonts`의 latin woff2를 `@font-face`로 쓴다.
 
 ---
 

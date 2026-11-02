@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/cn";
+import Tour from "@/components/Tour";
 import {
   COPY_FADE_END,
   COPY_LIFT,
-  CUE_FADE_END,
   LEFT_SCRIM,
   SCENE_BACKDROP,
 } from "./Hero.constants";
@@ -21,6 +21,23 @@ export default function Hero() {
   const t = useTranslations("Hero");
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  // three.js is the heaviest thing on the page. Don't even fetch it until the
+  // page has loaded and the main thread is idle, so the copy, fonts and
+  // hydration get the network and CPU first; the backdrop colour stands in.
+  const [sceneReady, setSceneReady] = useState(false);
+  useEffect(() => {
+    let idle: number | undefined;
+    const go = () => {
+      idle = window.requestIdleCallback?.(() => setSceneReady(true), { timeout: 2000 });
+      if (idle === undefined) setSceneReady(true);
+    };
+    if (document.readyState === "complete") go();
+    else window.addEventListener("load", go, { once: true });
+    return () => {
+      window.removeEventListener("load", go);
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+    };
+  }, []);
 
   // Scroll-linked parallax: the copy lifts and fades as the hero scrolls away.
   const { scrollYProgress } = useScroll({
@@ -29,7 +46,6 @@ export default function Hero() {
   });
   const contentY = useTransform(scrollYProgress, [0, 1], COPY_LIFT);
   const contentOpacity = useTransform(scrollYProgress, [0, COPY_FADE_END], [1, 0]);
-  const cueOpacity = useTransform(scrollYProgress, [0, CUE_FADE_END], [1, 0]);
 
   return (
     <section ref={ref} className="relative min-h-[100svh] w-full overflow-hidden bg-bg">
@@ -40,7 +56,7 @@ export default function Hero() {
           no visible swap when the canvas paints (a poster image would flash a
           different frame first). Reduced motion gets a single frozen frame. */}
       <div className={cn("pointer-events-none absolute inset-0", SCENE_BACKDROP)}>
-        <HeroScene className="block h-full w-full" still={!!reduce} />
+        {sceneReady && <HeroScene className="block h-full w-full" still={!!reduce} />}
       </div>
 
       {/* Left scrim for legibility — eased off so the backdrop's studio light
@@ -55,12 +71,7 @@ export default function Hero() {
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div className="max-w-2xl">
-          <p className="rise-in flex items-center gap-3 text-xs font-medium uppercase tracking-[0.16em] text-fg-dim md:text-sm">
-            <span className="inline-block h-px w-8 bg-accent" aria-hidden />
-            {t("eyebrow")}
-          </p>
-
-          <h1 className="mt-6 text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
+          <h1 id="hero-title" className="text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
             <span className="rise-in rise-d1 block">{t("titleLine1")}</span>
             <span className="rise-in rise-d2 block">{t("titleLine2")}</span>
           </h1>
@@ -68,17 +79,11 @@ export default function Hero() {
           <p className="rise-in rise-d3 mt-7 max-w-md text-base leading-relaxed text-fg-dim md:text-lg">
             {t("sub")}
           </p>
+
+          <Tour />
         </div>
       </motion.div>
 
-      {/* Scroll cue (desktop) — fades on first scroll. */}
-      <motion.div
-        className="absolute bottom-8 right-10 z-10 hidden items-center gap-3 md:flex"
-        style={reduce ? undefined : { opacity: cueOpacity }}
-      >
-        <span className="text-xs uppercase tracking-[0.2em] text-fg-faint">{t("scroll")}</span>
-        <span className="scroll-bob inline-block h-8 w-px bg-fg-faint" aria-hidden />
-      </motion.div>
     </section>
   );
 }

@@ -24,7 +24,7 @@ export default function IntroBody({
         maxWidth: 1080,
         width: "100%",
         margin: "0 auto",
-        padding: isMobile ? 0 : "0 48px",
+        padding: isMobile ? "0 24px" : "0 48px",
         boxSizing: "border-box",
       }}
     >
@@ -56,7 +56,7 @@ export default function IntroBody({
       <p
         ref={defRef}
         style={{
-          margin: "0 0 52px",
+          margin: isMobile ? "0 0 36px" : "0 0 52px",
           fontFamily: MONO,
           fontSize: isMobile ? 13 : 14.5,
           color: "#8A8A93",
