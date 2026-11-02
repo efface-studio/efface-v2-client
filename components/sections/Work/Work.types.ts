@@ -126,6 +126,8 @@ export interface WorkFeaturedRowProps {
   count: number;
   /** Phone layout: one project per row, two shots in view. */
   compact: boolean;
+  /** Whether this row shows its client strip (false when the next row shares it). */
+  showClients?: boolean;
 }
 
 /** DOM handles for one project (lane) inside a pinned row. */

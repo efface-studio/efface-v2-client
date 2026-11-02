@@ -98,7 +98,7 @@ export default function TourCaption({
       // Phones get a slim bar: less padding, smaller type and buttons, no eq.
       className="tour-glass fixed inset-x-3 bottom-3 z-[201] mx-auto flex max-w-3xl items-center gap-2.5 rounded-[22px] py-2 pl-3.5 pr-2 md:inset-x-4 md:bottom-9 md:gap-5 md:rounded-[28px] md:py-4 md:pl-6"
     >
-      <span ref={eqRef} aria-hidden className="tour-eq hidden shrink-0 md:inline-flex">
+      <span ref={eqRef} aria-hidden className="tour-eq shrink-0">
         <span />
         <span />
         <span />

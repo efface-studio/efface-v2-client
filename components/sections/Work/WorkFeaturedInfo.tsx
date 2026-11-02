@@ -18,18 +18,19 @@ export default function WorkFeaturedInfo({ project, links, more }: WorkFeaturedI
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{project.name}</h3>
-          {/* Platforms (in English, with their marks), a rule, then the year. */}
-          <p className="mt-1.5 flex flex-wrap items-center text-sm text-fg-faint">
+          {/* The year, a rule, then the platforms (in English, with marks) —
+              year first, so a wrapped platform list never strands it. */}
+          <p className="mt-1.5 flex flex-wrap items-center gap-y-1 text-sm text-fg-faint">
+            {project.year && (
+              <>
+                <span className="font-mono">{project.year}</span>
+                <span aria-hidden className="mx-3 h-3.5 w-px bg-white/20" />
+              </>
+            )}
             {WORK_PLATFORMS[project.key] ? (
               <WorkPlatforms platforms={WORK_PLATFORMS[project.key]} />
             ) : (
               project.field
-            )}
-            {project.year && (
-              <>
-                <span aria-hidden className="mx-3 h-3.5 w-px bg-white/20" />
-                <span className="font-mono">{project.year}</span>
-              </>
             )}
           </p>
         </div>

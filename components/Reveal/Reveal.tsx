@@ -21,11 +21,18 @@ export default function Reveal({ children, delay = 0, y = 20, className }: Revea
   const reduce = useReducedMotion();
   const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
+  // Furthest the wipe has got. It only moves forward: once content is shown it
+  // stays shown, so scrolling back up never rubs it out and in again.
+  const shown = useRef(0);
 
   const frame = useCallback(() => {
     const el = ref.current;
     if (!el) return;
-    const p = elementProgress(el, 0.96, 0.38);
+    // Done by the time the content is a little above mid-screen, so text being
+    // read is never still half-wiped.
+    const p = Math.max(shown.current, elementProgress(el, 0.96, 0.62));
+    if (p === shown.current && p > 0) return;
+    shown.current = p;
     el.style.setProperty("--erase", `${(-ERASE_SOFT + p * (100 + ERASE_SOFT * 2)).toFixed(1)}%`);
   }, []);
   useScrollMotion(ref, frame, isMobile && !reduce);

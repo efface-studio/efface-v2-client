@@ -25,7 +25,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * `compact` is the phone version: one project per row with two shots in view,
  * and the client strip moved below the pin so the row fits a phone screen.
  */
-export default function WorkFeaturedRow({ items, index, count, compact }: WorkFeaturedRowProps) {
+export default function WorkFeaturedRow({ items, index, count, compact, showClients = true }: WorkFeaturedRowProps) {
   const t = useTranslations("Work.featured");
   const units = useMemo(() => items.map((it) => laneUnits(it.feature)), [items]);
   const visible = compact ? FEATURED_VISIBLE_COMPACT : FEATURED_VISIBLE;
@@ -34,6 +34,7 @@ export default function WorkFeaturedRow({ items, index, count, compact }: WorkFe
   const clients = clientKeys.map((key) => <WorkClients key={key} clients={WORK_CLIENTS[key] ?? []} />);
 
   return (
+    <>
     <div ref={rootRef} data-tour={clientKeys.length && !compact ? "clients-row" : undefined} className="relative">
       {/* Content-height row, held near the middle of the screen; the spacer
           below is the scroll it stays pinned for. `--extra` is the height a
@@ -81,11 +82,13 @@ export default function WorkFeaturedRow({ items, index, count, compact }: WorkFe
         aria-hidden
         style={{ height: `${Math.round(FEATURED_PACE_VH * (Math.max(...units) + FEATURED_HOLD))}vh` }}
       />
-      {/* On a phone the strip would push the pinned row off screen, so it
-          follows the row once the pin releases instead. */}
-      {compact && clientKeys.length > 0 && (
-        <div data-tour="clients-row" className="-mt-8 overflow-hidden">{clients}</div>
-      )}
     </div>
+    {/* On a phone the strip would push the pinned row off screen, so it
+        follows the row once the pin releases instead. It sits outside the
+        row's box: inside, the sticky row would stay pinned over it. */}
+    {compact && showClients && clientKeys.length > 0 && (
+      <div data-tour="clients-row" className="mt-10 overflow-hidden">{clients}</div>
+    )}
+    </>
   );
 }
