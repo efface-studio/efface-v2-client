@@ -186,8 +186,8 @@ Tailwind 유틸로 표현이 불가능한 것만 `globals.css`에 둔다:
 `next.config.ts`의 `headers()`가 `X-Content-Type-Options: nosniff`,
 `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`를 전송한다.
 인라인 `<script>`를 두지 않아 스크립트 CSP를 조일 수 있는 상태이며,
-외부 리소스 출처는 `fonts.googleapis.com` / `fonts.gstatic.com` / `cdn.jsdelivr.net` 세 곳뿐이다.
-Pretendard CDN 링크에는 SRI(`integrity`)가 걸려 있다.
+글꼴을 포함한 모든 리소스를 같은 출처에서 서빙한다(외부 리소스 0곳). Pretendard는 `pretendard` 패키지의 dynamic-subset CSS를 번들하고,
+JetBrains Mono·Space Grotesk는 `public/fonts`의 latin woff2를 `@font-face`로 쓴다.
 
 ---
 
