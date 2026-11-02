@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Pretendard Variable, dynamic subset — bundled and served from our own origin
+   (no third-party CSS on the critical path); each unicode-range file is only
+   fetched when the page uses it. */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 /* ─────────────────────────────────────────────────────────────
    efface — v2 design tokens (dark)
@@ -87,14 +91,22 @@ body {
   color: #fff;
 }
 
-/* JetBrains Mono — one variable file, only for small mono labels. */
+/* JetBrains Mono — one variable latin file, only for small mono labels. */
 @font-face {
   font-family: "JetBrains Mono";
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTOlOV.woff2")
-    format("woff2");
+  src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
+}
+
+/* Space Grotesk — the footer and policy wordmarks (also drawn into a canvas). */
+@font-face {
+  font-family: "Space Grotesk";
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/space-grotesk-latin.woff2") format("woff2");
 }
 
 .font-mono {

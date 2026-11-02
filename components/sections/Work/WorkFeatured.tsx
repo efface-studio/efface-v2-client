@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 import { STAGGER } from "@/lib/motion";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
 import WorkPageFrame from "./WorkPageFrame";
+import { shotSrcSet } from "./Work.constants";
 import type { WorkFeaturedProps } from "./Work.types";
 
 /** Screenshot column per shot count, sized so one shot is the same width
@@ -58,6 +59,8 @@ export default function WorkFeatured({ feature, project }: WorkFeaturedProps) {
                 <Reveal delay={Math.min(i, 2) * STAGGER.tight}>
                   <img
                     src={src}
+                    srcSet={shotSrcSet(src)}
+                    sizes="(max-width: 767px) 33vw, 17vw"
                     alt={t("shotAlt", { name: project.name, n: i + 1 })}
                     width={720}
                     height={1565}

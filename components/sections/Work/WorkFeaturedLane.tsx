@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
 import WorkPageFrame from "./WorkPageFrame";
-import { FEATURED_SLIDE } from "./Work.constants";
+import { FEATURED_SLIDE, shotSrcSet } from "./Work.constants";
 import type { WorkFeaturedLaneProps } from "./Work.types";
 
 /** Shot width per count in view, net of the `gap-4` between them. */
@@ -57,6 +57,9 @@ export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFea
                   >
                     <img
                       src={src}
+                      srcSet={shotSrcSet(src)}
+                      // A third of a lane: about a sixth of the viewport on desktop.
+                      sizes="(max-width: 767px) 33vw, 17vw"
                       alt={t("shotAlt", { name: project.name, n: k + 1 })}
                       width={720}
                       height={1565}

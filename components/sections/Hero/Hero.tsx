@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
@@ -22,6 +22,23 @@ export default function Hero() {
   const t = useTranslations("Hero");
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  // three.js is the heaviest thing on the page. Don't even fetch it until the
+  // page has loaded and the main thread is idle, so the copy, fonts and
+  // hydration get the network and CPU first; the backdrop colour stands in.
+  const [sceneReady, setSceneReady] = useState(false);
+  useEffect(() => {
+    let idle: number | undefined;
+    const go = () => {
+      idle = window.requestIdleCallback?.(() => setSceneReady(true), { timeout: 2000 });
+      if (idle === undefined) setSceneReady(true);
+    };
+    if (document.readyState === "complete") go();
+    else window.addEventListener("load", go, { once: true });
+    return () => {
+      window.removeEventListener("load", go);
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+    };
+  }, []);
 
   // Scroll-linked parallax: the copy lifts and fades as the hero scrolls away.
   const { scrollYProgress } = useScroll({
@@ -41,7 +58,7 @@ export default function Hero() {
           no visible swap when the canvas paints (a poster image would flash a
           different frame first). Reduced motion gets a single frozen frame. */}
       <div className={cn("pointer-events-none absolute inset-0", SCENE_BACKDROP)}>
-        <HeroScene className="block h-full w-full" still={!!reduce} />
+        {sceneReady && <HeroScene className="block h-full w-full" still={!!reduce} />}
       </div>
 
       {/* Left scrim for legibility — eased off so the backdrop's studio light

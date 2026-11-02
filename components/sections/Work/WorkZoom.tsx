@@ -30,7 +30,8 @@ export default function WorkZoom() {
     const open = (target: EventTarget | null) => {
       if (!(target instanceof HTMLImageElement) || !("zoom" in target.dataset)) return false;
       setZoomed({
-        src: target.currentSrc || target.src,
+        // `src` is the full-size file; `currentSrc` may be a small srcset pick.
+        src: target.src || target.currentSrc,
         alt: target.alt,
         tile: "zoomTile" in target.dataset,
         bg: target.dataset.zoomBg,

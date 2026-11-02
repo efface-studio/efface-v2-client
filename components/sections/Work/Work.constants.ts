@@ -128,6 +128,10 @@ export const WORK_STACKS: Record<string, WorkStackGroup[]> = {
   ],
 };
 
+/** `srcset` for a store screenshot: every `shot-N.webp` (720px) has a
+ *  `shot-N-360.webp` beside it for small screens. */
+export const shotSrcSet = (src: string) => `${src.replace(/\.webp$/, "-360.webp")} 360w, ${src} 720w`;
+
 /** Projects shown large above the grid, in this order. Add one when its store
  *  art is ready. */
 export const WORK_FEATURED: WorkFeature[] = [
