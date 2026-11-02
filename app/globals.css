@@ -480,3 +480,126 @@ body {
     transform: none;
   }
 }
+
+/* Auto tour cursor — a ring pulses out each time it presses. */
+.tour-cursor__ring {
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-accent);
+  opacity: 0;
+  transform: scale(0.4);
+}
+.tour-cursor.is-down .tour-cursor__ring {
+  animation: tour-ring 0.5s ease-out;
+}
+@keyframes tour-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+/* Liquid glass — the tour's caption bar and buttons. A frosted, saturated
+   backdrop; a specular sheen from the top-left; and a rim that catches light
+   on two opposite corners, as a curved glass edge would. */
+.tour-glass,
+.tour-glass-button {
+  isolation: isolate;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035));
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -12px 28px rgba(255, 255, 255, 0.035),
+    0 22px 60px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.tour-glass-button {
+  position: relative;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.tour-glass-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.tour-glass::before,
+.tour-glass-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 18% -30%, rgba(255, 255, 255, 0.2), transparent 55%);
+}
+.tour-glass::after,
+.tour-glass-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.04) 65%,
+    rgba(255, 255, 255, 0.35)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Speaking indicator — four bars that bounce while a line plays. */
+.tour-eq {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+.tour-eq span {
+  width: 3px;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-accent-bright);
+  transform-origin: center;
+  animation: tour-eq 0.9s ease-in-out infinite;
+}
+.tour-eq span:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.tour-eq span:nth-child(3) {
+  animation-delay: -0.6s;
+}
+.tour-eq span:nth-child(4) {
+  animation-delay: -0.15s;
+}
+.tour-eq.is-idle span {
+  animation: none;
+  transform: scaleY(0.25);
+  opacity: 0.5;
+}
+@keyframes tour-eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-eq span {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+}
