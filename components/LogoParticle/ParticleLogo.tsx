@@ -5,6 +5,9 @@ import { useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 import type { ParticleLogoProps } from "./LogoParticle.types";
 
+/** Target x, y, accent colour, on the outline. */
+type Target = [number, number, boolean, boolean];
+
 interface Particle {
   x: number;
   y: number;
@@ -42,8 +45,11 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
     let accent = "#3b62e5";
     let img: HTMLImageElement | null = null;
 
-    // Draw the logo offscreen and sample its pixels into particle targets.
-    const sample = (): [number, number, boolean][] => {
+    // Draw the logo offscreen and sample it into particle targets: one row of
+    // evenly spaced dots traced along every edge (outline and colour seam) so
+    // the silhouette reads clean, then a lightly jittered grid filling the
+    // inside, kept clear of that outline.
+    const sample = (): Target[] => {
       if (!img) return [];
       const off = document.createElement("canvas");
       off.width = w;
@@ -56,13 +62,54 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
       const dh = img.height * s;
       c.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
       const data = c.getImageData(0, 0, w, h).data;
-      const pts: [number, number, boolean][] = [];
+
+      // 0 empty, 1 neutral, 2 accent (saturated) — per pixel.
+      const cls = new Uint8Array(w * h);
+      for (let i = 0; i < w * h; i++) {
+        const k = i * 4;
+        if (data[k + 3] <= 128) continue;
+        const sat = Math.max(data[k], data[k + 1], data[k + 2]) - Math.min(data[k], data[k + 1], data[k + 2]);
+        cls[i] = sat > 40 ? 2 : 1;
+      }
+      const at = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? 0 : cls[y * w + x]);
+
+      // Spatial hash of placed edge dots, for spacing and interior clearance.
+      const cell = gap;
+      const cols = Math.ceil(w / cell) + 1;
+      const buckets = new Map<number, [number, number][]>();
+      const nearEdge = (x: number, y: number, min: number) => {
+        const cx = Math.floor(x / cell);
+        const cy = Math.floor(y / cell);
+        for (let j = cy - 1; j <= cy + 1; j++)
+          for (let i = cx - 1; i <= cx + 1; i++)
+            for (const [ex, ey] of buckets.get(j * cols + i) ?? [])
+              if ((ex - x) ** 2 + (ey - y) ** 2 < min * min) return true;
+        return false;
+      };
+
+      const pts: Target[] = [];
+      const spacing = gap * 0.9;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const own = cls[y * w + x];
+          if (!own) continue;
+          const edge = at(x - 1, y) !== own || at(x + 1, y) !== own || at(x, y - 1) !== own || at(x, y + 1) !== own;
+          if (!edge || nearEdge(x, y, spacing)) continue;
+          const key = Math.floor(y / cell) * cols + Math.floor(x / cell);
+          const bucket = buckets.get(key);
+          if (bucket) bucket.push([x, y]);
+          else buckets.set(key, [[x, y]]);
+          pts.push([x, y, own === 2, true]);
+        }
+      }
       for (let y = 0; y < h; y += gap) {
         for (let x = 0; x < w; x += gap) {
-          const i = (y * w + x) * 4;
-          if (data[i + 3] <= 128) continue;
-          const sat = Math.max(data[i], data[i + 1], data[i + 2]) - Math.min(data[i], data[i + 1], data[i + 2]);
-          pts.push([x + (Math.random() - 0.5) * 1.2, y + (Math.random() - 0.5) * 1.2, sat > 40]);
+          const own = cls[y * w + x];
+          if (!own) continue;
+          const jx = x + (Math.random() - 0.5) * 1.2;
+          const jy = y + (Math.random() - 0.5) * 1.2;
+          if (nearEdge(jx, jy, gap * 0.6)) continue;
+          pts.push([jx, jy, own === 2, false]);
         }
       }
       return pts;
@@ -70,7 +117,7 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
 
     const build = () => {
       const prev = parts;
-      parts = sample().map(([tx, ty, accentPx], i) => {
+      parts = sample().map(([tx, ty, accentPx, edge], i) => {
         const old = prev[i];
         return {
           x: old ? old.x : Math.random() * w,
@@ -79,7 +126,8 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
           ty,
           vx: old ? old.vx : 0,
           vy: old ? old.vy : 0,
-          r: gap * 0.34 + Math.random() * gap * 0.16,
+          // Outline dots share one size so the silhouette stays even.
+          r: edge ? gap * 0.42 : gap * 0.34 + Math.random() * gap * 0.16,
           accent: accentPx,
         };
       });
