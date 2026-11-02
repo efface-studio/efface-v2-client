@@ -125,7 +125,8 @@ export default function CapabilitiesDesktop({
             <h2
               style={{
                 margin: 0,
-                fontSize: "clamp(44px, 5.6vw, 76px)",
+                // In step with the other section titles (md:text-5xl ≈ 48px).
+                fontSize: "clamp(34px, 3.6vw, 52px)",
                 fontWeight: 700,
                 letterSpacing: "-0.025em",
                 lineHeight: 1.04,
@@ -149,7 +150,7 @@ export default function CapabilitiesDesktop({
             ref={subRef}
             style={{
               margin: "0 0 96px",
-              fontSize: 22,
+              fontSize: 18,
               color: "#9A9AA3",
               opacity: 0,
               transform: "translateY(14px)",

@@ -37,7 +37,9 @@ export default function MagnifierLens({
           border: "1px solid rgba(255,255,255,0.25)",
           boxShadow:
             "0 20px 50px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -12px 26px rgba(255,255,255,0.05)",
-          willChange: "transform, opacity",
+          // Not `transform`: a promoted layer keeps the raster it got at the
+          // swell's small start scale, which blurred the magnified text.
+          willChange: "opacity",
         }}
       >
         <div
