@@ -51,12 +51,15 @@ export default function TourCaption({
   onVolume,
 }: TourCaptionProps) {
   const textRef = useRef<HTMLSpanElement>(null);
+  const boxRef = useRef<HTMLParagraphElement>(null);
   const eqRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const chars = Array.from(textRef.current?.children ?? []) as HTMLElement[];
     const painted = chars.map(() => "");
+    let lineTop = -1;
+    boxRef.current?.scrollTo({ top: 0 });
     let raf = 0;
     const frame = () => {
       raf = requestAnimationFrame(frame);
@@ -68,6 +71,17 @@ export default function TourCaption({
           el.style.color = color;
         }
       });
+      // Where the caption box is clamped (phones), keep the line being said
+      // at the top, so lines already said scroll out of view.
+      const box = boxRef.current;
+      const cur = chars[Math.min(chars.length - 1, Math.floor(p))];
+      if (box && cur && box.scrollHeight > box.clientHeight + 1) {
+        const top = cur.offsetTop;
+        if (top !== lineTop) {
+          lineTop = top;
+          box.scrollTo({ top, behavior: "smooth" });
+        }
+      }
       const done = p >= line.length;
       eqRef.current?.classList.toggle("is-idle", done || paused);
       if (barRef.current) {
@@ -81,16 +95,21 @@ export default function TourCaption({
   return (
     <div
       data-tour-controls
-      className="tour-glass fixed inset-x-4 bottom-5 z-[201] mx-auto flex max-w-3xl items-center gap-4 rounded-[28px] py-3.5 pl-5 pr-3 md:bottom-9 md:gap-5 md:py-4 md:pl-6"
+      // Phones get a slim bar: less padding, smaller type and buttons, no eq.
+      className="tour-glass fixed inset-x-3 bottom-3 z-[201] mx-auto flex max-w-3xl items-center gap-2.5 rounded-[22px] py-2 pl-3.5 pr-2 md:inset-x-4 md:bottom-9 md:gap-5 md:rounded-[28px] md:py-4 md:pl-6"
     >
-      <span ref={eqRef} aria-hidden className="tour-eq shrink-0">
+      <span ref={eqRef} aria-hidden className="tour-eq hidden shrink-0 md:inline-flex">
         <span />
         <span />
         <span />
         <span />
       </span>
 
-      <p aria-live="polite" className="min-w-0 flex-1 break-keep text-[15px] font-medium leading-relaxed tracking-[-0.01em] md:text-[17px]">
+      <p
+        ref={boxRef}
+        aria-live="polite"
+        className="relative max-h-[2lh] min-w-0 flex-1 overflow-hidden break-keep text-[13px] font-medium leading-snug tracking-[-0.01em] md:max-h-none md:overflow-visible md:text-[17px] md:leading-relaxed"
+      >
         <span className="sr-only">{line}</span>
         <span ref={textRef} aria-hidden key={line} className="tour-caption">
           {Array.from(line).map((ch, i) => (
@@ -105,7 +124,7 @@ export default function TourCaption({
           type="button"
           onClick={onToggle}
           aria-label={paused ? labels.resume : labels.pause}
-          className="tour-glass-button flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-fg/85 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="tour-glass-button flex h-9 w-9 cursor-pointer md:h-10 md:w-10 items-center justify-center rounded-full text-fg/85 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           {paused ? <Play className="h-3.5 w-3.5 fill-current" aria-hidden /> : <Pause className="h-3.5 w-3.5 fill-current" aria-hidden />}
         </button>
@@ -114,7 +133,7 @@ export default function TourCaption({
           onClick={onClose}
           aria-label={labels.close}
           className={cn(
-            "tour-glass-button flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-fg/60 hover:text-fg",
+            "tour-glass-button flex h-9 w-9 cursor-pointer md:h-10 md:w-10 items-center justify-center rounded-full text-fg/60 hover:text-fg",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           )}
         >

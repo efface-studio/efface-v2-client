@@ -82,7 +82,7 @@ export default function TourMixer({ speed, volume, labels, onSpeed, onVolume }: 
           run();
         }}
         className={cn(
-          "tour-glass-button relative flex h-12 w-12 cursor-move touch-none select-none items-center justify-center overflow-hidden rounded-2xl",
+          "tour-glass-button relative flex h-10 w-10 cursor-move md:h-12 md:w-12 touch-none select-none items-center justify-center overflow-hidden rounded-2xl",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         )}
       >
