@@ -603,3 +603,19 @@ body {
     transform: scaleY(0.6);
   }
 }
+
+/* Tour caption — unsaid characters start dim; the fill is painted per frame. */
+.tour-caption > span {
+  color: rgba(246, 246, 247, 0.3);
+}
+
+/* Tour spotlight — the frame's shadow dims everything around it. */
+.tour-focus {
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(97, 131, 255, 0.55),
+    0 0 32px rgba(59, 98, 229, 0.35),
+    0 0 0 200vmax rgba(6, 6, 9, 0.55);
+  opacity: 0;
+  will-change: transform, width, height, opacity;
+}

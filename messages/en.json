@@ -21,7 +21,9 @@
   },
   "Tour": {
     "start": "Auto tour",
-    "stop": "Stop",
+    "pause": "Pause",
+    "resume": "Resume",
+    "close": "End tour",
     "steps": {
       "hero": "Hi, this is efface — an AI, web and app team that erases the complexity and keeps only what works. Let me show you around.",
       "efface": "Efface means to erase. Instead of adding, we strip away clutter and friction until only the essence is left, sharp and clear.",
