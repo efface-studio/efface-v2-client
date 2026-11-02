@@ -41,6 +41,12 @@ export function createWordmarkPainter(
   let work: HTMLCanvasElement;
   let dimSrc: HTMLCanvasElement;
   let brightSrc: HTMLCanvasElement;
+  // Where the glow is, and the drift's phase — re-set when the cursor leaves
+  // so the drift picks up from the glow instead of its own fixed path.
+  let glow = { x: Number.NaN, y: Number.NaN };
+  let phaseX = 0;
+  let phaseY = 0;
+  let wasNear = false;
 
   const setup = () => {
     const w = canvas.clientWidth;
@@ -117,18 +123,34 @@ export function createWordmarkPainter(
 
       // Drift on its own; hand over to the cursor while it is recent and near.
       const time = now / 1000;
-      let px = cw * (0.5 + 0.44 * Math.sin(time * 0.32));
-      let py = ch * (0.5 + 0.14 * Math.sin(time * 1.05));
-      if (
+      const near =
         now - pointer.t < 1400 &&
         pointer.x >= r.left &&
         pointer.x <= r.right &&
         pointer.y >= r.top - 50 &&
-        pointer.y <= r.bottom + 50
-      ) {
-        px = pointer.x - r.left;
-        py = clamp(pointer.y - r.top, -10, ch + 10);
+        pointer.y <= r.bottom + 50;
+      let tx: number;
+      let ty: number;
+      if (near) {
+        tx = pointer.x - r.left;
+        ty = clamp(pointer.y - r.top, -10, ch + 10);
+      } else {
+        if (wasNear) {
+          // The cursor just left: re-phase the drift so it carries on from
+          // where the glow is, instead of jumping back to its own path.
+          phaseX = Math.asin(clamp((glow.x / cw - 0.5) / 0.44, -1, 1)) - time * 0.32;
+          phaseY = Math.asin(clamp((glow.y / ch - 0.5) / 0.14, -1, 1)) - time * 1.05;
+        }
+        tx = cw * (0.5 + 0.44 * Math.sin(time * 0.32 + phaseX));
+        ty = ch * (0.5 + 0.14 * Math.sin(time * 1.05 + phaseY));
       }
+      wasNear = near;
+      // Ease toward the target, so neither handover snaps.
+      if (Number.isNaN(glow.x)) glow = { x: tx, y: ty };
+      const ease = near ? 0.35 : 0.08;
+      glow = { x: glow.x + (tx - glow.x) * ease, y: glow.y + (ty - glow.y) * ease };
+      const px = glow.x;
+      const py = glow.y;
       const R = ch * 0.62;
       const gr = tctx.createRadialGradient(px, py, 0, px, py, R);
       gr.addColorStop(0, "rgba(255,255,255,0.5)");

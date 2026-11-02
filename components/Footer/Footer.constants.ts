@@ -3,7 +3,7 @@ export const DISPLAY = "'Space Grotesk', 'Pretendard Variable', sans-serif";
 
 /** Seconds the entrance sequence takes forward, and rewinding on the way out. */
 export const SEQ_IN = 1.6;
-export const SEQ_OUT = 0.45;
+export const SEQ_OUT = 0.3;
 
 /** Viewport band the footer must occupy for the sequence to run forward. */
 export const VISIBLE_TOP = 0.72;

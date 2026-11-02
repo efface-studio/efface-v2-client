@@ -5,11 +5,15 @@ export interface FooterRow {
   k: string;
   v: string;
   href?: string;
+  /** Small mark after the value: the efface logo, a LinkedIn badge, a flag. */
+  mark?: "logo" | "linkedin" | "kr";
 }
 
 export interface FooterGroup {
   label: string;
   rows: FooterRow[];
+  /** Links only, one per line like POLICY — `k` is just the row's key. */
+  plain?: boolean;
 }
 
 export interface FooterPolicy {
