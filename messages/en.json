@@ -405,10 +405,6 @@
   "About": {
     "label": "about",
     "title": "Small team, deep work.",
-    "mark": {
-      "idle": "Try it yourself",
-      "active": "Push it · tap it"
-    },
     "paragraphs": [
       "efface is an engineering team building AI, web, and app products. Planning, design, development, deployment, operations — we handle it end to end, ourselves.",
       "We chose depth over headcount. New tech doesn't stop at a demo here; it goes into real products and gets proven there. The backdrop on this page isn't a video — it's a 3D scene rendering live in your browser.",

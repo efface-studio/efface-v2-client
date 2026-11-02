@@ -24,7 +24,7 @@ export default function About() {
               <h2 className="mt-5 text-3xl font-semibold leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">
                 {t("title")}
               </h2>
-              <LogoParticle className="mt-10 h-64 md:h-80" />
+              <LogoParticle className="mt-6 h-56 md:h-72" />
             </Reveal>
           </div>
 
