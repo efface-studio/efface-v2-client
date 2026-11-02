@@ -86,7 +86,8 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className="dark">
+    // The head script below sets `--svh` on <html> before React hydrates.
+    <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#0a0a0b" />
         {/* A viewport height that holds still: phone browsers (in-app ones
