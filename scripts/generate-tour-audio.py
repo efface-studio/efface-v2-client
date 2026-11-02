@@ -21,8 +21,8 @@ TICKS_PER_MS = 10_000  # edge-tts offsets are in 100ns units
 # How the voice should say words it would otherwise mispronounce. The captions
 # keep the written form; only the synthesized text changes.
 SAY_AS = {
-    "ko": {"efface": "이페이스", "HiNest": "하이네스트"},
-    "en": {"efface": "E-face", "Efface": "E-face", "HiNest": "Hi Nest"},
+    "ko": {"efface": "이페이스", "HiNest": "하이네스트", "GOMS": "곰스", "2Pick": "투픽"},
+    "en": {"efface": "E-face", "Efface": "E-face", "HiNest": "Hi Nest", "GOMS": "Goms", "2Pick": "Two Pick"},
 }
 
 

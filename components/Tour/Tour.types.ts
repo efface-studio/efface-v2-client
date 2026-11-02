@@ -5,6 +5,9 @@ export interface TourScroll {
   /** `start` lands the element's top under the nav; `through` scrolls from its
    *  top to its bottom while the line plays, so a pinned scene runs like video. */
   mode: "start" | "through";
+  /** `through` only: share of the line the scroll takes (default 1), leaving
+   *  the rest for the pointer. */
+  share?: number;
 }
 
 /** What the pretend cursor does in a step. */
@@ -13,6 +16,14 @@ export interface TourPointer {
   target?: string;
   /** Press it once it arrives. */
   click?: boolean;
+  /** Aim at the true centre and sweep left↔right across it before pressing,
+   *  so pointer-driven effects (the particle logo) visibly react. */
+  sweep?: boolean;
+  /** With `sweep`: keep sweeping until the line has been said. */
+  linger?: boolean;
+  /** Read every visible match in turn: land on its left edge, then slide to
+   *  its right edge (e.g. the capability titles under the magnifier). */
+  each?: boolean;
 }
 
 export interface TourStep {
@@ -23,8 +34,16 @@ export interface TourStep {
   focus?: string;
   scroll?: TourScroll;
   pointer?: TourPointer;
+  /** Marks the focused element `data-tour-expanded` once scrolled to, for the
+   *  rest of the step — e.g. the client marquee lays every logo out, enlarged. */
+  expand?: boolean;
+  /** Page (locale-less path) the pointer's press opens in a preview popup,
+   *  instead of following the link — leaving would end the tour. */
+  open?: string;
+  /** Scrolls the open preview to its end while the line plays. */
+  scrollPreview?: boolean;
   /** Runs after the line has played — e.g. closes the popup a click opened. */
-  after?: "closeDialog";
+  after?: "closeDialog" | "closePreview";
 }
 
 export type TourStatus = "idle" | "playing" | "paused";
@@ -52,7 +71,21 @@ export interface TourCaptionProps {
   index: number;
   total: number;
   paused: boolean;
-  labels: { pause: string; resume: string; close: string };
+  speed: number;
+  volume: number;
+  labels: { pause: string; resume: string; close: string } & TourMixerProps["labels"];
   onToggle: () => void;
   onClose: () => void;
+  onSpeed: (rate: number) => void;
+  onVolume: (volume: number) => void;
+}
+
+export interface TourMixerProps {
+  speed: number;
+  volume: number;
+  /** `mixer` names the control (and says how to use it); `muted` replaces
+   *  the speed readout while muted. */
+  labels: { speed: string; volume: string; mixer: string; muted: string };
+  onSpeed: (rate: number) => void;
+  onVolume: (volume: number) => void;
 }

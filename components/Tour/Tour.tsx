@@ -17,7 +17,8 @@ export default function Tour() {
   const locale = useLocale();
   const lines = t.raw("steps") as Record<string, string>;
   const tour = useTour(lines, locale);
-  const { status, index, total, step, start, pause, resume, close, getProgress, cursorRef, focusRef, host } = tour;
+  const { status, index, total, step, start, pause, resume, close, getProgress, speed, setSpeed, volume, setVolume, cursorRef, focusRef, host } =
+    tour;
   const label = status === "playing" ? t("pause") : status === "paused" ? t("resume") : t("start");
 
   return (
@@ -62,9 +63,21 @@ export default function Tour() {
               index={index}
               total={total}
               paused={status === "paused"}
-              labels={{ pause: t("pause"), resume: t("resume"), close: t("close") }}
+              speed={speed}
+              volume={volume}
+              labels={{
+                pause: t("pause"),
+                resume: t("resume"),
+                close: t("close"),
+                speed: t("speed"),
+                volume: t("volume"),
+                mixer: t("mixer"),
+                muted: t("muted"),
+              }}
               onToggle={status === "paused" ? resume : pause}
               onClose={close}
+              onSpeed={setSpeed}
+              onVolume={setVolume}
             />
           </>,
           host ?? document.body

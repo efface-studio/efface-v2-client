@@ -3,9 +3,9 @@
 import { useEffect, useRef } from "react";
 import { Pause, Play, X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import TourMixer from "./TourMixer";
 import type { TourCaptionProps } from "./Tour.types";
 
-const pad = (n: number) => String(n).padStart(2, "0");
 /** How many characters the lit edge spreads over behind the voice. */
 const EDGE = 4;
 /** Caption colours as [r, g, b, a]: unsaid, being said, said. */
@@ -42,9 +42,13 @@ export default function TourCaption({
   index,
   total,
   paused,
+  speed,
+  volume,
   labels,
   onToggle,
   onClose,
+  onSpeed,
+  onVolume,
 }: TourCaptionProps) {
   const textRef = useRef<HTMLSpanElement>(null);
   const eqRef = useRef<HTMLSpanElement>(null);
@@ -95,10 +99,8 @@ export default function TourCaption({
         </span>
       </p>
 
-      <span className="hidden shrink-0 font-mono text-[11px] tracking-wider text-fg/45 sm:block">
-        {`${pad(index + 1)} / ${pad(total)}`}
-      </span>
-      <div className="flex shrink-0 gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5">
+        <TourMixer speed={speed} volume={volume} labels={labels} onSpeed={onSpeed} onVolume={onVolume} />
         <button
           type="button"
           onClick={onToggle}

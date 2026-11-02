@@ -1,11 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { routing } from "@/i18n/routing";
 import { clamp } from "@/lib/motion";
 import timingsJson from "./tourTimings.json";
 import {
+  TOUR_DIALOG_RETURN_MS,
+  TOUR_DIALOG_SCROLL_MS,
   TOUR_FOCUS_PAD,
   TOUR_GLIDE_MS,
+  TOUR_READ_MS,
+  TOUR_SPEED_MAX,
+  TOUR_SPEED_MIN,
   TOUR_STEPS,
   TOUR_STEP_GAP,
   TOUR_TOP_OFFSET,
@@ -26,6 +32,23 @@ const scrollPage = (top: number) => {
   tourScrollY = top;
   window.scrollTo({ top, behavior: "instant" });
 };
+
+const SPEED_KEY = "tour:speed";
+const VOLUME_KEY = "tour:volume";
+/** Storage can be missing or blocked (private windows); it's only a nicety. */
+function store(key: string, value: number) {
+  try {
+    localStorage.setItem(key, String(value));
+  } catch {}
+}
+function recall(key: string): number | null {
+  try {
+    const v = localStorage.getItem(key);
+    return v === null ? null : Number(v);
+  } catch {
+    return null;
+  }
+}
 
 /** Caption characters said by `ms` into a line: whole words before it, and the
  *  current word filled in proportion to how far into it the voice is. */
@@ -62,13 +85,19 @@ export function useTour(lines: Record<string, string>, locale: string) {
   const focusRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const previewRef = useRef<HTMLDialogElement | null>(null);
   const pos = useRef({ x: 0, y: 0 });
   const over = useRef<Element | null>(null);
   const reduce = useRef(false);
   const focusSel = useRef<string | undefined>(undefined);
   const focusBox = useRef({ x: 0, y: 0, w: 0, h: 0, o: 0 });
-  // Pausable clock: real time minus every paused stretch.
-  const clock = useRef({ paused: false, since: 0, lost: 0 });
+  // Pausable, speed-adjustable clock: tour time `t` as of real time `at`,
+  // running `rate` times real time while not paused. Motion and the voice
+  // (`playbackRate`) share the rate, so they stay in step at any speed.
+  const clock = useRef({ t: 0, at: 0, rate: 1, paused: false });
+  const [speed, setSpeedState] = useState(1);
+  // Narration starts at half volume; the mixer (and storage) can change it.
+  const [volume, setVolumeState] = useState(0.5);
   const pausedAt = useRef(0);
   const line = useRef<{ id: string; started: number } | null>(null);
   // Smoothed narration time. Browsers step `currentTime` coarsely (Safari
@@ -78,7 +107,43 @@ export function useTour(lines: Record<string, string>, locale: string) {
 
   const now = useCallback(() => {
     const c = clock.current;
-    return performance.now() - c.lost - (c.paused ? performance.now() - c.since : 0);
+    return c.paused ? c.t : c.t + (performance.now() - c.at) * c.rate;
+  }, []);
+
+  /** Re-anchors the clock at the current tour time (before changing it). */
+  const anchor = useCallback(() => {
+    clock.current.t = now();
+    clock.current.at = performance.now();
+  }, [now]);
+
+  const setSpeed = useCallback(
+    (rate: number) => {
+      anchor();
+      clock.current.rate = rate;
+      const audio = audioRef.current;
+      if (audio) {
+        // `defaultPlaybackRate` survives the `src` change of the next line.
+        audio.defaultPlaybackRate = rate;
+        audio.playbackRate = rate;
+      }
+      setSpeedState(rate);
+      store(SPEED_KEY, rate);
+    },
+    [anchor]
+  );
+
+  const setVolume = useCallback((v: number) => {
+    if (audioRef.current) audioRef.current.volume = v;
+    setVolumeState(v);
+    store(VOLUME_KEY, v);
+  }, []);
+
+  // Remember the visitor's speed and volume between tours.
+  useEffect(() => {
+    const r = recall(SPEED_KEY);
+    const v = recall(VOLUME_KEY);
+    if (r !== null && r >= TOUR_SPEED_MIN && r <= TOUR_SPEED_MAX) setSpeedState(r);
+    if (v !== null && v >= 0 && v <= 1) setVolumeState(v);
   }, []);
 
   /** Runs `frame(t)` for t 0 → 1 over `ms` of tour time. Rejects once closed;
@@ -101,6 +166,17 @@ export function useTour(lines: Record<string, string>, locale: string) {
     [now]
   );
   const wait = useCallback((ms: number, signal: AbortSignal) => tween(ms, signal, () => {}), [tween]);
+
+  /** Scrolls a scrolling box (an open popup) to `to` over `ms`. */
+  const scrollBox = useCallback(
+    (el: Element, to: number, ms: number, signal: AbortSignal) => {
+      const from = el.scrollTop;
+      return tween(reduce.current ? 0 : ms, signal, (t) => {
+        el.scrollTop = from + (to - from) * easeInOut(t);
+      });
+    },
+    [tween]
+  );
 
   const paintCursor = useCallback(() => {
     const el = cursorRef.current;
@@ -138,15 +214,35 @@ export function useTour(lines: Record<string, string>, locale: string) {
     [pointAt, tween]
   );
 
+  /** Glides onto `el`, re-measuring it every frame, so the cursor lands on it
+   *  even if it is still moving (a pinned row settling, a reveal finishing). */
+  const glideTo = useCallback(
+    async (
+      el: Element,
+      aim: (r: DOMRect) => { x: number; y: number },
+      signal: AbortSignal,
+      ms = TOUR_GLIDE_MS
+    ) => {
+      const from = { ...pos.current };
+      await tween(reduce.current ? 0 : ms, signal, (t) => {
+        const to = aim(el.getBoundingClientRect());
+        const e = easeInOut(t);
+        pointAt(from.x + (to.x - from.x) * e, from.y + (to.y - from.y) * e);
+      });
+    },
+    [pointAt, tween]
+  );
+
+  /** Presses at the cursor. `dispatch: false` only shows the press ring. */
   const press = useCallback(
-    async (signal: AbortSignal) => {
+    async (signal: AbortSignal, dispatch = true) => {
       const { x, y } = pos.current;
       const target = document.elementFromPoint(x, y);
       const el = cursorRef.current;
       el?.classList.remove("is-down");
       void el?.offsetWidth; // restart the ring animation
       el?.classList.add("is-down");
-      if (!target) return;
+      if (!target || !dispatch) return;
       const init = { clientX: x, clientY: y, bubbles: true, cancelable: true, pointerType: "mouse", isPrimary: true };
       target.dispatchEvent(new PointerEvent("pointerdown", init));
       target.dispatchEvent(new MouseEvent("mousedown", init));
@@ -158,6 +254,50 @@ export function useTour(lines: Record<string, string>, locale: string) {
       target.dispatchEvent(new MouseEvent("click", init));
     },
     [wait]
+  );
+
+  const closePreview = useCallback(() => {
+    previewRef.current?.close();
+    previewRef.current?.remove();
+    previewRef.current = null;
+    setHost(null);
+  }, []);
+
+  /** Opens `path` (in the tour's locale) in a modal popup over the page, and
+   *  moves the cursor and captions into it once it has loaded. */
+  const openPreview = useCallback(
+    async (path: string, signal: AbortSignal) => {
+      const dialog = document.createElement("dialog");
+      dialog.className =
+        "m-auto h-[calc(100dvh-3rem)] w-[calc(100%-3rem)] max-w-[1280px] overflow-hidden rounded-3xl bg-bg p-0 ring-1 ring-white/10 backdrop:bg-black/80 backdrop:backdrop-blur-sm";
+      const frame = document.createElement("iframe");
+      frame.className = "pointer-events-none h-full w-full border-0";
+      frame.src = `${locale === routing.defaultLocale ? "" : `/${locale}`}${path}`;
+      dialog.append(frame);
+      document.body.append(dialog);
+      previewRef.current = dialog;
+      dialog.showModal();
+      // What the spotlight framed is now under the popup — drop it.
+      focusSel.current = undefined;
+      setHost(dialog);
+      const loaded = new Promise<void>((resolve) => frame.addEventListener("load", () => resolve(), { once: true }));
+      await Promise.race([loaded, wait(5000, signal)]);
+    },
+    [locale, wait]
+  );
+
+  /** Scrolls the open preview's page from where it is to its end over `ms`. */
+  const scrollPreview = useCallback(
+    (ms: number, signal: AbortSignal) => {
+      const win = previewRef.current?.querySelector("iframe")?.contentWindow;
+      if (!win) return Promise.resolve();
+      const from = win.scrollY;
+      const to = win.document.documentElement.scrollHeight - win.innerHeight;
+      return tween(reduce.current ? 0 : ms, signal, (t) =>
+        win.scrollTo({ top: from + (to - from) * easeInOut(t), behavior: "instant" })
+      );
+    },
+    [tween]
   );
 
   /** Scrolls so the step's target sits under the nav, or through it over `ms`. */
@@ -184,7 +324,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
       const vh = window.innerHeight;
       // While scrolling through a scene the cursor drifts mid-screen, so hover
       // effects (the capability lens, row highlights) keep playing.
-      await tween(reduce.current ? 0 : through ? ms : 1100, signal, (t) => {
+      await tween(reduce.current ? 0 : through ? ms * (step.scroll.share ?? 1) : 1100, signal, (t) => {
         scrollPage(start + (to - start) * (through ? t : easeInOut(t)));
         if (through) {
           const a = t * Math.PI * 2;
@@ -254,7 +394,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
         v.ct = ct;
         v.at = t;
       }
-      const ahead = audio.paused ? 0 : Math.min(300, t - v.at);
+      const ahead = audio.paused ? 0 : Math.min(300, (t - v.at) * clock.current.rate);
       v.ms = Math.max(v.ms, ct + ahead);
     } else {
       v.ms = Math.max(v.ms, now() - cur.started);
@@ -268,59 +408,106 @@ export function useTour(lines: Record<string, string>, locale: string) {
       const timing = TIMINGS[locale]?.[step.id];
       // The line starts with the step; scene scrolls run exactly as long as it.
       const spoken = narrate(step.id, signal);
+      let said = false;
+      spoken.then(() => (said = true), () => {});
+      let expanded: Element | null = null;
       const moves = (async () => {
         await scroll(step, timing?.duration ?? 4000, signal);
+        if (step.scrollPreview) await scrollPreview(timing?.duration ?? 4000, signal);
+        if (step.expand && step.focus) {
+          expanded = document.querySelector(step.focus);
+          expanded?.setAttribute("data-tour-expanded", "");
+        }
+        if (step.pointer?.each && step.pointer.target) {
+          // Skip hidden layouts and the magnifier's cloned copy of the grid.
+          const els = [...document.querySelectorAll(step.pointer.target)].filter(
+            (el) => el.getClientRects().length > 0 && !el.closest(".cap-lens")
+          );
+          const mid = (b: DOMRect) => b.top + b.height / 2;
+          for (const el of els) {
+            await glideTo(el, (b) => ({ x: b.left + 2, y: mid(b) }), signal);
+            await glideTo(el, (b) => ({ x: b.right - 2, y: mid(b) }), signal, TOUR_READ_MS);
+          }
+          return;
+        }
         const target = step.pointer?.target ? document.querySelector(step.pointer.target) : null;
         if (target) {
           const r = target.getBoundingClientRect();
-          await glide(r.left + Math.min(r.width / 2, 160), r.top + r.height / 2, signal);
-          if (step.pointer?.click) {
-            await wait(250, signal);
+          const cy = r.top + r.height / 2;
+          if (step.pointer?.sweep) {
+            const cx = r.left + r.width / 2;
+            const reach = r.width * 0.3;
+            await glide(cx, cy, signal);
+            do {
+              await glide(cx - reach, cy, signal);
+              await glide(cx + reach, cy, signal);
+            } while (step.pointer.linger && !said);
+            await glide(cx, cy, signal);
+          } else {
+            await glideTo(target, (b) => ({ x: b.left + Math.min(b.width / 2, 160), y: b.top + b.height / 2 }), signal);
+          }
+          // Rest on it a moment so its hover state shows before the press.
+          if (step.pointer?.click) await wait(450, signal);
+          if (step.pointer?.click && step.open) {
+            await press(signal, false);
+            await openPreview(step.open, signal);
+          } else if (step.pointer?.click) {
             await press(signal);
             const dialog = document.querySelector("dialog[open]");
             if (dialog) {
               focusSel.current = undefined;
               setHost(dialog);
+              // Show the whole popup: let it open, then scroll it to the end.
+              await wait(600, signal);
+              await scrollBox(dialog, dialog.scrollHeight - dialog.clientHeight, TOUR_DIALOG_SCROLL_MS, signal);
             }
           }
         }
       })();
-      await Promise.all([spoken, moves]);
+      try {
+        await Promise.all([spoken, moves]);
+      } finally {
+        (expanded as Element | null)?.removeAttribute("data-tour-expanded");
+      }
 
       if (step.after === "closeDialog") {
-        const btn = document.querySelector("dialog[open] form[method='dialog'] button");
-        if (btn) {
+        const dialog = document.querySelector("dialog[open]");
+        const btn = dialog?.querySelector("form[method='dialog'] button");
+        if (dialog && btn) {
+          // The close button sits at the popup's top, so scroll back up to it.
+          await scrollBox(dialog, 0, TOUR_DIALOG_RETURN_MS, signal);
           const r = btn.getBoundingClientRect();
           await glide(r.left + r.width / 2, r.top + r.height / 2, signal);
           await press(signal);
         }
         setHost(null);
       }
+      if (step.after === "closePreview") closePreview();
       await wait(TOUR_STEP_GAP, signal);
     },
-    [locale, narrate, scroll, glide, press, wait]
+    [locale, narrate, scroll, glide, glideTo, press, wait, scrollBox, openPreview, scrollPreview, closePreview]
   );
 
   const close = useCallback(() => {
     abortRef.current?.abort();
     abortRef.current = null;
     audioRef.current?.pause();
-    clock.current = { paused: false, since: 0, lost: 0 };
+    clock.current = { t: 0, at: performance.now(), rate: clock.current.rate, paused: false };
     line.current = null;
     over.current = null;
     focusSel.current = undefined;
-    setHost(null);
+    closePreview();
     setStatus("idle");
-  }, []);
+  }, [closePreview]);
 
   const pause = useCallback(() => {
     if (!abortRef.current || clock.current.paused) return;
+    anchor();
     clock.current.paused = true;
-    clock.current.since = performance.now();
     pausedAt.current = tourScrollY;
     audioRef.current?.pause();
     setStatus("paused");
-  }, []);
+  }, [anchor]);
 
   const resume = useCallback(() => {
     if (!abortRef.current || !clock.current.paused) return;
@@ -335,9 +522,8 @@ export function useTour(lines: Record<string, string>, locale: string) {
       const t = back ? clamp((performance.now() - t0) / back, 0, 1) : 1;
       scrollPage(from + (to - from) * easeInOut(t));
       if (t < 1) return void requestAnimationFrame(step);
-      const c = clock.current;
-      c.lost += performance.now() - c.since;
-      c.paused = false;
+      clock.current.at = performance.now();
+      clock.current.paused = false;
       const audio = audioRef.current;
       if (audio && audio.src && !audio.ended && audio.currentTime > 0) void audio.play().catch(() => {});
     };
@@ -350,7 +536,10 @@ export function useTour(lines: Record<string, string>, locale: string) {
     abortRef.current = ctrl;
     reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     audioRef.current ??= new Audio();
-    clock.current = { paused: false, since: 0, lost: 0 };
+    audioRef.current.defaultPlaybackRate = speed;
+    audioRef.current.playbackRate = speed;
+    audioRef.current.volume = volume;
+    clock.current = { t: 0, at: performance.now(), rate: speed, paused: false };
     pos.current = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.6 };
     focusBox.current.o = 0;
     tourScrollY = window.scrollY;
@@ -370,7 +559,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
         if (abortRef.current === ctrl) close();
       }
     })();
-  }, [runStep, close]);
+  }, [runStep, close, speed, volume]);
 
   // Spotlight: eases toward the focused element every frame (it moves as the
   // page scrolls) and fades out when the step has nothing to frame.
@@ -440,6 +629,10 @@ export function useTour(lines: Record<string, string>, locale: string) {
     resume,
     close,
     getProgress,
+    speed,
+    setSpeed,
+    volume,
+    setVolume,
     cursorRef,
     focusRef,
     host,

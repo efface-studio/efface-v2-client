@@ -17,12 +17,22 @@ export const TOUR_STEPS: TourStep[] = [
   },
   { id: "featured", scroll: { target: "[data-tour='featured']", mode: "through" } },
   {
+    id: "clients",
+    focus: "[data-tour='clients']",
+    scroll: { target: "[data-tour='clients-row']", mode: "start" },
+    expand: true,
+  },
+  {
     id: "more",
     focus: "[data-tour='more']",
     scroll: { target: "[data-tour='more']", mode: "start" },
-    pointer: { target: "[data-tour='more'] summary", click: true },
+    pointer: { target: "[data-tour='more'] [data-project]" },
   },
-  { id: "capabilities", scroll: { target: "#capabilities", mode: "through" } },
+  {
+    id: "capabilities",
+    scroll: { target: "#capabilities", mode: "through", share: 0.45 },
+    pointer: { target: "#capabilities h3", each: true },
+  },
   {
     id: "approach",
     focus: "#approach ul",
@@ -33,14 +43,34 @@ export const TOUR_STEPS: TourStep[] = [
     id: "about",
     focus: "[data-tour='about-logo']",
     scroll: { target: "#about", mode: "start" },
-    pointer: { target: "[data-tour='about-logo']", click: true },
+    pointer: { target: "[data-tour='about-logo']", click: true, sweep: true },
+  },
+  {
+    id: "testimonials",
+    focus: "#testimonials",
+    scroll: { target: "#testimonials", mode: "start" },
+    pointer: { target: "#testimonials p[title]" },
   },
   {
     id: "contact",
-    focus: "#contact a[href^='mailto:']",
+    focus: "#contact ul",
     scroll: { target: "#contact", mode: "start" },
-    pointer: { target: "#contact a[href^='mailto:']" },
+    // Sweeping the inbox rows stirs the ink behind them.
+    pointer: { target: "#contact ul", sweep: true, linger: true },
   },
+  {
+    id: "footer",
+    focus: "footer",
+    scroll: { target: "footer", mode: "start" },
+    pointer: { target: "footer canvas", sweep: true, linger: true },
+  },
+  {
+    id: "policies",
+    focus: "[data-tour='policy']",
+    pointer: { target: "[data-tour='policy'] a", click: true },
+    open: "/policies#privacy",
+  },
+  { id: "privacy", scrollPreview: true, after: "closePreview" },
 ];
 
 /** Gap between the nav and a section top the tour scrolls to (px). */
@@ -49,5 +79,13 @@ export const TOUR_TOP_OFFSET = 96;
 export const TOUR_FOCUS_PAD = 18;
 /** Pause between steps (ms). */
 export const TOUR_STEP_GAP = 450;
+/** How long an opened popup takes to scroll to its end, and back up (ms). */
+export const TOUR_DIALOG_SCROLL_MS = 3200;
+export const TOUR_DIALOG_RETURN_MS = 700;
+/** Narration speed range the mixer drags across (voice and motion together). */
+export const TOUR_SPEED_MIN = 0.5;
+export const TOUR_SPEED_MAX = 2;
+/** Time the cursor takes to read across one title, left to right (ms). */
+export const TOUR_READ_MS = 1300;
 /** Cursor glide time (ms). */
 export const TOUR_GLIDE_MS = 900;
