@@ -5,11 +5,12 @@ import type { TourStep } from "./Tour.types";
  * `messages/*.json` under `Tour.steps.<id>`; selectors point at the live page.
  */
 export const TOUR_STEPS: TourStep[] = [
-  { id: "hero", scroll: { target: "#top", mode: "start" }, pointer: { target: "#hero-title" } },
+  { id: "hero", focus: "#hero-title", scroll: { target: "#top", mode: "start" }, pointer: { target: "#hero-title" } },
   { id: "efface", scroll: { target: "#efface", mode: "through" } },
-  { id: "work", scroll: { target: "#work", mode: "start" }, pointer: { target: "#work h2" } },
+  { id: "work", focus: "#work h2", scroll: { target: "#work", mode: "start" }, pointer: { target: "#work h2" } },
   {
     id: "detail",
+    focus: "[data-tour='featured'] article",
     scroll: { target: "[data-tour='featured']", mode: "start" },
     pointer: { target: "[data-tour='featured'] [data-project]", click: true },
     after: "closeDialog",
@@ -17,24 +18,35 @@ export const TOUR_STEPS: TourStep[] = [
   { id: "featured", scroll: { target: "[data-tour='featured']", mode: "through" } },
   {
     id: "more",
+    focus: "[data-tour='more']",
     scroll: { target: "[data-tour='more']", mode: "start" },
     pointer: { target: "[data-tour='more'] summary", click: true },
   },
   { id: "capabilities", scroll: { target: "#capabilities", mode: "through" } },
-  { id: "approach", scroll: { target: "#approach", mode: "start" }, pointer: { target: "#approach h2" } },
+  {
+    id: "approach",
+    focus: "#approach ul",
+    scroll: { target: "#approach", mode: "start" },
+    pointer: { target: "#approach h2" },
+  },
   {
     id: "about",
+    focus: "[data-tour='about-logo']",
     scroll: { target: "#about", mode: "start" },
     pointer: { target: "[data-tour='about-logo']", click: true },
   },
-  { id: "contact", scroll: { target: "#contact", mode: "start" }, pointer: { target: "#contact a[href^='mailto:']" } },
+  {
+    id: "contact",
+    focus: "#contact a[href^='mailto:']",
+    scroll: { target: "#contact", mode: "start" },
+    pointer: { target: "#contact a[href^='mailto:']" },
+  },
 ];
 
 /** Gap between the nav and a section top the tour scrolls to (px). */
 export const TOUR_TOP_OFFSET = 96;
-/** Seconds of speech per character, used to pace scrolling and as a fallback
- *  when the browser has no voice for the locale. */
-export const TOUR_SECONDS_PER_CHAR = { ko: 0.2, en: 0.072 } as const;
+/** Room (px) the spotlight leaves around what it frames. */
+export const TOUR_FOCUS_PAD = 18;
 /** Pause between steps (ms). */
 export const TOUR_STEP_GAP = 450;
 /** Cursor glide time (ms). */
