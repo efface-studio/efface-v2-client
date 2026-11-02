@@ -1,4 +1,6 @@
 import { useTranslations } from "next-intl";
+import { Mail } from "lucide-react";
+import LinkedInMark from "@/components/LinkedInMark";
 import Reveal from "@/components/Reveal";
 import LogoParticle from "@/components/LogoParticle";
 import SectionBackdrop from "@/components/SectionBackdrop";
@@ -40,12 +42,32 @@ export default function About() {
               ))}
             </div>
 
+            {/* Facts: a hairline and two columns, no box. */}
             <Reveal delay={0.2}>
-              <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+              <dl className="mt-14 grid gap-8 border-t border-white/10 pt-7 sm:grid-cols-2">
                 {meta.map((m) => (
-                  <div key={m.label} className="bg-bg p-6">
+                  <div key={m.label}>
                     <dt className="label">{m.label}</dt>
-                    <dd className="mt-2 text-sm text-fg md:text-base">{m.value}</dd>
+                    <dd className="mt-3 text-lg font-medium tracking-tight text-fg md:text-xl">
+                      {m.href ? (
+                        <a
+                          href={m.href}
+                          {...(m.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
+                          className="group inline-flex items-center gap-1.5 transition-colors hover:text-accent-bright"
+                        >
+                          {m.value}
+                          <span className="ml-1 inline-flex transition-transform group-hover:-translate-y-0.5">
+                            {m.href.startsWith("mailto:") ? (
+                              <Mail aria-hidden className="h-[18px] w-[18px] text-fg-dim group-hover:text-accent-bright" />
+                            ) : (
+                              <LinkedInMark size={17} />
+                            )}
+                          </span>
+                        </a>
+                      ) : (
+                        m.value
+                      )}
+                    </dd>
                   </div>
                 ))}
               </dl>

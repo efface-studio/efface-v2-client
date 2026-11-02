@@ -2,4 +2,6 @@
 export interface AboutMeta {
   label: string;
   value: string;
+  /** Where the value links (LinkedIn, mailto:). */
+  href?: string;
 }
