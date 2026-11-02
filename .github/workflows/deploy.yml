@@ -1,6 +1,6 @@
 name: Deploy
 
-# Every merge to main ships to production (v2.efface.dev) through the Vercel CLI.
+# Every merge to main ships to production (efface.dev) through the Vercel CLI.
 # Needs repo secrets VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID.
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://v2.efface.dev
+      url: https://efface.dev
     steps:
       - uses: actions/checkout@v4
 
