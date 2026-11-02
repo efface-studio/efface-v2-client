@@ -34,7 +34,7 @@ export default function WorkFeaturedRow({ items, index, count, compact }: WorkFe
   const clients = clientKeys.map((key) => <WorkClients key={key} clients={WORK_CLIENTS[key] ?? []} />);
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} data-tour={clientKeys.length && !compact ? "clients-row" : undefined} className="relative">
       {/* Content-height row, held near the middle of the screen; the spacer
           below is the scroll it stays pinned for. `--extra` is the height a
           client strip adds — the shots shrink by it so the row still fits. */}
@@ -84,7 +84,7 @@ export default function WorkFeaturedRow({ items, index, count, compact }: WorkFe
       {/* On a phone the strip would push the pinned row off screen, so it
           follows the row once the pin releases instead. */}
       {compact && clientKeys.length > 0 && (
-        <div className="-mt-8 overflow-hidden">{clients}</div>
+        <div data-tour="clients-row" className="-mt-8 overflow-hidden">{clients}</div>
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
 import WorkFeaturedLinks from "./WorkFeaturedLinks";
 import WorkIconTile from "./WorkIconTile";
-import { WORK_ICONS } from "./Work.constants";
+import WorkPlatforms from "./WorkPlatforms";
+import { WORK_ICONS, WORK_PLATFORMS } from "./Work.constants";
 import type { WorkFeaturedInfoProps } from "./Work.types";
 
 /** Icon, name, field · year, description and links — shared by the static list and
@@ -17,11 +18,20 @@ export default function WorkFeaturedInfo({ project, links, more }: WorkFeaturedI
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{project.name}</h3>
-          {(project.field || project.year) && (
-            <p className="mt-1 text-sm text-fg-faint">
-              {[project.field, project.year].filter(Boolean).join(" · ")}
-            </p>
-          )}
+          {/* Platforms (in English, with their marks), a rule, then the year. */}
+          <p className="mt-1.5 flex flex-wrap items-center text-sm text-fg-faint">
+            {WORK_PLATFORMS[project.key] ? (
+              <WorkPlatforms platforms={WORK_PLATFORMS[project.key]} />
+            ) : (
+              project.field
+            )}
+            {project.year && (
+              <>
+                <span aria-hidden className="mx-3 h-3.5 w-px bg-white/20" />
+                <span className="font-mono">{project.year}</span>
+              </>
+            )}
+          </p>
         </div>
         {more && (
           <button

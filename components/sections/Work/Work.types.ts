@@ -154,3 +154,6 @@ export interface WorkFeaturedRowRefs {
   runwayRef: RefObject<HTMLDivElement | null>;
   lanes: WorkLaneRefs[];
 }
+
+/** A platform a project runs on, shown with its mark on featured cards. */
+export type WorkPlatform = "web" | "desktop" | "ios" | "android" | "server";

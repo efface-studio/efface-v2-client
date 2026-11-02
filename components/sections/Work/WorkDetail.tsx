@@ -14,6 +14,8 @@ import {
   WORK_FEATURED,
   WORK_ICONS,
   WORK_LINKS,
+  WORK_ROLES,
+  WORK_ROLES_ALL,
   WORK_SCREENS,
   WORK_STACKS,
 } from "./Work.constants";
@@ -116,11 +118,16 @@ export default function WorkDetail({ projects }: WorkDetailProps) {
                   {project.desc}
                 </p>
               )}
-              {(project.field || project.year) && (
-                <p className="mt-1.5 text-sm text-fg-faint md:text-base">
-                  {[project.field, project.year].filter(Boolean).join(" · ")}
-                </p>
-              )}
+              {/* Year, a rule, then every role efface took on the project. */}
+              <p className="mt-1.5 flex flex-wrap items-center text-sm text-fg-faint md:text-base">
+                {project.year && (
+                  <>
+                    <span className="font-mono">{project.year}</span>
+                    <span aria-hidden className="mx-3 h-3.5 w-px bg-white/20" />
+                  </>
+                )}
+                <span>{(WORK_ROLES[project.key] ?? WORK_ROLES_ALL).join(" · ")}</span>
+              </p>
               <WorkFeaturedLinks
                 links={feature?.links ?? WORK_LINKS[project.key]}
                 webIcon={icon}

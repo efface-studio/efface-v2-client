@@ -1,4 +1,4 @@
-import type { WorkClient, WorkFeature, WorkIcon, WorkLinks, WorkStackGroup } from "./Work.types";
+import type { WorkClient, WorkFeature, WorkIcon, WorkLinks, WorkPlatform, WorkStackGroup } from "./Work.types";
 
 /** Icon art per project `key`. Projects missing here get a monogram tile. */
 export const WORK_ICONS: Record<string, WorkIcon> = {
@@ -26,11 +26,11 @@ export const WORK_LINKS: Record<string, WorkLinks> = {
   },
   "efface-v1": {
     github: "https://github.com/efface-studio/efface-v1-client",
-    web: "https://efface.dev",
+    web: "https://shop.efface.dev",
   },
   "efface-v2": {
     github: "https://github.com/efface-studio/efface-v2-client",
-    web: "https://v2.efface.dev",
+    web: "https://efface.dev",
   },
   cheezefilm: {
     github: "https://github.com/efface-studio/CheezeFilm-Client",
@@ -54,7 +54,7 @@ const screens = (key: string, count: number): string[] =>
 export const WORK_SCREENS: Record<string, string[]> = {
   luckgluck: screens("luckgluck", 4),
   "efface-v1": screens("efface-v1", 4),
-  "efface-v2": screens("efface-v2", 4),
+  "efface-v2": screens("efface-v2", 5),
   cheezefilm: screens("cheezefilm", 4),
   cutephoto: screens("cutephoto", 3),
   "design-system": screens("design-system", 4),
@@ -131,6 +131,33 @@ export const WORK_STACKS: Record<string, WorkStackGroup[]> = {
 /** `srcset` for a store screenshot: every `shot-N.webp` (720px) has a
  *  `shot-N-360.webp` beside it for small screens. */
 export const shotSrcSet = (src: string) => `${src.replace(/\.webp$/, "-360.webp")} 360w, ${src} 720w`;
+
+/** Roles shown after the year in a project's detail header. efface does every
+ *  part itself, so that's the default; team projects list their own. */
+export const WORK_ROLES_ALL = ["Product Manager", "FrontEnd", "BackEnd", "DevOps", "Design"];
+export const WORK_ROLES: Record<string, string[]> = {
+  goms: ["Team Leader", "Product Manager", "iOS Leader"],
+};
+
+/** What each featured project runs on, shown with marks on its card. */
+export const WORK_PLATFORMS: Record<string, WorkPlatform[]> = {
+  hwaso: ["web", "ios", "android", "server"],
+  hinest: ["web", "desktop"],
+  rooti: ["web", "ios", "android"],
+  "rooti-admin": ["ios", "android"],
+  goms: ["ios", "android"],
+  "2pick": ["web", "server"],
+};
+export const WORK_PLATFORM_LABELS: Record<WorkPlatform, string> = {
+  web: "Web",
+  desktop: "Desktop",
+  ios: "iOS",
+  android: "Android",
+  server: "Server",
+};
+
+/** Order of the "other work" grid (keys); anything unlisted follows. */
+export const WORK_OTHER_ORDER = ["cheezefilm", "luckgluck", "efface-v2", "design-system", "cutephoto", "efface-v1"];
 
 /** Projects shown large above the grid, in this order. Add one when its store
  *  art is ready. */
