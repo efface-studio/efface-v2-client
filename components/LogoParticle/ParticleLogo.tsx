@@ -45,10 +45,9 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
     let accent = "#3b62e5";
     let img: HTMLImageElement | null = null;
 
-    // Draw the logo offscreen and sample it into particle targets: one row of
-    // evenly spaced dots traced along every edge (outline and colour seam) so
-    // the silhouette reads clean, then a lightly jittered grid filling the
-    // inside, kept clear of that outline.
+    // Draw the logo offscreen and sample it into evenly spaced particle
+    // targets: a row traced along every edge (outline and colour seam) so the
+    // silhouette reads clean, then the inside filled at the same spacing.
     const sample = (): Target[] => {
       if (!img) return [];
       const off = document.createElement("canvas");
@@ -73,44 +72,53 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
       }
       const at = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? 0 : cls[y * w + x]);
 
-      // Spatial hash of placed edge dots, for spacing and interior clearance.
+      // Spatial hash of every placed dot, so each new one keeps its distance.
       const cell = gap;
       const cols = Math.ceil(w / cell) + 1;
       const buckets = new Map<number, [number, number][]>();
-      const nearEdge = (x: number, y: number, min: number) => {
+      const crowded = (x: number, y: number, min: number) => {
         const cx = Math.floor(x / cell);
         const cy = Math.floor(y / cell);
         for (let j = cy - 1; j <= cy + 1; j++)
           for (let i = cx - 1; i <= cx + 1; i++)
-            for (const [ex, ey] of buckets.get(j * cols + i) ?? [])
-              if ((ex - x) ** 2 + (ey - y) ** 2 < min * min) return true;
+            for (const [px, py] of buckets.get(j * cols + i) ?? [])
+              if ((px - x) ** 2 + (py - y) ** 2 < min * min) return true;
         return false;
       };
-
       const pts: Target[] = [];
-      const spacing = gap * 0.9;
+      const place = (x: number, y: number, accentPx: boolean, edge: boolean) => {
+        const key = Math.floor(y / cell) * cols + Math.floor(x / cell);
+        const bucket = buckets.get(key);
+        if (bucket) bucket.push([x, y]);
+        else buckets.set(key, [[x, y]]);
+        pts.push([x, y, accentPx, edge]);
+      };
+
+      // Outline first, then the inside packed around it — a fixed grid would
+      // leave uneven bands where it meets the curve.
+      const spacing = gap * 0.92;
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
           const own = cls[y * w + x];
           if (!own) continue;
           const edge = at(x - 1, y) !== own || at(x + 1, y) !== own || at(x, y - 1) !== own || at(x, y + 1) !== own;
-          if (!edge || nearEdge(x, y, spacing)) continue;
-          const key = Math.floor(y / cell) * cols + Math.floor(x / cell);
-          const bucket = buckets.get(key);
-          if (bucket) bucket.push([x, y]);
-          else buckets.set(key, [[x, y]]);
-          pts.push([x, y, own === 2, true]);
+          if (edge && !crowded(x, y, spacing)) place(x, y, own === 2, true);
         }
       }
-      for (let y = 0; y < h; y += gap) {
-        for (let x = 0; x < w; x += gap) {
-          const own = cls[y * w + x];
-          if (!own) continue;
-          const jx = x + (Math.random() - 0.5) * 1.2;
-          const jy = y + (Math.random() - 0.5) * 1.2;
-          if (nearEdge(jx, jy, gap * 0.6)) continue;
-          pts.push([jx, jy, own === 2, false]);
-        }
+      // Candidates in random order (a blue-noise fill): scanning in rows would
+      // leave seams where packing from different edges meets.
+      const step = Math.max(1, Math.round(gap / 3));
+      const cand: number[] = [];
+      for (let y = 0; y < h; y += step) for (let x = 0; x < w; x += step) if (cls[y * w + x]) cand.push(y * w + x);
+      for (let i = cand.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cand[i], cand[j]] = [cand[j], cand[i]];
+      }
+      const fill = gap * 0.8;
+      for (const i of cand) {
+        const x = i % w;
+        const y = (i - x) / w;
+        if (!crowded(x, y, fill)) place(x, y, cls[i] === 2, false);
       }
       return pts;
     };
@@ -126,8 +134,9 @@ export default function ParticleLogo({ src, gap = 5, radius = 90, scale = 0.8, c
           ty,
           vx: old ? old.vx : 0,
           vy: old ? old.vy : 0,
-          // Outline dots share one size so the silhouette stays even.
-          r: edge ? gap * 0.42 : gap * 0.34 + Math.random() * gap * 0.16,
+          // Outline dots share one size so the silhouette stays even; the
+          // inside varies a touch so it doesn't read as a printed screen.
+          r: edge ? gap * 0.42 : gap * 0.38 + Math.random() * gap * 0.08,
           accent: accentPx,
         };
       });
