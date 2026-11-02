@@ -9,6 +9,8 @@ import {
   TOUR_DIALOG_SCROLL_MS,
   TOUR_FOCUS_PAD,
   TOUR_GLIDE_MS,
+  TOUR_MOBILE_QUERY,
+  TOUR_MOBILE_SCROLL_SLOWDOWN,
   TOUR_READ_MS,
   TOUR_SPEED_MAX,
   TOUR_SPEED_MIN,
@@ -89,6 +91,11 @@ export function useTour(lines: Record<string, string>, locale: string) {
   const pos = useRef({ x: 0, y: 0 });
   const over = useRef<Element | null>(null);
   const reduce = useRef(false);
+  // Phones scroll a short page fast; every tour scroll runs slower there.
+  const mobile = useRef(false);
+  /** How long a tour scroll of `ms` takes here: none under reduced motion,
+   *  stretched on phones. Cursor glides are not scrolls and keep their pace. */
+  const scrollMs = (ms: number) => (reduce.current ? 0 : ms * (mobile.current ? TOUR_MOBILE_SCROLL_SLOWDOWN : 1));
   const focusSel = useRef<string | undefined>(undefined);
   const focusBox = useRef({ x: 0, y: 0, w: 0, h: 0, o: 0 });
   // Pausable, speed-adjustable clock: tour time `t` as of real time `at`,
@@ -171,7 +178,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
   const scrollBox = useCallback(
     (el: Element, to: number, ms: number, signal: AbortSignal) => {
       const from = el.scrollTop;
-      return tween(reduce.current ? 0 : ms, signal, (t) => {
+      return tween(scrollMs(ms), signal, (t) => {
         el.scrollTop = from + (to - from) * easeInOut(t);
       });
     },
@@ -293,7 +300,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
       if (!win) return Promise.resolve();
       const from = win.scrollY;
       const to = win.document.documentElement.scrollHeight - win.innerHeight;
-      return tween(reduce.current ? 0 : ms, signal, (t) =>
+      return tween(scrollMs(ms), signal, (t) =>
         win.scrollTo({ top: from + (to - from) * easeInOut(t), behavior: "instant" })
       );
     },
@@ -314,7 +321,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
       if (through) {
         const from = window.scrollY;
         if (Math.abs(from - top) > 4) {
-          await tween(reduce.current ? 0 : 900, signal, (t) =>
+          await tween(scrollMs(900), signal, (t) =>
             scrollPage(from + (top - from) * easeInOut(t))
           );
         }
@@ -324,7 +331,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
       const vh = window.innerHeight;
       // While scrolling through a scene the cursor drifts mid-screen, so hover
       // effects (the capability lens, row highlights) keep playing.
-      await tween(reduce.current ? 0 : through ? ms * (step.scroll.share ?? 1) : 1100, signal, (t) => {
+      await tween(scrollMs(through ? ms * (step.scroll.share ?? 1) : 1100), signal, (t) => {
         scrollPage(start + (to - start) * (through ? t : easeInOut(t)));
         if (through) {
           const a = t * Math.PI * 2;
@@ -516,7 +523,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
     // and the voice together.
     const from = window.scrollY;
     const to = pausedAt.current;
-    const back = Math.abs(from - to) > 4 && !reduce.current ? 600 : 0;
+    const back = Math.abs(from - to) > 4 ? scrollMs(600) : 0;
     const t0 = performance.now();
     const step = () => {
       const t = back ? clamp((performance.now() - t0) / back, 0, 1) : 1;
@@ -535,6 +542,7 @@ export function useTour(lines: Record<string, string>, locale: string) {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    mobile.current = window.matchMedia(TOUR_MOBILE_QUERY).matches;
     audioRef.current ??= new Audio();
     audioRef.current.defaultPlaybackRate = speed;
     audioRef.current.playbackRate = speed;
