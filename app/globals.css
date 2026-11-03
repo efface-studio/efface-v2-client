@@ -713,7 +713,7 @@ body {
   }
 }
 .build-pane {
-  background: #0d0d10;
+  background: #08080b;
   box-shadow: inset 0 0 0 1px var(--color-line);
 }
 /* VS Code's caret: a thin bar that blinks while nothing is being typed. */
@@ -753,9 +753,17 @@ body {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
-.build-stage :is([data-build="layout"], [data-build="text"]) :not(span, br, svg *) {
-  outline: 1px dashed rgba(97, 131, 255, 0.28);
+/* Boxes outline one by one as the layout code goes in (`data-build-box`). */
+.build-stage :is([data-build="layout"], [data-build="text"]) [data-build-box],
+.build-stage :is([data-build="layout"], [data-build="text"])[data-build-box] {
+  outline: 1px dashed rgba(97, 131, 255, 0.3);
   outline-offset: -1px;
+  animation: build-box 0.35s ease-out;
+}
+@keyframes build-box {
+  from {
+    outline-color: rgba(97, 131, 255, 0.9);
+  }
 }
 .build-stage [data-build="layout"],
 .build-stage [data-build="layout"] * {
@@ -765,41 +773,221 @@ body {
 .build-stage [data-build="text"] * {
   color: var(--color-fg) !important;
 }
-/* Letters not typed yet (a highlight over the visible copy). */
-::highlight(build-hidden) {
-  color: transparent;
-}
-/* Colour eases in; images wait for the media step. */
+/* Letters not typed yet: a highlight over the visible copy, styled from
+   previewStage.ts (the CSS minifier doesn't know ::highlight yet). */
+/* Colour sweeps down: each element waits by where it sits (`--build-delay`). */
 .build-stage :is([data-build="color"], [data-build="media"], [data-build="done"]) * {
   transition:
-    color 0.6s ease,
-    background-color 0.6s ease,
-    border-color 0.6s ease !important;
+    color 0.7s ease var(--build-delay, 0ms),
+    background-color 0.7s ease var(--build-delay, 0ms),
+    border-color 0.7s ease var(--build-delay, 0ms) !important;
 }
-.build-stage :is([data-build="layout"], [data-build="text"], [data-build="color"]) :is(img, video, canvas) {
+/* Media: none while laid out; then each icon or image in its turn among the
+   letters (`data-build-wait` until then). */
+.build-stage [data-build="layout"] :is(img, video, canvas, svg),
+.build-stage [data-build-wait] {
   opacity: 0 !important;
 }
-/* Media renders in: a top-down scan in coarse steps, sharpening as it lands.
-   Backwards fill only, so the element's own filters return once it's done. */
-.build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas) {
-  animation: build-scan calc(1200ms / var(--build-speed, 1)) steps(24, end) backwards;
+/* Icons pop in; images and scenes unveil top-down through a soft edge,
+   settling from a slight zoom and blur. Backwards fill only, so the element's
+   own transforms and filters return once it's done. */
+.build-stage [data-build-in="pop"] {
+  animation: build-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
-@keyframes build-scan {
+@keyframes build-pop {
   from {
-    clip-path: inset(0 0 100% 0);
-    filter: blur(14px) saturate(0);
+    opacity: 0;
+    transform: scale(0.4);
   }
-  70% {
-    filter: blur(4px) saturate(0.6);
+}
+@property --build-reveal {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+.build-stage [data-build-in="scan"],
+.build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas):not([data-build-in]) {
+  animation: build-unveil calc(1500ms / var(--build-speed, 1)) cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+@keyframes build-unveil {
+  from {
+    --build-reveal: -30%;
+    opacity: 0.2;
+    transform: scale(1.06);
+    filter: blur(16px) saturate(0.3) brightness(1.3);
   }
   to {
-    clip-path: inset(0 0 0 0);
-    filter: none;
+    --build-reveal: 100%;
   }
+}
+.build-stage [data-build-in="scan"],
+.build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas):not([data-build-in]) {
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--build-reveal), transparent calc(var(--build-reveal) + 30%));
+  mask-image: linear-gradient(to bottom, #000 var(--build-reveal), transparent calc(var(--build-reveal) + 30%));
 }
 @media (prefers-reduced-motion: reduce) {
   .build-studio[open],
+  .build-stage [data-build-in],
   .build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas) {
     animation: none;
+  }
+}
+
+/* Build mode splash: in on open, lifting away to the studio; back on close. */
+.build-splash__glow {
+  background: radial-gradient(closest-side, rgba(59, 98, 229, 0.28), transparent);
+  animation: build-glow 2.4s ease-in-out infinite alternate;
+}
+@keyframes build-glow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+.build-splash__mark > svg {
+  animation: build-mark-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+@keyframes build-mark-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(0.55) rotate(-18deg);
+  }
+}
+.build-splash__letter {
+  animation: build-letter-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+@keyframes build-letter-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(0.45em);
+  }
+}
+.build-splash__caption,
+.build-splash__bar {
+  animation: build-fade-up 0.6s ease-out 0.7s backwards;
+}
+@keyframes build-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.build-splash__bar > span {
+  animation: build-bar 1.1s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+@keyframes build-bar {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+/* Lifting away: the mark zooms past, the black parts to the studio. */
+.build-splash--leave {
+  pointer-events: none;
+  animation: build-splash-out 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.build-splash--leave .build-splash__mark {
+  animation: build-mark-out 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes build-splash-out {
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes build-mark-out {
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(2.6);
+  }
+}
+/* Studio panes rise in once the splash lifts. */
+.build-studio__panes > * {
+  animation: build-pane-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.build-studio__panes > :nth-child(3) {
+  animation-delay: 0.08s;
+}
+@keyframes build-pane-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+}
+/* Handing back: the studio sinks away under the splash, the splash fades, and
+   the page underneath comes up out of a soft blur. */
+.build-splash--outro {
+  animation: build-outro 1.5s ease forwards;
+}
+@keyframes build-outro {
+  from {
+    opacity: 0;
+  }
+  25%,
+  70% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.build-studio[data-leaving] .build-studio__chrome {
+  animation: build-chrome-out 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes build-chrome-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+.build-studio[data-leaving] {
+  animation: build-studio-out 1.5s step-end forwards;
+}
+.build-studio[data-leaving]::backdrop {
+  animation: build-backdrop-out 1.5s ease forwards;
+}
+@keyframes build-studio-out {
+  to {
+    visibility: hidden;
+  }
+}
+@keyframes build-backdrop-out {
+  70% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+html.build-return :is(body > header, main, body > footer) {
+  animation: build-return 1.1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+@keyframes build-return {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(0.97);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .build-splash,
+  .build-splash *,
+  .build-studio__panes > *,
+  .build-studio[data-leaving],
+  .build-studio[data-leaving] *,
+  html.build-return :is(body > header, main, body > footer) {
+    animation: none !important;
   }
 }

@@ -635,7 +635,16 @@
     "close": "닫기",
     "code": "코드 편집기",
     "preview": "생성 중인 efface 미리보기",
-    "progress": "생성 진행률"
+    "progress": "생성 진행률",
+    "error": "코드를 불러오지 못했습니다",
+    "intro": "efface를 처음부터 만들어 봅니다",
+    "outro": "사이트로 돌아갑니다",
+    "resize": "미리보기와 코드 창 비율 조절",
+    "editor": {
+      "explorer": "탐색기",
+      "closeTab": "{file} 닫기",
+      "binary": "이 파일은 이진 파일이라 텍스트 편집기에 표시되지 않습니다."
+    }
   },
   "Footer": {
     "tagline": "복잡함은 ~지우고~, 효과만 남깁니다.",

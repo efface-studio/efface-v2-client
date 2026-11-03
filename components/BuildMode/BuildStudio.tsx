@@ -1,22 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Pause, Play, SkipForward, X } from "lucide-react";
 import LogoMark from "@/components/LogoMark";
 import { cn } from "@/lib/cn";
+import BuildSplash from "./BuildSplash";
 import CodePane from "./CodePane";
 import PreviewPane from "./PreviewPane";
-import { buildFiles, type BuildCopy } from "./buildScript";
+import SplitHandle from "./SplitHandle";
+import { toBuildFile } from "./buildScript";
 import { useBuildPlayer } from "./useBuildPlayer";
-import { BUILD_PARAM, DONE_CLOSE_MS, SPEEDS } from "./BuildMode.constants";
+import {
+  BUILD_PARAM,
+  BUILD_SOURCE_URL,
+  DONE_CLOSE_MS,
+  OUTRO_MS,
+  RETURN_MS,
+  SPEEDS,
+  SPLIT_DEFAULT,
+  SPLASH_LIFT_MS,
+  SPLASH_MIN_MS,
+} from "./BuildMode.constants";
+import type { BuildFile, BuildRepoEntry, BuildSourceIndex } from "./BuildMode.types";
 
-/** Copy as it reads on the page: placeholders and the inline marks stripped. */
-const clean = (s: string) =>
-  s
-    .replace(/\{\w+\}\s*/g, "")
-    .replace(/[~*]/g, "")
-    .trim();
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const CONTROL =
   "flex h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-xs font-medium text-fg-dim ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
@@ -24,42 +32,65 @@ const CONTROL =
 /**
  * Build mode: the site writing itself. The editor types each block's code
  * while the preview — the real page in a frame — rebuilds that block in step:
- * outlines, letters, colour, then images. Closes on its own when done.
+ * outlines, letters, colour, then images. Opens behind the efface splash,
+ * closes on its own when done, and hands back to the page through it again.
  */
 export default function BuildStudio({ onClose }: { onClose: () => void }) {
   const t = useTranslations("Build");
-  const all = useTranslations();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(SPEEDS[0]);
+  // The preview's share of the studio; the divider between the panes drags it.
+  const [split, setSplit] = useState(SPLIT_DEFAULT);
 
-  const files = useMemo(() => {
-    const section = (ns: string) => ({
-      label: all(`${ns}.label`),
-      title: all(`${ns}.title`),
-      lead: all(`${ns}.lead`),
-    });
-    const copy: BuildCopy = {
-      heroTitle1: all("Hero.titleLine1"),
-      heroTitle2: all("Hero.titleLine2"),
-      heroSub: all("Hero.sub"),
-      effaceLabel: all("Efface.label"),
-      effaceDefinition: all("Efface.definition"),
-      effaceSentence: clean(all.raw("Efface.sentence") as string),
-      work: section("Work"),
-      capabilities: section("Capabilities"),
-      approach: section("Approach"),
-      about: { label: all("About.label"), title: all("About.title"), lead: (all.raw("About.paragraphs") as string[])[0] },
-      testimonials: { label: all("Testimonials.label"), title: all("Testimonials.title"), lead: all("Testimonials.note") },
-      contact: { ...section("Contact"), email: all("Contact.email") },
-      footerTagline: clean(all.raw("Footer.tagline") as string),
-      footerRights: all("Footer.rights"),
-    };
-    return buildFiles(copy);
-  }, [all]);
+  // The components' real source, read at build time (app/build-source.json).
+  const [files, setFiles] = useState<BuildFile[] | null>(null);
+  const [tree, setTree] = useState<BuildRepoEntry[]>([]);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch(BUILD_SOURCE_URL, { signal: ctrl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<BuildSourceIndex>) : Promise.reject(r.status)))
+      .then((index) => {
+        setFiles(index.files.map(toBuildFile));
+        setTree(index.tree);
+      })
+      .catch(() => !ctrl.signal.aborted && setFailed(true));
+    return () => ctrl.abort();
+  }, []);
 
-  const player = useBuildPlayer(files, frameRef, speed);
-  const { status, view, progress, skip } = player;
+  // intro (splash up) → lifting (splash zooms away) → run → leaving (splash back, then gone)
+  const [phase, setPhase] = useState<"intro" | "lifting" | "run" | "leaving">("intro");
+  const [minSplash, setMinSplash] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setMinSplash(true), reducedMotion() ? 0 : SPLASH_MIN_MS);
+    return () => clearTimeout(id);
+  }, []);
+
+  const player = useBuildPlayer(files, frameRef, speed, phase !== "intro");
+  const { loaded, status, view, progress, focus, skip } = player;
+
+  // The splash lifts once the studio behind it is ready (or has failed to be).
+  useEffect(() => {
+    if (phase === "intro" && minSplash && (loaded || failed)) setPhase("lifting");
+  }, [phase, minSplash, loaded, failed]);
+  useEffect(() => {
+    if (phase !== "lifting") return;
+    const id = setTimeout(() => setPhase("run"), reducedMotion() ? 0 : SPLASH_LIFT_MS);
+    return () => clearTimeout(id);
+  }, [phase]);
+
+  // Leaving: the splash comes back over the studio, then the page fades up.
+  const leave = useCallback(() => {
+    if (reducedMotion()) return onClose();
+    setPhase("leaving");
+    setTimeout(() => {
+      const html = document.documentElement;
+      html.classList.add("build-return");
+      setTimeout(() => html.classList.remove("build-return"), RETURN_MS);
+      onClose();
+    }, OUTRO_MS);
+  }, [onClose]);
   // Built only on the client (the studio never server-renders).
   const src = useMemo(() => `${location.pathname}?${BUILD_PARAM}`, []);
 
@@ -69,16 +100,16 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
 
   // Reduced motion: no typing — straight to the finished page.
   useEffect(() => {
-    if (status === "playing" && matchMedia("(prefers-reduced-motion: reduce)").matches) skip();
+    if (status === "playing" && reducedMotion()) skip();
   }, [status, skip]);
 
   useEffect(() => {
     if (status !== "done") return;
-    const id = setTimeout(onClose, DONE_CLOSE_MS);
+    const id = setTimeout(leave, DONE_CLOSE_MS);
     return () => clearTimeout(id);
-  }, [status, onClose]);
+  }, [status, leave]);
 
-  const current = files[view.file].name;
+  const current = files?.[view.file].name ?? "";
   const statusLabel = status === "done" ? t("done") : t("building", { file: current });
 
   return (
@@ -87,11 +118,19 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
       aria-label={t("title")}
       onCancel={(e) => {
         e.preventDefault();
-        onClose();
+        if (phase !== "leaving") leave();
       }}
-      className="build-studio fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none bg-bg/95 p-0 text-fg outline-none backdrop:bg-black/60"
+      data-leaving={phase === "leaving" ? "" : undefined}
+      className="build-studio fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none bg-[#050506] p-0 text-fg outline-none backdrop:bg-black/80"
     >
-      <div className="flex h-full flex-col gap-3 p-3 md:gap-4 md:p-5">
+      {phase !== "run" && (
+        <BuildSplash
+          phase={phase === "leaving" ? "outro" : "intro"}
+          leaving={phase === "lifting"}
+          caption={phase === "leaving" ? t("outro") : failed ? t("error") : t("intro")}
+        />
+      )}
+      <div className="build-studio__chrome flex h-full flex-col gap-3 p-3 md:gap-4 md:p-5">
         <header className="flex shrink-0 items-center gap-3">
           <LogoMark className="h-5 w-5 shrink-0 text-fg" />
           <h2 className="min-w-0 truncate text-sm font-semibold tracking-tight">{t("title")}</h2>
@@ -135,22 +174,33 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
                 </button>
               </>
             )}
-            <button type="button" aria-label={t("close")} onClick={onClose} className={cn(CONTROL, "w-9 justify-center px-0")}>
+            <button type="button" aria-label={t("close")} onClick={leave} className={cn(CONTROL, "w-9 justify-center px-0")}>
               <X aria-hidden className="h-4 w-4" />
             </button>
           </div>
         </header>
 
-        {/* Code beside the preview from md up; stacked, code on top, on a phone. */}
-        <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,2fr)] gap-3 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:grid-rows-1 xl:grid-cols-2 md:gap-4">
-          <CodePane files={files} file={view.file} pos={view.pos} label={t("code")} typing={status === "playing"} />
-          <PreviewPane
-            frameRef={frameRef}
-            src={src}
-            title={t("preview")}
-            loadingLabel={status === "loading" ? t("loading") : null}
-            status={statusLabel}
-          />
+        {/* Preview and editor, 7:3 to start and dragged from there — side by
+            side from md up, stacked (preview on top) on a phone. */}
+        <div className={cn("flex min-h-0 flex-1 flex-col md:flex-row", phase !== "intro" && "build-studio__panes")}>
+          <div className="flex min-h-0 min-w-0 shrink-0 flex-col" style={{ flexBasis: `${split * 100}%` }}>
+            <PreviewPane
+              frameRef={frameRef}
+              src={src}
+              title={t("preview")}
+              loadingLabel={failed ? t("error") : status === "loading" ? t("loading") : null}
+              status={statusLabel}
+              focus={focus}
+            />
+          </div>
+          <SplitHandle value={split} onChange={setSplit} label={t("resize")} />
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            {files ? (
+              <CodePane files={files} tree={tree} file={view.file} pos={view.pos} label={t("code")} typing={status === "playing"} />
+            ) : (
+              <div aria-hidden className="flex-1 rounded-[6px] bg-[#101118] ring-1 ring-white/[0.06]" />
+            )}
+          </div>
         </div>
 
         <div

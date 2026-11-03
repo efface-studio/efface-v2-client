@@ -2,7 +2,15 @@
 
 import { useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { cn } from "@/lib/cn";
-import { PREVIEW_DESKTOP_WIDTH, PREVIEW_MIN_ASPECT, PREVIEW_PHONE_BELOW, PREVIEW_PHONE_WIDTH } from "./BuildMode.constants";
+import {
+  CAMERA_FILL,
+  CAMERA_MAX_ZOOM,
+  PREVIEW_DESKTOP_WIDTH,
+  PREVIEW_MIN_ASPECT,
+  PREVIEW_PHONE_BELOW,
+  PREVIEW_PHONE_WIDTH,
+} from "./BuildMode.constants";
+import type { BuildRect } from "./BuildMode.types";
 
 interface PreviewPaneProps {
   frameRef: RefObject<HTMLIFrameElement | null>;
@@ -11,14 +19,18 @@ interface PreviewPaneProps {
   /** Shown over the frame until the preview reports ready. */
   loadingLabel: string | null;
   status: string;
+  /** What the page is building right now; the camera eases in on it. */
+  focus: BuildRect | null;
 }
+
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 /**
  * A browser window around the page being built. The page renders at a real
  * device width and is scaled to the pane, so it keeps its desktop (or phone)
  * layout instead of reflowing into whatever the pane happens to be.
  */
-export default function PreviewPane({ frameRef, src, title, loadingLabel, status }: PreviewPaneProps) {
+export default function PreviewPane({ frameRef, src, title, loadingLabel, status, focus }: PreviewPaneProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
 
@@ -39,8 +51,22 @@ export default function PreviewPane({ frameRef, src, title, loadingLabel, status
   const scale = box.w ? Math.min(box.w / width, box.h / minHeight) : 1;
   const left = (box.w - width * scale) / 2;
 
+  // Camera: zoom so the focused block fills a good part of the pane, centred
+  // on it, but never past the page's edges. Reduced motion keeps it still.
+  const [still, setStill] = useState(false);
+  useLayoutEffect(() => setStill(matchMedia("(prefers-reduced-motion: reduce)").matches), []);
+  let camera = "none";
+  if (focus && box.w && !still) {
+    const zoom = clamp(Math.min((box.w * CAMERA_FILL) / (focus.w * scale), (box.h * CAMERA_FILL) / (focus.h * scale)), 1, CAMERA_MAX_ZOOM);
+    const cx = left + (focus.x + focus.w / 2) * scale;
+    const cy = (focus.y + focus.h / 2) * scale;
+    const tx = clamp(box.w / 2 - zoom * cx, box.w * (1 - zoom), 0);
+    const ty = clamp(box.h / 2 - zoom * cy, box.h * (1 - zoom), 0);
+    camera = `translate(${tx}px, ${ty}px) scale(${zoom})`;
+  }
+
   return (
-    <section aria-label={title} className="build-pane flex min-h-0 flex-col overflow-hidden rounded-[6px]">
+    <section aria-label={title} className="build-pane flex min-h-0 flex-1 flex-col overflow-hidden rounded-[6px]">
       <div className="flex shrink-0 items-center gap-3 border-b border-line px-4 py-2.5">
         <span aria-hidden className="flex gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
@@ -56,6 +82,10 @@ export default function PreviewPane({ frameRef, src, title, loadingLabel, status
       </div>
       <div ref={boxRef} className="relative min-h-0 flex-1 overflow-hidden bg-bg">
         {box.w > 0 && (
+          <div
+            className="absolute inset-0 origin-top-left transition-transform duration-[1400ms] ease-[cubic-bezier(0.45,0,0.2,1)] will-change-transform"
+            style={{ transform: camera }}
+          >
           <iframe
             ref={frameRef}
             src={src}
@@ -68,6 +98,7 @@ export default function PreviewPane({ frameRef, src, title, loadingLabel, status
             )}
             style={{ left, width, height: box.h / scale, transform: `scale(${scale})` }}
           />
+          </div>
         )}
         {loadingLabel && (
           <p className="absolute inset-0 flex items-center justify-center gap-2.5 font-mono text-xs text-fg-faint">
