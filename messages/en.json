@@ -484,7 +484,6 @@
     "nameAlt": "서지완",
     "email": "xixn2@efface.dev",
     "headline": "When I find friction, I turn it into a service.",
-    "summary": "A developer who turns everyday inconveniences into real services — planning them, building the iOS app and the frontend, and seeing them through release and operation as PM. I enjoy collaborating with all kinds of people and getting one step further than yesterday.",
     "careerLabel": "Career",
     "career": [
       {
@@ -530,32 +529,76 @@
         "label": "Language",
         "items": [
           "Swift",
+          "JavaScript",
           "TypeScript",
+          "Python",
           "C",
-          "C++",
-          "Python"
+          "C++"
         ]
       },
       {
-        "label": "iOS · Framework",
+        "label": "iOS",
         "items": [
           "SwiftUI",
           "UIKit",
           "Swift Concurrency",
-          "RxSwift",
           "Combine",
+          "RxSwift",
+          "Tuist",
           "MVVM",
           "MVC"
         ]
       },
       {
-        "label": "Web · Backend",
+        "label": "Web",
         "items": [
           "React",
-          "Vite",
+          "Next.js",
+          "Tailwind CSS",
+          "TanStack Query",
+          "Zustand",
+          "motion",
+          "three.js",
+          "Vite"
+        ]
+      },
+      {
+        "label": "App · Desktop",
+        "items": [
+          "React Native",
+          "Expo",
+          "Electron",
+          "Tauri",
+          "Capacitor"
+        ]
+      },
+      {
+        "label": "Server · Data",
+        "items": [
+          "Node.js",
+          "NestJS",
           "Express",
+          "Fastify",
+          "FastAPI",
+          "Socket.IO",
           "Prisma",
+          "Drizzle",
+          "PostgreSQL",
+          "Redis",
+          "Supabase",
           "SQLite"
+        ]
+      },
+      {
+        "label": "Infra · AI",
+        "items": [
+          "Vercel",
+          "Docker",
+          "AWS S3",
+          "Cloudflare Workers",
+          "GitHub Actions",
+          "Firebase (FCM)",
+          "OpenAI"
         ]
       }
     ],
