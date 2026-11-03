@@ -1,16 +1,15 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { JetBrains_Mono } from "next/font/google";
+import { useTranslations } from "next-intl";
 import {
-  Atom,
   Bell,
   Blocks,
   Bug,
-  ChevronDown,
   ChevronRight,
   CircleUser,
   CircleX,
-  Ellipsis,
   Files,
   GitBranch,
   Search,
@@ -19,101 +18,58 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import Explorer from "./Explorer";
+import FileIcon from "./FileIcon";
 import { tokenize } from "./highlight";
-import type { BuildFile, BuildToken } from "./BuildMode.types";
+import { REPO_FILE_URL } from "./BuildMode.constants";
+import type { BuildFile, BuildRepoEntry, BuildToken } from "./BuildMode.types";
 
-// VS Code's Dark+ theme: token colours and the workbench around them.
+// The editor's own face, fetched with the studio rather than the page.
+const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], display: "swap" });
+
+// Tokyo Night, on a darker workbench.
 const TOKEN_CLASS: Record<BuildToken["kind"], string> = {
-  tag: "text-[#569cd6]",
-  component: "text-[#4ec9b0]",
-  bracket: "text-[#808080]",
-  attr: "text-[#9cdcfe]",
-  str: "text-[#ce9178]",
-  hex: "text-[#ce9178]",
-  num: "text-[#b5cea8]",
-  key: "text-[#9cdcfe]",
-  keyword: "text-[#569cd6]",
-  control: "text-[#c586c0]",
-  fn: "text-[#dcdcaa]",
-  comment: "text-[#6a9955]",
-  punct: "text-[#d4d4d4]",
-  plain: "text-[#d4d4d4]",
-  copy: "text-[#d4d4d4]",
+  tag: "text-[#f7768e]",
+  component: "text-[#2ac3de]",
+  bracket: "text-[#89ddff]/80",
+  attr: "italic text-[#bb9af7]",
+  str: "text-[#9ece6a]",
+  hex: "text-[#9ece6a]",
+  num: "text-[#ff9e64]",
+  key: "text-[#73daca]",
+  keyword: "text-[#bb9af7]",
+  control: "italic text-[#bb9af7]",
+  fn: "text-[#7aa2f7]",
+  comment: "italic text-[#51597d]",
+  punct: "text-[#89ddff]",
+  plain: "text-[#a9b1d6]",
 };
-const ACTIVITY = [Files, Search, GitBranch, Bug, Blocks];
-/** The repo's other top-level entries, collapsed in the explorer. */
-const ROOT_FOLDERS = ["app", "lib", "messages", "public"];
-const ROOT_FILES = ["next.config.ts", "package.json", "tsconfig.json"];
+const IDLE_ACTIVITY = [Search, GitBranch, Bug, Blocks];
+/** The status bar's language mode, by extension. */
+const LANGUAGE: Record<string, string> = {
+  tsx: "TypeScript JSX",
+  ts: "TypeScript",
+  mjs: "JavaScript",
+  js: "JavaScript",
+  json: "JSON",
+  css: "CSS",
+  md: "Markdown",
+  yml: "YAML",
+  svg: "XML",
+};
+/** Editor width (px) from which the explorer shows on its own — `@[32rem]` below. */
+const EXPLORER_FITS = 512;
+/** Lexed as code; anything else shows as plain text. */
+const CODE_FILE = /\.(tsx?|m?js|json|css|ya?ml|svg)$/;
 
 /** A typed piece of one line; `whole` once its token is typed to the end. */
 type Piece = BuildToken & { whole: boolean };
 
-interface CodePaneProps {
-  files: BuildFile[];
-  /** The file being written and how many of its characters are typed. */
-  file: number;
-  pos: number;
-  label: string;
-  typing: boolean;
-}
-
-function TsxIcon({ className }: { className?: string }) {
-  return <Atom aria-hidden className={cn("h-3.5 w-3.5 shrink-0 text-[#519aba]", className)} />;
-}
-
-/** An explorer row, indented by depth the way the tree is. */
-function TreeRow({
-  depth,
-  open,
-  active,
-  children,
-}: {
-  depth: number;
-  open?: boolean;
-  active?: boolean;
-  children: React.ReactNode;
-}) {
-  const Chevron = open ? ChevronDown : ChevronRight;
-  return (
-    <li
-      className={cn(
-        "flex h-[22px] items-center gap-1 whitespace-nowrap pr-2",
-        active ? "bg-[#37373d] text-white" : "text-[#cccccc]"
-      )}
-      style={{ paddingLeft: 8 + depth * 12 }}
-    >
-      {open === undefined ? <span className="w-3.5 shrink-0" /> : <Chevron aria-hidden className="h-3.5 w-3.5 shrink-0" />}
-      {children}
-    </li>
-  );
-}
-
-/**
- * The editor, drawn as VS Code: title bar, activity bar, explorer (files
- * appear as they're written), tabs, breadcrumbs, the file typing itself out,
- * and the status bar with the caret's line and column.
- */
-export default function CodePane({ files, file, pos, label, typing }: CodePaneProps) {
-  const tokens = useMemo(() => files.map((f) => tokenize(f.parts)), [files]);
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const tabRef = useRef<HTMLLIElement>(null);
-  const current = files[file];
-  const written = files.slice(0, file + 1);
-
-  // Keep the caret in sight as the code grows, and the open tab in the strip.
-  useLayoutEffect(() => {
-    const body = bodyRef.current;
-    if (body) body.scrollTop = body.scrollHeight;
-  }, [file, pos]);
-  useLayoutEffect(() => {
-    tabRef.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
-  }, [file]);
-
-  // The typed stretch of the file, cut at the caret and split into lines so
-  // each wraps beside its own number.
+/** Tokens cut at `pos` characters and split into lines. */
+function toRows(tokens: BuildToken[], pos: number): Piece[][] {
   const rows: Piece[][] = [[]];
   let left = pos;
-  for (const tok of tokens[file]) {
+  for (const tok of tokens) {
     if (left <= 0) break;
     const whole = left >= tok.text.length;
     const typed = whole ? tok.text : tok.text.slice(0, left);
@@ -123,164 +79,278 @@ export default function CodePane({ files, file, pos, label, typing }: CodePanePr
       if (text) rows[rows.length - 1].push({ ...tok, text, whole });
     });
   }
-  const col = rows[rows.length - 1].reduce((n, t) => n + t.text.length, 0) + 1;
+  return rows;
+}
 
-  const fileRow = (f: BuildFile, depth: number) => (
-    <TreeRow key={f.name} depth={depth} active={f === current}>
-      <TsxIcon />
-      <span className="truncate">{f.name}</span>
-    </TreeRow>
+/** Folders above a path, outermost first: "a/b/c.ts" → ["a", "a/b"]. */
+const ancestors = (p: string) =>
+  p
+    .split("/")
+    .slice(0, -1)
+    .map((_, i, segs) => segs.slice(0, i + 1).join("/"));
+
+interface CodePaneProps {
+  files: BuildFile[];
+  tree: BuildRepoEntry[];
+  /** The file being written and how many of its characters are typed. */
+  file: number;
+  pos: number;
+  label: string;
+  typing: boolean;
+}
+
+/**
+ * The editor, drawn and behaving as VS Code: the explorer lists the real repo
+ * (folders open and close, files open), tabs switch and close, and the file
+ * being written types itself out at its real line numbers while any other
+ * opens whole. A new file being written takes the editor back to it.
+ */
+export default function CodePane({ files, tree, file, pos, label, typing }: CodePaneProps) {
+  const t = useTranslations("Build.editor");
+  const typingFile = files[file];
+  const [tabs, setTabs] = useState<string[]>([]);
+  const [active, setActive] = useState(typingFile.path);
+  const [open, setOpen] = useState(() => new Set(ancestors(typingFile.path)));
+  // null: the explorer shows when the editor is wide enough for it; the
+  // explorer button then forces it either way.
+  const [sidebar, setSidebar] = useState<boolean | null>(null);
+  const [texts, setTexts] = useState<Record<string, string | null>>({});
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const tabRef = useRef<HTMLLIElement>(null);
+
+  const written = useMemo(() => new Set(files.slice(0, file + 1).map((f) => f.path)), [files, file]);
+  const binary = useMemo(() => new Set(tree.filter((e) => e.binary).map((e) => e.path)), [tree]);
+
+  const openFile = (path: string) => {
+    setTabs((ts) => (ts.includes(path) ? ts : [...ts, path]));
+    setActive(path);
+    setOpen((s) => new Set([...s, ...ancestors(path)]));
+  };
+
+  // Each new file being written opens and takes the editor, as it would.
+  useEffect(() => {
+    openFile(typingFile.path);
+  }, [typingFile.path]);
+
+  const closeTab = (path: string) => {
+    const at = tabs.indexOf(path);
+    const rest = tabs.filter((p) => p !== path);
+    setTabs(rest);
+    if (path === active) setActive(rest[Math.min(at, rest.length - 1)] ?? "");
+  };
+
+  // Any other file is fetched whole the first time it's opened.
+  const excerptOf = files.findIndex((f) => f.path === active);
+  const showsExcerpt = excerptOf >= 0 && excerptOf <= file;
+  const needsText = active && !showsExcerpt && !binary.has(active) && !(active in texts);
+  useEffect(() => {
+    if (!needsText) return;
+    const path = active;
+    setTexts((m) => ({ ...m, [path]: null }));
+    fetch(REPO_FILE_URL + path)
+      .then((r) => (r.ok ? r.text() : Promise.reject(r.status)))
+      .then((text) => setTexts((m) => ({ ...m, [path]: text })))
+      .catch(() => setTexts((m) => ({ ...m, [path]: "" })));
+  }, [needsText, active]);
+
+  // What the editor shows: the file being typed (to the caret), a written
+  // file's excerpt (whole), or any other file as it is in the repo.
+  const typingView = active === typingFile.path;
+  const shownFile = showsExcerpt ? files[excerptOf] : null;
+  const text = shownFile ? shownFile.code : (texts[active] ?? null);
+  const tokens = useMemo(
+    () => (text === null ? [] : CODE_FILE.test(active) || shownFile ? tokenize(text) : [{ text, kind: "plain" as const }]),
+    [text, active, shownFile]
   );
+  const rows = toRows(tokens, typingView ? pos : Infinity);
+  const lastRow = rows.length - 1;
+  const lineNo = (r: number) => (shownFile ? shownFile.lineNumbers[r] : r + 1);
+  const col = typingView ? rows[lastRow].reduce((n, x) => n + x.text.length, 0) + 1 : 1;
+
+  // Typing keeps the caret in sight; opening another file starts at its top.
+  useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (body && typingView) body.scrollTop = body.scrollHeight;
+  }, [typingView, pos]);
+  useLayoutEffect(() => {
+    if (bodyRef.current && !typingView) bodyRef.current.scrollTop = 0;
+    tabRef.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [active, typingView]);
+
+  const ext = active.split(".").at(-1) ?? "";
 
   return (
     <section
       aria-label={label}
-      className="flex min-h-0 flex-col overflow-hidden rounded-[6px] bg-[#1e1e1e] text-[13px] text-[#cccccc] ring-1 ring-black/60 [font-family:-apple-system,BlinkMacSystemFont,'Segoe_UI',system-ui,sans-serif]"
+      className="@container flex min-h-0 flex-1 flex-col overflow-hidden rounded-[6px] bg-[#101118] text-[13px] text-[#a9b1d6] ring-1 ring-white/[0.06] [font-family:-apple-system,BlinkMacSystemFont,'Segoe_UI',system-ui,sans-serif]"
     >
       {/* Title bar */}
-      <div className="relative flex h-[30px] shrink-0 items-center bg-[#3c3c3c] px-3 text-[12px]">
+      <div className="relative flex h-[30px] shrink-0 items-center border-b border-black/60 bg-[#0b0c10] px-3 text-[12px]">
         <span aria-hidden className="flex gap-2">
           <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
           <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
           <span className="h-3 w-3 rounded-full bg-[#28c840]" />
         </span>
-        <span className="pointer-events-none absolute inset-x-20 truncate text-center text-[#cccccc]">
-          {current.name} — efface-v2-client
+        <span className="pointer-events-none absolute inset-x-20 truncate text-center text-[#787c99]">
+          {active ? `${active.split("/").at(-1)} — ` : ""}efface-v2-client
         </span>
       </div>
 
       <div className="flex min-h-0 flex-1">
-        {/* Activity bar */}
-        <nav aria-hidden className="hidden w-12 shrink-0 flex-col items-center bg-[#333333] md:flex">
-          {ACTIVITY.map((Icon, i) => (
-            <span
-              key={i}
-              className={cn(
-                "flex h-12 w-full items-center justify-center border-l-2",
-                i === 0 ? "border-white text-white" : "border-transparent text-[#858585]"
-              )}
-            >
+        {/* Activity bar — the explorer button shows and hides the sidebar. */}
+        <nav className="hidden w-12 shrink-0 flex-col items-center border-r border-black/50 bg-[#0b0c10] md:flex">
+          <button
+            type="button"
+            aria-label={t("explorer")}
+            aria-pressed={sidebar ?? undefined}
+            onClick={(e) => {
+              // From "auto", flip whatever is showing now.
+              const showing = (e.currentTarget.closest("section")?.clientWidth ?? 0) >= EXPLORER_FITS;
+              setSidebar((v) => !(v ?? showing));
+            }}
+            className={cn(
+              "flex h-12 w-full cursor-pointer items-center justify-center border-l-2 transition-colors",
+              sidebar !== false ? "border-[#7aa2f7] text-[#c0caf5]" : "border-transparent text-[#565f89] hover:text-[#a9b1d6]"
+            )}
+          >
+            <Files aria-hidden className="h-6 w-6" strokeWidth={1.5} />
+          </button>
+          {IDLE_ACTIVITY.map((Icon, i) => (
+            <span key={i} aria-hidden className="flex h-12 w-full items-center justify-center text-[#3b4261]">
               <Icon className="h-6 w-6" strokeWidth={1.5} />
             </span>
           ))}
-          <span className="mt-auto flex flex-col items-center gap-5 pb-4 text-[#858585]">
+          <span aria-hidden className="mt-auto flex flex-col items-center gap-5 pb-4 text-[#3b4261]">
             <CircleUser className="h-6 w-6" strokeWidth={1.5} />
             <Settings className="h-6 w-6" strokeWidth={1.5} />
           </span>
         </nav>
 
-        {/* Explorer */}
-        <aside aria-hidden className="hidden w-52 shrink-0 flex-col bg-[#252526] xl:flex">
-          <div className="flex h-[35px] items-center justify-between px-5 text-[11px] uppercase tracking-wide text-[#bbbbbb]">
-            Explorer
-            <Ellipsis className="h-4 w-4" />
+        {sidebar !== false && (
+          <div className={cn(sidebar ? "flex" : "hidden @[32rem]:flex")}>
+            <Explorer
+              title={t("explorer")}
+              repo="efface-v2-client"
+              entries={tree}
+              open={open}
+              active={active}
+              written={written}
+              onToggle={(p) =>
+                setOpen((s) => {
+                  const next = new Set(s);
+                  if (!next.delete(p)) next.add(p);
+                  return next;
+                })
+              }
+              onOpen={openFile}
+            />
           </div>
-          <ul className="min-h-0 flex-1 overflow-hidden text-[13px]">
-            <TreeRow depth={0} open>
-              <span className="text-[11px] font-bold uppercase">efface-v2-client</span>
-            </TreeRow>
-            {ROOT_FOLDERS.slice(0, 1).map((d) => (
-              <TreeRow key={d} depth={1} open={false}>
-                {d}
-              </TreeRow>
-            ))}
-            <TreeRow depth={1} open>
-              components
-            </TreeRow>
-            <TreeRow depth={2} open>
-              sections
-            </TreeRow>
-            {written.filter((f) => f.dir === "components/sections").map((f) => fileRow(f, 3))}
-            {written.filter((f) => f.dir === "components").map((f) => fileRow(f, 2))}
-            {ROOT_FOLDERS.slice(1).map((d) => (
-              <TreeRow key={d} depth={1} open={false}>
-                {d}
-              </TreeRow>
-            ))}
-            {ROOT_FILES.map((f) => (
-              <TreeRow key={f} depth={1}>
-                <span className="w-3.5 shrink-0 text-center text-[11px] font-bold text-[#cbcb41]">{"{}"}</span>
-                {f}
-              </TreeRow>
-            ))}
-          </ul>
-        </aside>
+        )}
 
         {/* Editor group */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <ol className="flex h-[35px] shrink-0 overflow-x-auto bg-[#252526] [scrollbar-width:none]">
-            {written.map((f) => {
-              const active = f === current;
+          <ol className="flex h-[35px] shrink-0 overflow-x-auto border-b border-black/50 bg-[#0d0e13] [scrollbar-width:none]">
+            {tabs.map((path) => {
+              const isActive = path === active;
               return (
                 <li
-                  key={f.name}
-                  ref={active ? tabRef : undefined}
+                  key={path}
+                  ref={isActive ? tabRef : undefined}
                   className={cn(
-                    "flex shrink-0 items-center gap-1.5 border-r border-[#252526] pl-3 pr-2",
-                    active ? "bg-[#1e1e1e] text-white" : "bg-[#2d2d2d] text-[#969696]"
+                    "group flex shrink-0 items-center border-r border-black/40",
+                    isActive ? "bg-[#101118] text-[#c0caf5] shadow-[inset_0_1px_0_#7aa2f7]" : "text-[#4f5573] hover:text-[#787c99]"
                   )}
                 >
-                  <TsxIcon />
-                  {f.name}
-                  <X aria-hidden className={cn("ml-1.5 h-3.5 w-3.5", active ? "opacity-100" : "opacity-0")} />
+                  <button type="button" onClick={() => setActive(path)} className="flex h-full cursor-pointer items-center gap-1.5 pl-3">
+                    <FileIcon path={path} />
+                    {path.split("/").at(-1)}
+                    {/* The file still being written shows VS Code's unsaved dot. */}
+                    {path === typingFile.path && typing && !isActive && <span aria-hidden className="h-2 w-2 rounded-full bg-[#a9b1d6]" />}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t("closeTab", { file: path.split("/").at(-1) ?? path })}
+                    onClick={() => closeTab(path)}
+                    className={cn(
+                      "ml-1 mr-1.5 flex h-5 w-5 cursor-pointer items-center justify-center rounded hover:bg-white/10",
+                      isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                    )}
+                  >
+                    <X aria-hidden className="h-3.5 w-3.5" />
+                  </button>
                 </li>
               );
             })}
           </ol>
-          <div aria-hidden className="flex h-[22px] shrink-0 items-center gap-1 truncate px-4 text-[12px] text-[#a9a9a9]">
-            {[...current.dir.split("/"), current.name].map((seg, i, all) => (
-              <span key={seg} className="flex items-center gap-1">
-                {i === all.length - 1 && <TsxIcon className="h-3 w-3" />}
-                {seg}
-                {i < all.length - 1 && <ChevronRight className="h-3 w-3" />}
-              </span>
-            ))}
-          </div>
+          {active && (
+            <div aria-hidden className="flex h-[22px] shrink-0 items-center gap-1 overflow-hidden whitespace-nowrap px-4 text-[12px] text-[#565f89]">
+              {active.split("/").map((seg, i, all) => (
+                <span key={i} className="flex items-center gap-1">
+                  {i === all.length - 1 && <FileIcon path={active} className="h-3 w-3" />}
+                  {seg}
+                  {i < all.length - 1 && <ChevronRight className="h-3 w-3" />}
+                </span>
+              ))}
+            </div>
+          )}
 
           <div
             ref={bodyRef}
-            className="min-h-0 flex-1 overflow-y-auto pb-6 font-mono text-[12px] leading-[19px] [scrollbar-width:none] md:text-[13px] md:leading-[20px]"
+            className={cn(
+              mono.className,
+              "min-h-0 flex-1 overflow-auto pb-6 text-[11.5px] leading-[18px] [scrollbar-width:thin] md:text-[12.5px] md:leading-[20px]"
+            )}
           >
-            <pre>
-              <code className="block">
-                {rows.map((row, r) => {
-                  const last = r === rows.length - 1;
-                  return (
-                    <span key={r} className={cn("flex", last && "shadow-[inset_0_1px_0_#282828,inset_0_-1px_0_#282828]")}>
-                      <span
-                        aria-hidden
-                        className={cn("w-14 shrink-0 select-none pr-6 text-right", last ? "text-[#c6c6c6]" : "text-[#6e7681]")}
-                      >
-                        {r + 1}
+            {!active ? null : binary.has(active) ? (
+              <p className="px-6 py-8 text-[13px] text-[#565f89] [font-family:system-ui,sans-serif]">{t("binary")}</p>
+            ) : text === null ? null : (
+              <pre className="font-[inherit]">
+                <code className="block font-[inherit]">
+                  {rows.map((row, r) => {
+                    const current = typingView && r === lastRow;
+                    return (
+                      <span key={r} className={cn("flex", current && "bg-[#16171f]")}>
+                        <span
+                          aria-hidden
+                          className={cn("w-14 shrink-0 select-none pr-5 text-right", current ? "text-[#9aa5ce]" : "text-[#363b54]")}
+                        >
+                          {lineNo(r)}
+                        </span>
+                        <span className="min-w-0 flex-1 whitespace-pre-wrap break-words pr-5">
+                          {row.map((x, i) => (
+                            <span key={i} className={TOKEN_CLASS[x.kind]}>
+                              {/* VS Code's colour decorator: a swatch before a colour value. */}
+                              {x.kind === "hex" && x.whole && (
+                                <span
+                                  aria-hidden
+                                  className="mx-0.5 inline-block h-[0.75em] w-[0.75em] translate-y-[0.05em] border border-white/50"
+                                  style={{ background: x.text }}
+                                />
+                              )}
+                              {x.text}
+                            </span>
+                          ))}
+                          {current && <span aria-hidden className={cn("build-caret", !typing && "build-caret--idle")} />}
+                          {/* Folded lines (imports, hooks) between the signature and the JSX. */}
+                          {shownFile?.folds.includes(r) && r < lastRow && (
+                            <span aria-hidden className="ml-2 rounded-[3px] bg-[#1f2335] px-1.5 text-[#737aa2]">
+                              ⋯
+                            </span>
+                          )}
+                        </span>
                       </span>
-                      <span className="min-w-0 flex-1 whitespace-pre-wrap break-words pr-5">
-                        {row.map((t, i) => (
-                          <span key={i} className={TOKEN_CLASS[t.kind]}>
-                            {/* VS Code's colour decorator: a swatch before a colour value. */}
-                            {t.kind === "hex" && t.whole && (
-                              <span
-                                aria-hidden
-                                className="mx-0.5 inline-block h-[0.75em] w-[0.75em] translate-y-[0.05em] border border-white/60"
-                                style={{ background: t.text }}
-                              />
-                            )}
-                            {t.text}
-                          </span>
-                        ))}
-                        {last && <span aria-hidden className={cn("build-caret", !typing && "build-caret--idle")} />}
-                      </span>
-                    </span>
-                  );
-                })}
-              </code>
-            </pre>
+                    );
+                  })}
+                </code>
+              </pre>
+            )}
           </div>
         </div>
       </div>
 
       {/* Status bar */}
-      <div aria-hidden className="flex h-[22px] shrink-0 items-center gap-3 bg-[#007acc] px-2.5 text-[12px] text-white">
-        <span className="flex items-center gap-1">
+      <div aria-hidden className="flex h-[22px] shrink-0 items-center gap-3 overflow-hidden whitespace-nowrap border-t border-black/60 bg-[#0b0c10] pr-2.5 text-[12px] text-[#565f89]">
+        <span className="flex h-full items-center gap-1 bg-[#7aa2f7] px-2.5 text-[#0b0c10]">
           <GitBranch className="h-3.5 w-3.5" />
           main
         </span>
@@ -289,15 +359,18 @@ export default function CodePane({ files, file, pos, label, typing }: CodePanePr
           <TriangleAlert className="ml-1 h-3.5 w-3.5" />0
         </span>
         <span className="ml-auto tabular-nums">
-          Ln {rows.length}, Col {col}
+          Ln {typingView ? lineNo(lastRow) : 1}, Col {col}
         </span>
-        <span className="hidden sm:inline">Spaces: 2</span>
-        <span className="hidden sm:inline">UTF-8</span>
-        <span className="hidden sm:inline">LF</span>
-        <span className="hidden items-center gap-1 sm:flex">
-          <span className="text-[11px]">{"{}"}</span>
-          TypeScript JSX
-        </span>
+        {/* The less-needed items drop first as the editor narrows. */}
+        <span className="hidden @[44rem]:inline">Spaces: 2</span>
+        <span className="hidden @[38rem]:inline">UTF-8</span>
+        <span className="hidden @[44rem]:inline">LF</span>
+        {LANGUAGE[ext] && (
+          <span className="hidden items-center gap-1 @[30rem]:flex">
+            <span className="text-[11px]">{"{}"}</span>
+            {LANGUAGE[ext]}
+          </span>
+        )}
         <Bell className="h-3.5 w-3.5" />
       </div>
     </section>
