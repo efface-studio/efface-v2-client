@@ -1,190 +1,57 @@
-import type { BuildFile, BuildPart } from "./BuildMode.types";
+import { tokenize } from "./highlight";
+import { COMMENT_COST, NEWLINE_COST } from "./BuildMode.constants";
+import type { BuildEvent, BuildFile, BuildSource } from "./BuildMode.types";
 
-/** The page's copy the files type out, read from the messages so the editor
- *  and the preview say the same thing in either locale. */
-export interface BuildCopy {
-  heroTitle1: string;
-  heroTitle2: string;
-  heroSub: string;
-  effaceLabel: string;
-  effaceDefinition: string;
-  effaceSentence: string;
-  work: SectionCopy;
-  capabilities: SectionCopy;
-  approach: SectionCopy;
-  about: SectionCopy;
-  testimonials: SectionCopy;
-  contact: SectionCopy & { email: string };
-  footerTagline: string;
-  footerRights: string;
-}
+// Copy as the JSX renders it: a `t("key")` / `t.raw("key")` call, or a bare
+// `{value}` / `{item.value}` child between tags.
+const COPY = /\bt(?:\.raw)?\("[^"]+"\)|(?<=[>\s])\{[a-zA-Z_]\w*(?:\.\w+)*\}(?=\s*(?:<|$))/gm;
 
-interface SectionCopy {
-  label: string;
-  title: string;
-  lead: string;
-}
+/**
+ * A component's real source, readied for typing, with the preview's stages
+ * pinned to it: outlines from the first character, letters as the copy goes
+ * in, colour once the last of it is in, media halfway from there to the end.
+ */
+export function toBuildFile(source: BuildSource): BuildFile {
+  const lineNumbers: number[] = [];
+  const folds: number[] = [];
+  source.blocks.forEach((b, i) => {
+    const count = b.code.split("\n").length;
+    for (let k = 0; k < count; k++) lineNumbers.push(b.start + k);
+    if (i < source.blocks.length - 1) folds.push(lineNumbers.length - 1);
+  });
+  const code = source.blocks.map((b) => b.code).join("\n");
 
-// Part builders: what reaching each stretch does to the preview.
-const layout = (code: string): BuildPart => ({ code, event: "layout" });
-const text = (code: string): BuildPart => ({ code, event: "text" });
-const color = (code: string): BuildPart => ({ code, event: "color" });
-const media = (code: string): BuildPart => ({ code, event: "media" });
-const plain = (code: string): BuildPart => ({ code });
-
-/** The palette block every file closes with — the moment its colours land. */
-function palette(entries: [string, string][]): BuildPart[] {
-  return [
-    plain("\nconst colors = {\n"),
-    color(entries.map(([k, v]) => `  ${k}: "${v}",\n`).join("")),
-    plain("};\n"),
+  const copy = [...code.matchAll(COPY)];
+  // Letters fill from the first piece of copy to the end of the last, over at
+  // least a third of the file (a block may render all its copy in one `{body}`).
+  const copyEnd = copy.length ? copy[copy.length - 1].index + copy[copy.length - 1][0].length : Math.round(code.length * 0.6);
+  const copyStart = copy.length ? copy[0].index : Math.round(code.length * 0.2);
+  const textSpan: [number, number] = [Math.max(0, Math.min(copyStart, copyEnd - Math.round(code.length / 3))), copyEnd];
+  const lineEnd = code.indexOf("\n", copyEnd);
+  const colorAt = lineEnd < 0 ? copyEnd : lineEnd;
+  const events: { at: number; event: BuildEvent }[] = [
+    { at: 0, event: "layout" },
+    { at: textSpan[0], event: "text" },
+    { at: colorAt, event: "color" },
+    { at: Math.round((colorAt + code.length) / 2), event: "media" },
   ];
-}
 
-/** A titled section: label, heading, lead — the shape most of the page shares. */
-function titled(name: string, id: string, copy: SectionCopy, body: BuildPart[], tail: BuildPart[]): BuildFile {
+  // Indent after a line break is free (the editor auto-indents), comments are
+  // skimmed, so the time goes on the code itself.
+  const cost: number[] = [];
+  for (const tok of tokenize(code))
+    for (let k = 0; k < tok.text.length; k++)
+      cost.push(tok.text[k] === "\n" ? NEWLINE_COST : tok.kind === "comment" ? COMMENT_COST : 1);
+  for (let i = 1; i < code.length; i++) if (code[i] === " " && (code[i - 1] === "\n" || cost[i - 1] === 0)) cost[i] = 0;
+
   return {
-    name,
-    dir: "components/sections",
-    parts: [
-      plain(`export default function ${name.replace(/\.tsx$/, "")}() {\n  return (\n`),
-      layout(`    <section id="${id}" className="border-t border-line py-36">\n      <p className="label">\n        `),
-      text(`// ${copy.label}`),
-      layout(`\n      </p>\n      <h2 className="mt-5 text-5xl font-semibold tracking-tight">\n        `),
-      text(copy.title),
-      layout(`\n      </h2>\n      <p className="mt-6 max-w-xl text-fg-dim">\n        `),
-      text(copy.lead),
-      layout("\n      </p>\n"),
-      ...body,
-      layout("    </section>\n"),
-      plain("  );\n}\n"),
-      ...tail,
-    ],
+    name: source.path.split("/").at(-1) ?? source.path,
+    path: source.path,
+    code,
+    lineNumbers,
+    folds,
+    events,
+    textSpan,
+    cost,
   };
-}
-
-/** One file per block of the page, in page order — the preview's sections line up by index. */
-export function buildFiles(c: BuildCopy): BuildFile[] {
-  return [
-    {
-      name: "Hero.tsx",
-      dir: "components/sections",
-      parts: [
-        plain("export default function Hero() {\n  return (\n"),
-        layout(`    <section className="relative min-h-svh overflow-hidden">\n      <h1 className="text-7xl font-semibold leading-[1.04]">\n        `),
-        text(c.heroTitle1),
-        plain("\n        "),
-        text(c.heroTitle2),
-        layout(`\n      </h1>\n      <p className="mt-7 max-w-md text-lg">\n        `),
-        text(c.heroSub),
-        layout("\n      </p>\n      <Tour />\n    </section>\n"),
-        plain("  );\n}\n"),
-        ...palette([
-          ["bg", "#0a0a0b"],
-          ["fg", "#f6f6f7"],
-          ["dim", "#9b9ba4"],
-          ["accent", "#3b62e5"],
-        ]),
-        media('\n<HeroScene shader="glass" dpr={2} />\n'),
-      ],
-    },
-    {
-      name: "EffaceIntro.tsx",
-      dir: "components/sections",
-      parts: [
-        plain("export default function EffaceIntro() {\n  return (\n"),
-        layout(`    <section id="efface" style={{ height: "300svh" }}>\n      <div className="sticky top-0 h-svh">\n        <p className="label">`),
-        text(c.effaceLabel),
-        layout(`</p>\n        <p className="font-mono text-sm">\n          `),
-        text(c.effaceDefinition),
-        layout(`\n        </p>\n        <p className="text-5xl font-semibold">\n          `),
-        text(c.effaceSentence),
-        layout("\n        </p>\n      </div>\n    </section>\n"),
-        plain("  );\n}\n"),
-        ...palette([
-          ["ink", "#ededef"],
-          ["orb", "#3b62e5"],
-        ]),
-        media("\n<ClutterField />\n<EraserPuck />\n"),
-      ],
-    },
-    titled("Work.tsx", "work", c.work, [layout("      <WorkFeaturedScene items={featured} />\n")], [
-      ...palette([
-        ["line", "rgba(255,255,255,0.09)"],
-        ["accent", "#3b62e5"],
-      ]),
-      media('\n<img src="/work/*.webp" loading="lazy" />\n'),
-    ]),
-    titled(
-      "Capabilities.tsx",
-      "capabilities",
-      c.capabilities,
-      [layout('      <div className="grid grid-cols-2 gap-6">{groups.map(CapabilityCard)}</div>\n')],
-      [
-        ...palette([
-          ["surface", "#141418"],
-          ["accent", "#6183ff"],
-        ]),
-        media("\n<MagnifierLens />\n"),
-      ]
-    ),
-    titled("Approach.tsx", "approach", c.approach, [layout('      <ul className="border-t border-line">{items}</ul>\n')], [
-      ...palette([
-        ["accent", "#3b62e5"],
-        ["faint", "#6a6a73"],
-      ]),
-      media('\n<SectionBackdrop src="/approach/code.webp" />\n'),
-    ]),
-    titled("About.tsx", "about", c.about, [layout('      <LogoParticle className="h-72" />\n')], [
-      ...palette([
-        ["dim", "#9b9ba4"],
-        ["accent", "#3b62e5"],
-      ]),
-      media('\n<SectionBackdrop src="/about/office.webp" />\n'),
-    ]),
-    titled(
-      "Testimonials.tsx",
-      "testimonials",
-      c.testimonials,
-      [layout('      <ul className="grid gap-6 md:grid-cols-3">{quotes}</ul>\n')],
-      [
-        ...palette([
-          ["card", "#101013"],
-          ["accent", "#3b62e5"],
-        ]),
-        media('\n<SectionBackdrop src="/testimonials/silicon-valley.webp" />\n'),
-      ]
-    ),
-    titled(
-      "Contact.tsx",
-      "contact",
-      c.contact,
-      [layout('      <a href={`mailto:${email}`} className="text-4xl">'), text(c.contact.email), layout("</a>\n")],
-      [
-        ...palette([
-          ["ink", "#3b62e5"],
-          ["fg", "#f6f6f7"],
-        ]),
-        media("\n<FluidInk className=\"opacity-75\" />\n"),
-      ]
-    ),
-    {
-      name: "Footer.tsx",
-      dir: "components",
-      parts: [
-        plain("export default function Footer() {\n  return (\n"),
-        layout(`    <footer className="border-t border-[#1b1b22]">\n      <h2 className="text-6xl font-semibold">\n        `),
-        text(c.footerTagline),
-        layout(`\n      </h2>\n      <FooterMeta />\n      <small>`),
-        text(c.footerRights),
-        layout("</small>\n    </footer>\n"),
-        plain("  );\n}\n"),
-        ...palette([
-          ["bg", "#0a0a0b"],
-          ["ink", "#ededef"],
-        ]),
-        media("\n<Wordmark />\n"),
-      ],
-    },
-  ];
 }
