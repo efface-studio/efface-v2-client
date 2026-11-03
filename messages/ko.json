@@ -477,6 +477,101 @@
       { "label": "Support", "note": "운영 중인 서비스 이용 지원", "email": "support@efface.dev" }
     ]
   },
+  "Profile": {
+    "title": "대표자 소개",
+    "close": "닫기",
+    "photoAlt": "서지완 사진",
+    "name": "서지완",
+    "nameAlt": "Jiwan SEO",
+    "role": "efface 대표 · iOS · Frontend Developer & PM",
+    "headline": "불편함을 발견하면, 서비스로 만듭니다.",
+    "summary": "일상 생활의 불편함을 직접 서비스로 기획하고 iOS·프론트엔드 개발과 PM을 맡아 배포·운영까지 완수해 온 개발자입니다. 다양한 사람들과 협업하며 어제보다 한 걸음 더 나아가는 과정을 즐깁니다.",
+    "careerLabel": "경력",
+    "career": [
+      {
+        "company": "efface",
+        "role": "대표 · 기획 · 디자인 · 개발",
+        "period": "2026 — 운영 중"
+      },
+      {
+        "company": "(주) 하이비츠",
+        "role": "iOS Developer · Frontend Developer",
+        "period": "2026.03 — 재직 중"
+      },
+      {
+        "company": "(주) 얼라이브러쉬",
+        "role": "어플리케이션 · 서비스 기획 (PM)",
+        "period": "2025.11 — 2026.01"
+      },
+      {
+        "company": "USLASH",
+        "role": "공동 설립 · 운영",
+        "period": "2024.08 — 2025.06"
+      },
+      {
+        "company": "광주소프트웨어마이스터고",
+        "role": "iOS Developer · PM",
+        "period": "2023.03 — 2026.02"
+      }
+    ],
+    "skillsLabel": "기술",
+    "linksLabel": "링크",
+    "skills": [
+      {
+        "label": "Language",
+        "items": [
+          "Swift",
+          "TypeScript",
+          "C / C++",
+          "Python"
+        ]
+      },
+      {
+        "label": "iOS · Framework",
+        "items": [
+          "SwiftUI",
+          "UIKit",
+          "Swift Concurrency",
+          "RxSwift",
+          "Combine",
+          "MVVM",
+          "MVC"
+        ]
+      },
+      {
+        "label": "Web · Backend",
+        "items": [
+          "React",
+          "Vite",
+          "Express",
+          "Prisma",
+          "SQLite"
+        ]
+      }
+    ],
+    "links": [
+      {
+        "label": "Email",
+        "value": "xixn2@efface.dev",
+        "href": "mailto:xixn2@efface.dev"
+      },
+      {
+        "label": "GitHub",
+        "value": "xixn2",
+        "href": "https://github.com/xixn2"
+      },
+      {
+        "label": "LinkedIn",
+        "value": "xixn2",
+        "href": "https://www.linkedin.com/in/xixn2"
+      },
+      {
+        "label": "App Store",
+        "value": "Jiwan Seo",
+        "href": "https://apps.apple.com/kr/developer/jiwan-seo/id1778994453"
+      }
+    ]
+  },
   "Footer": {
     "tagline": "복잡함은 ~지우고~, 효과만 남깁니다.",
     "groups": [
