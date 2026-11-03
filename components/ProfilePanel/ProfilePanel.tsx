@@ -6,19 +6,20 @@ import { X } from "lucide-react";
 import { siAppstore, siGithub } from "simple-icons";
 import LinkedInMark from "@/components/LinkedInMark";
 import LogoMark from "@/components/LogoMark";
+import { cn } from "@/lib/cn";
 import StackMark from "@/components/StackMark";
 import { CAREER_LOGOS } from "./ProfilePanel.constants";
 import type { ProfileCareer, ProfileLink, ProfileSkillGroup } from "./ProfilePanel.types";
 
 /** A company's logo as the company draws it; its initial when we carry none. */
 function CareerLogo({ career }: { career: ProfileCareer }) {
-  const src = CAREER_LOGOS[career.key];
+  const logo = CAREER_LOGOS[career.key];
   return (
     <span aria-hidden className="flex h-11 w-16 shrink-0 items-center justify-center">
       {career.key === "efface" ? (
         <LogoMark className="h-9 w-9 text-fg" />
-      ) : src ? (
-        <img src={src} alt="" className={career.key === "hivits" ? "max-h-7 max-w-14 object-contain" : "max-h-8 max-w-16 object-contain"} />
+      ) : logo ? (
+        <img src={logo.src} alt="" className={cn("max-h-8 max-w-16 object-contain", logo.className)} />
       ) : (
         <span className="text-base font-semibold text-fg-dim">{career.company.replace(/^㈜\s*/, "").charAt(0)}</span>
       )}
