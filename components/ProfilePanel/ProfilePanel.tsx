@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { siAppstore, siGithub } from "simple-icons";
@@ -70,6 +70,15 @@ export default function ProfilePanel() {
   const skills = t.raw("skills") as ProfileSkillGroup[];
   const links = t.raw("links") as ProfileLink[];
 
+  // Slide out before the dialog actually closes; the close lands on the
+  // animation's end. Reduced motion closes at once.
+  const close = useCallback(() => {
+    const dialog = dialogRef.current;
+    if (!dialog?.open || dialog.dataset.closing !== undefined) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return dialog.close();
+    dialog.dataset.closing = "";
+  }, []);
+
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (!(e.target instanceof Element)) return;
@@ -88,20 +97,31 @@ export default function ProfilePanel() {
       ref={dialogRef}
       aria-labelledby="profile-name"
       // A click on the dialog itself (not its content) is a click on the backdrop.
-      onClick={(e) => e.target === e.currentTarget && dialogRef.current?.close()}
-      className="profile-panel fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-full max-w-[640px] overflow-hidden rounded-l-[5px] p-0 text-fg backdrop:bg-black/40"
+      onClick={(e) => e.target === e.currentTarget && close()}
+      // Esc animates out too, instead of the browser's instant close.
+      onCancel={(e) => {
+        e.preventDefault();
+        close();
+      }}
+      onAnimationEnd={(e) => {
+        const dialog = e.currentTarget;
+        if (e.target !== dialog || e.animationName !== "profile-out") return;
+        delete dialog.dataset.closing;
+        dialog.close();
+      }}
+      className="profile-panel fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-full max-w-[880px] overflow-hidden rounded-l-[5px] p-0 text-fg outline-none backdrop:bg-black/40 backdrop:backdrop-blur-[3px]"
     >
       {/* The glass rim and sheen are pseudo-elements of the dialog, so the copy
           scrolls inside this layer instead and they stay put. */}
-      <div className="relative h-full overflow-y-auto overscroll-contain px-6 pb-12 pt-6 md:px-10 md:pt-8">
-        <form method="dialog" className="absolute right-5 top-5 md:right-8 md:top-7">
-          <button
-            aria-label={t("close")}
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5 text-fg-dim ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-fg"
-          >
-            <X aria-hidden className="h-5 w-5" />
-          </button>
-        </form>
+      <div className="profile-body relative h-full overflow-y-auto overscroll-contain px-6 pb-12 pt-6 md:px-10 md:pt-8">
+        <button
+          type="button"
+          aria-label={t("close")}
+          onClick={close}
+          className="absolute right-5 top-5 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5 text-fg-dim ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-fg md:right-8 md:top-7"
+        >
+          <X aria-hidden className="h-5 w-5" />
+        </button>
 
         {/* Header — photo, name, email. */}
         <header className="mt-6 flex items-end gap-5 pr-12">
@@ -149,7 +169,6 @@ export default function ProfilePanel() {
         <p className="mt-10 break-keep text-xl font-medium leading-snug tracking-tight">
           {t("headline")}
         </p>
-        <p className="mt-4 break-keep leading-relaxed text-fg-dim">{t("summary")}</p>
 
         <section className="mt-10 border-t border-line pt-7">
           <h3 className="label">{t("careerLabel")}</h3>
