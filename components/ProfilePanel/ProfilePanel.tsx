@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { siAppstore, siGithub } from "simple-icons";
@@ -10,48 +10,51 @@ import StackMark from "@/components/StackMark";
 import { CAREER_LOGOS } from "./ProfilePanel.constants";
 import type { ProfileCareer, ProfileLink, ProfileSkillGroup } from "./ProfilePanel.types";
 
-/** A small brand-coloured tile, matching LinkedIn's own "in" badge. */
-function Tile({ bg, children }: { bg: string; children: ReactNode }) {
-  return (
-    <span aria-hidden className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] text-white" style={{ background: bg }}>
-      {children}
-    </span>
-  );
-}
-
-/** A company's logo on a small dark plate; its initial when we carry none. */
+/** A company's logo as the company draws it; its initial when we carry none. */
 function CareerLogo({ career }: { career: ProfileCareer }) {
   const src = CAREER_LOGOS[career.key];
   return (
-    <span aria-hidden className="flex h-11 w-16 shrink-0 items-center justify-center rounded-[5px] bg-white/[0.04] ring-1 ring-white/10">
+    <span aria-hidden className="flex h-11 w-16 shrink-0 items-center justify-center">
       {career.key === "efface" ? (
-        <LogoMark className="h-6 w-6 text-fg" />
+        <LogoMark className="h-9 w-9 text-fg" />
       ) : src ? (
-        <img src={src} alt="" className="max-h-5 max-w-12 object-contain" />
+        <img src={src} alt="" className={career.key === "hivits" ? "max-h-7 max-w-14 object-contain" : "max-h-8 max-w-16 object-contain"} />
       ) : (
-        <span className="text-base font-semibold text-fg-dim">{career.company.replace(/^\(주\)\s*/, "").charAt(0)}</span>
+        <span className="text-base font-semibold text-fg-dim">{career.company.replace(/^㈜\s*/, "").charAt(0)}</span>
       )}
     </span>
   );
 }
 
-/** Each link's brand mark, picked by where it points. */
+/** Each link's brand mark as the brand itself shows it on a dark surface. */
 function LinkMark({ href }: { href: string }) {
   if (href.includes("linkedin.com"))
     return (
-      <span aria-hidden className="flex h-4 w-4 items-center leading-none">
+      <span aria-hidden className="flex">
         <LinkedInMark size={16} />
       </span>
     );
-  const icon = href.includes("github.com") ? siGithub : href.includes("apps.apple.com") ? siAppstore : null;
-  if (!icon) return null;
-  return (
-    <Tile bg={`#${icon.hex}`}>
-      <svg viewBox="0 0 24 24" className="h-[11px] w-[11px]" fill="currentColor">
-        <path d={icon.path} />
+  // GitHub's mark stands alone, in white, on dark backgrounds.
+  if (href.includes("github.com"))
+    return (
+      <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4 text-fg" fill="currentColor">
+        <path d={siGithub.path} />
       </svg>
-    </Tile>
-  );
+    );
+  // The App Store icon: a sky-to-blue rounded square with the white "A".
+  if (href.includes("apps.apple.com"))
+    return (
+      <span
+        aria-hidden
+        className="flex h-4 w-4 items-center justify-center rounded-[4px] text-white"
+        style={{ background: "linear-gradient(180deg, #18BFFB, #2072F3)" }}
+      >
+        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="currentColor">
+          <path d={siAppstore.path} />
+        </svg>
+      </span>
+    );
+  return null;
 }
 
 /**
@@ -85,9 +88,11 @@ export default function ProfilePanel() {
       aria-labelledby="profile-name"
       // A click on the dialog itself (not its content) is a click on the backdrop.
       onClick={(e) => e.target === e.currentTarget && dialogRef.current?.close()}
-      className="profile-panel fixed inset-y-2 left-auto right-2 m-0 h-[calc(100dvh-1rem)] max-h-none w-[calc(100%-1rem)] max-w-[640px] overflow-y-auto overscroll-contain rounded-[5px] border border-white/10 bg-surface p-0 text-fg backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className="profile-panel fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-full max-w-[640px] overflow-hidden rounded-l-[5px] p-0 text-fg backdrop:bg-black/40"
     >
-      <div className="relative px-6 pb-12 pt-6 md:px-10 md:pt-8">
+      {/* The glass rim and sheen are pseudo-elements of the dialog, so the copy
+          scrolls inside this layer instead and they stay put. */}
+      <div className="relative h-full overflow-y-auto overscroll-contain px-6 pb-12 pt-6 md:px-10 md:pt-8">
         <form method="dialog" className="absolute right-5 top-5 md:right-8 md:top-7">
           <button
             aria-label={t("close")}
@@ -151,13 +156,23 @@ export default function ProfilePanel() {
             {career.map((c) => (
               <li key={c.key} className="flex items-center gap-4">
                 <CareerLogo career={c} />
-                {/* Period sits right of the name from sm up; on a phone it drops under the role. */}
+                {/* Period and site sit right of the name from sm up; on a phone they drop under the role. */}
                 <div className="grid min-w-0 flex-1 gap-x-4 sm:grid-cols-[1fr_auto]">
                   <span className="break-keep font-medium">{c.company}</span>
-                  <span className="order-last mt-1 whitespace-nowrap text-sm tabular-nums text-fg-faint sm:order-none sm:mt-0">
-                    {c.period}
+                  <span className="order-last mt-1 flex flex-col gap-1 sm:order-none sm:row-span-2 sm:mt-0 sm:items-end">
+                    <span className="whitespace-nowrap text-sm tabular-nums text-fg-faint">{c.period}</span>
+                    {c.site && (
+                      <a
+                        href={c.site}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-fit whitespace-nowrap text-sm text-fg-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg hover:decoration-white/60"
+                      >
+                        {new URL(c.site).hostname}
+                      </a>
+                    )}
                   </span>
-                  <span className="mt-1 break-keep text-sm text-fg-dim sm:col-span-2">{c.role}</span>
+                  <span className="mt-1 break-keep text-sm text-fg-dim">{c.role}</span>
                 </div>
               </li>
             ))}

@@ -491,31 +491,36 @@
         "key": "efface",
         "company": "efface",
         "role": "대표 · 기획 · 디자인 · 개발",
-        "period": "2026 — 운영 중"
+        "period": "2026 — 운영 중",
+        "site": "https://efface.dev"
       },
       {
         "key": "hivits",
-        "company": "(주) 하이비츠",
+        "company": "㈜하이비츠",
         "role": "iOS Developer · Frontend Developer",
-        "period": "2026.03 — 재직 중"
+        "period": "2026.03 — 재직 중",
+        "site": "https://hi-vits.com"
       },
       {
         "key": "alivebrush",
-        "company": "(주) 얼라이브러쉬",
+        "company": "㈜얼라이브러쉬",
         "role": "어플리케이션 · 서비스 기획 (PM)",
-        "period": "2025.11 — 2026.01"
+        "period": "2025.11 — 2026.01",
+        "site": "https://aliverush.com"
       },
       {
         "key": "uslash",
         "company": "USLASH",
         "role": "공동 설립 · 운영",
-        "period": "2024.08 — 2025.06"
+        "period": "2024.08 — 2025.06",
+        "site": "https://uslash.org"
       },
       {
         "key": "gsm",
         "company": "광주소프트웨어마이스터고",
         "role": "iOS Developer · PM",
-        "period": "2023.03 — 2026.02"
+        "period": "2023.03 — 2026.02",
+        "site": "https://hellogsm.kr"
       }
     ],
     "skillsLabel": "기술",
@@ -526,7 +531,8 @@
         "items": [
           "Swift",
           "TypeScript",
-          "C / C++",
+          "C",
+          "C++",
           "Python"
         ]
       },

@@ -5,6 +5,8 @@ export interface ProfileCareer {
   company: string;
   role: string;
   period: string;
+  /** The company's own site, shown under the period. */
+  site?: string;
 }
 
 /** A labelled group of tools. */

@@ -491,31 +491,36 @@
         "key": "efface",
         "company": "efface",
         "role": "Founder · Planning · Design · Development",
-        "period": "2026 — Present"
+        "period": "2026 — Present",
+        "site": "https://efface.dev"
       },
       {
         "key": "hivits",
         "company": "Hivits Inc.",
         "role": "iOS Developer · Frontend Developer",
-        "period": "2026.03 — Present"
+        "period": "2026.03 — Present",
+        "site": "https://hi-vits.com"
       },
       {
         "key": "alivebrush",
         "company": "Alivebrush Inc.",
         "role": "Application & Service Planning (PM)",
-        "period": "2025.11 — 2026.01"
+        "period": "2025.11 — 2026.01",
+        "site": "https://aliverush.com"
       },
       {
         "key": "uslash",
         "company": "USLASH",
         "role": "Co-founder · Operator",
-        "period": "2024.08 — 2025.06"
+        "period": "2024.08 — 2025.06",
+        "site": "https://uslash.org"
       },
       {
         "key": "gsm",
         "company": "Gwangju Software Meister High School",
         "role": "iOS Developer · PM",
-        "period": "2023.03 — 2026.02"
+        "period": "2023.03 — 2026.02",
+        "site": "https://hellogsm.kr"
       }
     ],
     "skillsLabel": "Skills",
@@ -526,7 +531,8 @@
         "items": [
           "Swift",
           "TypeScript",
-          "C / C++",
+          "C",
+          "C++",
           "Python"
         ]
       },
