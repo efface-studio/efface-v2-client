@@ -630,3 +630,21 @@ body {
   opacity: 0;
   will-change: transform, width, height, opacity;
 }
+
+/* Founder profile drawer — slides in from the right edge. */
+.profile-panel[open] {
+  animation: profile-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.profile-panel[open]::backdrop {
+  animation: profile-fade 420ms ease-out;
+}
+@keyframes profile-in {
+  from { transform: translateX(100%); }
+}
+@keyframes profile-fade {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-panel[open],
+  .profile-panel[open]::backdrop { animation: none; }
+}
