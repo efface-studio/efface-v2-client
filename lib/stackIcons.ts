@@ -1,8 +1,10 @@
 import {
   siAnthropic,
+  siApple,
   siCapacitor,
   siCloudflare,
   siCloudflareworkers,
+  siCplusplus,
   siDocker,
   siDrizzle,
   siElectron,
@@ -14,11 +16,11 @@ import {
   siFramer,
   siGithubactions,
   siGooglecloud,
+  siHtml5,
+  siJsonwebtokens,
   siMediapipe,
   siNestjs,
   siNextdotjs,
-  siHtml5,
-  siJsonwebtokens,
   siNodedotjs,
   siOxc,
   siPino,
@@ -30,6 +32,7 @@ import {
   siRadixui,
   siReact,
   siReacthookform,
+  siReactivex,
   siReactquery,
   siReactrouter,
   siRedis,
@@ -38,6 +41,7 @@ import {
   siSharp,
   siSocketdotio,
   siSqlalchemy,
+  siSqlite,
   siSupabase,
   siSwagger,
   siSwift,
@@ -55,7 +59,7 @@ import {
   siZod,
 } from "simple-icons";
 import type { SimpleIcon } from "simple-icons";
-import { Calculator, FlaskConical, Globe, KeyRound, type LucideIcon } from "lucide-react";
+import { Boxes, Calculator, FlaskConical, Globe, KeyRound, Layers, type LucideIcon } from "lucide-react";
 
 type Mark = Pick<SimpleIcon, "path" | "hex">;
 
@@ -134,6 +138,8 @@ const ICONS: Record<string, Mark> = {
   "Supabase Storage": siSupabase,
   Swagger: siSwagger,
   Swift: siSwift,
+  "Swift Concurrency": siSwift,
+  SwiftUI: siSwift,
   "Swift (macOS widget)": siSwift,
   "Swift Package Manager": siSwift,
   "Tailwind CSS": siTailwindcss,
@@ -148,6 +154,12 @@ const ICONS: Record<string, Mark> = {
   WebRTC: siWebrtc,
   "YouTube Data API v3": siYoutube,
   Zod: siZod,
+  // Apple's own frameworks carry no mark of their own — the Apple logo stands in.
+  Combine: siApple,
+  UIKit: siApple,
+  "C / C++": siCplusplus,
+  RxSwift: siReactivex,
+  SQLite: siSqlite,
 };
 
 /** Marks simple-icons doesn't carry, as 96px PNGs in `public/stack/` taken
@@ -173,6 +185,8 @@ const GLYPHS: Partial<Record<string, LucideIcon>> = {
   argon2: KeyRound,
   CDN: Globe,
   "decimal.js": Calculator,
+  MVC: Boxes,
+  MVVM: Layers,
   supertest: FlaskConical,
 };
 
