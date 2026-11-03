@@ -8,6 +8,7 @@ import About from "@/components/sections/About";
 import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/Footer";
+import ProfilePanel from "@/components/ProfilePanel";
 
 export default async function Home({
   params,
@@ -31,6 +32,7 @@ export default async function Home({
         <Contact />
       </main>
       <Footer />
+      <ProfilePanel />
     </>
   );
 }
