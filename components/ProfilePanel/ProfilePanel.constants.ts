@@ -5,5 +5,5 @@ export const CAREER_LOGOS: Partial<Record<string, string>> = {
   hivits: "/about/career/hivits-white.svg",
   alivebrush: "/about/career/alivebrush-logo.webp",
   uslash: "/about/career/uslash-logo.webp",
-  gsm: "/about/career/gsm-logo.webp",
+  gsm: "/about/career/gsm-white.webp",
 };
