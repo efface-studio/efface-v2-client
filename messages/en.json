@@ -478,37 +478,41 @@
     ]
   },
   "Profile": {
-    "title": "Founder",
     "close": "Close",
     "photoAlt": "Photo of Jiwan SEO",
     "name": "Jiwan SEO",
     "nameAlt": "서지완",
-    "role": "Founder of efface · iOS · Frontend Developer & PM",
+    "email": "xixn2@efface.dev",
     "headline": "When I find friction, I turn it into a service.",
     "summary": "A developer who turns everyday inconveniences into real services — planning them, building the iOS app and the frontend, and seeing them through release and operation as PM. I enjoy collaborating with all kinds of people and getting one step further than yesterday.",
     "careerLabel": "Career",
     "career": [
       {
+        "key": "efface",
         "company": "efface",
         "role": "Founder · Planning · Design · Development",
         "period": "2026 — Present"
       },
       {
+        "key": "hivits",
         "company": "Hivits Inc.",
         "role": "iOS Developer · Frontend Developer",
         "period": "2026.03 — Present"
       },
       {
+        "key": "alivebrush",
         "company": "Alivebrush Inc.",
         "role": "Application & Service Planning (PM)",
         "period": "2025.11 — 2026.01"
       },
       {
+        "key": "uslash",
         "company": "USLASH",
         "role": "Co-founder · Operator",
         "period": "2024.08 — 2025.06"
       },
       {
+        "key": "gsm",
         "company": "Gwangju Software Meister High School",
         "role": "iOS Developer · PM",
         "period": "2023.03 — 2026.02"
@@ -550,11 +554,6 @@
       }
     ],
     "links": [
-      {
-        "label": "Email",
-        "value": "xixn2@efface.dev",
-        "href": "mailto:xixn2@efface.dev"
-      },
       {
         "label": "GitHub",
         "value": "xixn2",

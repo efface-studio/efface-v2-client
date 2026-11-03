@@ -1,9 +1,58 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowUpRight, X } from "lucide-react";
+import { X } from "lucide-react";
+import { siAppstore, siGithub } from "simple-icons";
+import LinkedInMark from "@/components/LinkedInMark";
+import LogoMark from "@/components/LogoMark";
+import StackMark from "@/components/StackMark";
+import { CAREER_LOGOS } from "./ProfilePanel.constants";
 import type { ProfileCareer, ProfileLink, ProfileSkillGroup } from "./ProfilePanel.types";
+
+/** A small brand-coloured tile, matching LinkedIn's own "in" badge. */
+function Tile({ bg, children }: { bg: string; children: ReactNode }) {
+  return (
+    <span aria-hidden className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] text-white" style={{ background: bg }}>
+      {children}
+    </span>
+  );
+}
+
+/** A company's logo on a small dark plate; its initial when we carry none. */
+function CareerLogo({ career }: { career: ProfileCareer }) {
+  const src = CAREER_LOGOS[career.key];
+  return (
+    <span aria-hidden className="flex h-11 w-16 shrink-0 items-center justify-center rounded-[5px] bg-white/[0.04] ring-1 ring-white/10">
+      {career.key === "efface" ? (
+        <LogoMark className="h-6 w-6 text-fg" />
+      ) : src ? (
+        <img src={src} alt="" className="max-h-5 max-w-12 object-contain" />
+      ) : (
+        <span className="text-base font-semibold text-fg-dim">{career.company.replace(/^\(주\)\s*/, "").charAt(0)}</span>
+      )}
+    </span>
+  );
+}
+
+/** Each link's brand mark, picked by where it points. */
+function LinkMark({ href }: { href: string }) {
+  if (href.includes("linkedin.com"))
+    return (
+      <span aria-hidden className="flex h-4 w-4 items-center leading-none">
+        <LinkedInMark size={16} />
+      </span>
+    );
+  const icon = href.includes("github.com") ? siGithub : href.includes("apps.apple.com") ? siAppstore : null;
+  if (!icon) return null;
+  return (
+    <Tile bg={`#${icon.hex}`}>
+      <svg viewBox="0 0 24 24" className="h-[11px] w-[11px]" fill="currentColor">
+        <path d={icon.path} />
+      </svg>
+    </Tile>
+  );
+}
 
 /**
  * The founder's introduction in a drawer from the right edge, so a click on the
@@ -36,56 +85,56 @@ export default function ProfilePanel() {
       aria-labelledby="profile-name"
       // A click on the dialog itself (not its content) is a click on the backdrop.
       onClick={(e) => e.target === e.currentTarget && dialogRef.current?.close()}
-      className="profile-panel fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-full max-w-[520px] overflow-y-auto overscroll-contain border-l border-white/10 bg-surface p-0 text-fg backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className="profile-panel fixed inset-y-2 left-auto right-2 m-0 h-[calc(100dvh-1rem)] max-h-none w-[calc(100%-1rem)] max-w-[640px] overflow-y-auto overscroll-contain rounded-[5px] border border-white/10 bg-surface p-0 text-fg backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
       <div className="relative px-6 pb-12 pt-6 md:px-10 md:pt-8">
-        <div className="flex items-center justify-between">
-          <p className="label">
-            <span className="text-accent">//</span> {t("title")}
-          </p>
-          <form method="dialog">
-            <button
-              aria-label={t("close")}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5 text-fg-dim ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-fg"
-            >
-              <X aria-hidden className="h-5 w-5" />
-            </button>
-          </form>
-        </div>
+        <form method="dialog" className="absolute right-5 top-5 md:right-8 md:top-7">
+          <button
+            aria-label={t("close")}
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/5 text-fg-dim ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-fg"
+          >
+            <X aria-hidden className="h-5 w-5" />
+          </button>
+        </form>
 
-        {/* Header — photo, name, role. */}
-        <header className="mt-8 flex items-end gap-5">
+        {/* Header — photo, name, email. */}
+        <header className="mt-6 flex items-end gap-5 pr-12">
           <img
-            src="/about/founder.webp"
+            src="/about/founder-photo.webp"
             alt={t("photoAlt")}
             width={400}
-            height={515}
-            className="w-24 shrink-0 rounded-2xl object-cover ring-1 ring-white/10 md:w-28"
+            height={514}
+            // A cut-out on transparency — no frame, the panel is its background.
+            className="w-24 shrink-0 md:w-28"
           />
           <div className="min-w-0 pb-1">
             <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
               {t("name")}
             </h2>
             <p className="mt-1 text-sm text-fg-faint">{t("nameAlt")}</p>
-            <p className="mt-3 break-keep text-sm text-fg-dim">{t("role")}</p>
+            <a
+              href={`mailto:${t("email")}`}
+              className="mt-3 inline-block text-sm text-fg-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg hover:decoration-white/60"
+            >
+              {t("email")}
+            </a>
           </div>
         </header>
 
         {/* Links sit right under the name, where they're looked for first. */}
-        <ul aria-label={t("linksLabel")} className="mt-6 flex flex-wrap gap-2">
+        <ul aria-label={t("linksLabel")} className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
           {links.map((l) => (
             <li key={l.label}>
               <a
                 href={l.href}
                 title={l.value}
                 {...(l.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
-                className="group inline-flex items-center gap-1 rounded-full bg-white/5 py-2 pl-3.5 pr-3 text-sm text-fg ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-accent-bright"
+                className="flex items-center gap-2 text-sm text-fg-dim transition-colors hover:text-fg"
               >
-                {l.label}
-                <ArrowUpRight
-                  aria-hidden
-                  className="h-3.5 w-3.5 text-fg-faint transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent-bright"
-                />
+                <LinkMark href={l.href} />
+                <span className="underline decoration-white/20 underline-offset-4 transition-colors hover:decoration-white/60">
+                  {l.label}
+                </span>
               </a>
             </li>
           ))}
@@ -100,10 +149,16 @@ export default function ProfilePanel() {
           <h3 className="label">{t("careerLabel")}</h3>
           <ol className="mt-5 space-y-5">
             {career.map((c) => (
-              <li key={c.company} className="grid grid-cols-[1fr_auto] gap-x-4">
-                <span className="break-keep font-medium">{c.company}</span>
-                <span className="whitespace-nowrap text-sm tabular-nums text-fg-faint">{c.period}</span>
-                <span className="col-span-2 mt-1 break-keep text-sm text-fg-dim">{c.role}</span>
+              <li key={c.key} className="flex items-center gap-4">
+                <CareerLogo career={c} />
+                {/* Period sits right of the name from sm up; on a phone it drops under the role. */}
+                <div className="grid min-w-0 flex-1 gap-x-4 sm:grid-cols-[1fr_auto]">
+                  <span className="break-keep font-medium">{c.company}</span>
+                  <span className="order-last mt-1 whitespace-nowrap text-sm tabular-nums text-fg-faint sm:order-none sm:mt-0">
+                    {c.period}
+                  </span>
+                  <span className="mt-1 break-keep text-sm text-fg-dim sm:col-span-2">{c.role}</span>
+                </div>
               </li>
             ))}
           </ol>
@@ -115,12 +170,10 @@ export default function ProfilePanel() {
             {skills.map((g) => (
               <div key={g.label}>
                 <dt className="text-sm text-fg-faint">{g.label}</dt>
-                <dd className="mt-2 flex flex-wrap gap-1.5">
+                <dd className="mt-2.5 flex flex-wrap gap-x-5 gap-y-2.5">
                   {g.items.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full bg-white/5 px-3 py-1 text-sm text-fg-dim ring-1 ring-white/10"
-                    >
+                    <span key={item} className="inline-flex items-center gap-2 text-sm text-fg">
+                      <StackMark item={item} />
                       {item}
                     </span>
                   ))}
@@ -129,7 +182,6 @@ export default function ProfilePanel() {
             ))}
           </dl>
         </section>
-
       </div>
     </dialog>
   );
