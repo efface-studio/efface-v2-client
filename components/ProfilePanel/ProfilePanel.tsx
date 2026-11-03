@@ -124,7 +124,7 @@ export default function ProfilePanel() {
         </button>
 
         {/* Header — photo, name, email. */}
-        <header className="mt-6 flex items-end gap-5 pr-12">
+        <header className="mt-6 flex flex-wrap items-end gap-5 pr-12">
           <img
             src="/about/founder-photo.webp"
             alt={t("photoAlt")}
@@ -145,6 +145,10 @@ export default function ProfilePanel() {
               {t("email")}
             </a>
           </div>
+          {/* The one-line motto sits opposite the name from sm up; under it on a phone. */}
+          <p className="w-full break-keep pb-1 text-lg font-medium leading-snug tracking-tight sm:ml-auto sm:w-auto sm:max-w-[24rem] sm:text-right md:text-xl">
+            {t("headline")}
+          </p>
         </header>
 
         {/* Links sit right under the name, where they're looked for first. */}
@@ -165,10 +169,6 @@ export default function ProfilePanel() {
             </li>
           ))}
         </ul>
-
-        <p className="mt-10 break-keep text-xl font-medium leading-snug tracking-tight">
-          {t("headline")}
-        </p>
 
         <section className="mt-10 border-t border-line pt-7">
           <h3 className="label">{t("careerLabel")}</h3>
