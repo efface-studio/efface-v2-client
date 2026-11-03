@@ -161,6 +161,7 @@ const IMAGES: Record<string, string> = {
   // reads as a different logo.
   C: "/stack/c.svg",
   "C++": "/stack/cplusplus.svg",
+  JavaScript: "/stack/javascript.svg",
   Python: "/stack/python.svg",
   Swift: "/stack/swift.svg",
   "Swift Concurrency": "/stack/swift.svg",
