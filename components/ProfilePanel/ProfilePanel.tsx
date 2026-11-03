@@ -145,10 +145,12 @@ export default function ProfilePanel() {
               {t("email")}
             </a>
           </div>
-          {/* The one-line motto sits opposite the name from sm up; under it on a phone. */}
-          <p className="w-full break-keep pb-1 text-lg font-medium leading-snug tracking-tight sm:ml-auto sm:w-auto sm:max-w-[24rem] sm:text-right md:text-xl">
-            {t("headline")}
-          </p>
+          {/* The motto and summary fill the space opposite the name from sm up;
+              on a phone they follow it. */}
+          <div className="w-full pb-1 sm:ml-auto sm:w-auto sm:max-w-[26rem]">
+            <p className="break-keep text-lg font-medium leading-snug tracking-tight md:text-xl">{t("headline")}</p>
+            <p className="mt-2.5 break-keep text-sm leading-relaxed text-fg-dim">{t("summary")}</p>
+          </div>
         </header>
 
         {/* Links sit right under the name, where they're looked for first. */}
