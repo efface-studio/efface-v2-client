@@ -2,10 +2,10 @@ import { readdir } from "node:fs/promises";
 import path from "node:path";
 import type { BuildRepoEntry } from "./BuildMode.types";
 
-/** What the editor's explorer shows: the repo as committed, nothing local. */
-const ROOT_DIRS = [".github", "app", "components", "docs", "i18n", "lib", "messages", "public", "scripts", "store"];
+/** What the editor's explorer shows: the site's own source. Nothing local, and
+ *  none of the team's internal notes, scripts or CI (CLAUDE.md, docs, scripts, .github). */
+const ROOT_DIRS = ["app", "components", "i18n", "lib", "messages", "public", "store"];
 const ROOT_FILES = [
-  "CLAUDE.md",
   "README.md",
   "middleware.ts",
   "next.config.ts",

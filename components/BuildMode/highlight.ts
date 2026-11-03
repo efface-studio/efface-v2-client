@@ -43,3 +43,34 @@ export function tokenize(code: string): BuildToken[] {
   if (last < code.length) out.push({ text: code.slice(last), kind: "plain" });
   return out;
 }
+
+/**
+ * The source with its comments taken out — lines that held only a comment go
+ * with it, the rest keep their code. Copy that merely looks like a comment
+ * (`//` after a tag or in a URL) stays, by the same rules as the lexer.
+ */
+export function stripComments(code: string): string {
+  // Mark every character that belongs to a comment, then rebuild line by line.
+  const inComment = new Uint8Array(code.length);
+  let at = 0;
+  for (const t of tokenize(code)) {
+    if (t.kind === "comment") inComment.fill(1, at, at + t.text.length);
+    at += t.text.length;
+  }
+  const out: string[] = [];
+  let line = "";
+  let hadComment = false;
+  for (let i = 0; i <= code.length; i++) {
+    const ch = code[i];
+    if (ch === "\n" || i === code.length) {
+      // A line that was only a comment (and its indent) goes entirely.
+      if (!(hadComment && !line.trim())) out.push(line.trimEnd());
+      line = "";
+      hadComment = false;
+      continue;
+    }
+    if (inComment[i]) hadComment = true;
+    else line += ch;
+  }
+  return out.join("\n").replace(/\n{3,}/g, "\n\n");
+}
