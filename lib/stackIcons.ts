@@ -1,5 +1,6 @@
 import {
   siAnthropic,
+  siApple,
   siCapacitor,
   siCloudflare,
   siCloudflareworkers,
@@ -14,11 +15,11 @@ import {
   siFramer,
   siGithubactions,
   siGooglecloud,
+  siHtml5,
+  siJsonwebtokens,
   siMediapipe,
   siNestjs,
   siNextdotjs,
-  siHtml5,
-  siJsonwebtokens,
   siNodedotjs,
   siOxc,
   siPino,
@@ -26,10 +27,10 @@ import {
   siPostgresql,
   siPrisma,
   siPydantic,
-  siPython,
   siRadixui,
   siReact,
   siReacthookform,
+  siReactivex,
   siReactquery,
   siReactrouter,
   siRedis,
@@ -38,6 +39,7 @@ import {
   siSharp,
   siSocketdotio,
   siSqlalchemy,
+  siSqlite,
   siSupabase,
   siSwagger,
   siSwift,
@@ -45,7 +47,6 @@ import {
   siTauri,
   siTestinglibrary,
   siThreedotjs,
-  siTypescript,
   siVercel,
   siVite,
   siVitest,
@@ -55,7 +56,7 @@ import {
   siZod,
 } from "simple-icons";
 import type { SimpleIcon } from "simple-icons";
-import { Calculator, FlaskConical, Globe, KeyRound, type LucideIcon } from "lucide-react";
+import { Boxes, Calculator, FlaskConical, Globe, KeyRound, Layers, type LucideIcon } from "lucide-react";
 
 type Mark = Pick<SimpleIcon, "path" | "hex">;
 
@@ -117,7 +118,6 @@ const ICONS: Record<string, Mark> = {
   "Supabase Postgres": siSupabase,
   Prisma: siPrisma,
   "pydantic-ai": siPydantic,
-  Python: siPython,
   "Radix UI": siRadixui,
   React: siReact,
   "React Native": siReact,
@@ -133,14 +133,12 @@ const ICONS: Record<string, Mark> = {
   Supabase: siSupabase,
   "Supabase Storage": siSupabase,
   Swagger: siSwagger,
-  Swift: siSwift,
   "Swift (macOS widget)": siSwift,
   "Swift Package Manager": siSwift,
   "Tailwind CSS": siTailwindcss,
   Tauri: siTauri,
   "Testing Library": siTestinglibrary,
   "three.js": siThreedotjs,
-  TypeScript: siTypescript,
   Vercel: siVercel,
   Vite: siVite,
   Vitest: siVitest,
@@ -148,12 +146,27 @@ const ICONS: Record<string, Mark> = {
   WebRTC: siWebrtc,
   "YouTube Data API v3": siYoutube,
   Zod: siZod,
+  // Apple's own frameworks carry no mark of their own — the Apple logo stands in.
+  Combine: siApple,
+  UIKit: siApple,
+  RxSwift: siReactivex,
+  SQLite: siSqlite,
 };
 
 /** Marks simple-icons doesn't carry, as 96px PNGs in `public/stack/` taken
  *  from each project's own site, devicon or svgl. Near-black marks (Tiptap,
  *  Reanimated) were lightened the same way `isDark` does for the paths. */
 const IMAGES: Record<string, string> = {
+  // Official multi-colour marks, where the single-colour simple-icons glyph
+  // reads as a different logo.
+  C: "/stack/c.svg",
+  "C++": "/stack/cplusplus.svg",
+  JavaScript: "/stack/javascript.svg",
+  Python: "/stack/python.svg",
+  Swift: "/stack/swift.svg",
+  "Swift Concurrency": "/stack/swift.svg",
+  SwiftUI: "/stack/swift.svg",
+  TypeScript: "/stack/typescript.svg",
   ExcelJS: "/stack/exceljs.png",
   "fast-check": "/stack/fast-check.png",
   motion: "/stack/motion.png",
@@ -173,6 +186,8 @@ const GLYPHS: Partial<Record<string, LucideIcon>> = {
   argon2: KeyRound,
   CDN: Globe,
   "decimal.js": Calculator,
+  MVC: Boxes,
+  MVVM: Layers,
   supertest: FlaskConical,
 };
 

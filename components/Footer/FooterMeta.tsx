@@ -48,6 +48,7 @@ function RowValue({ row }: { row: FooterRow }) {
     <a
       href={row.href}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+      {...(row.mark === "linkedin" ? { "data-profile": "" } : {})}
       className="footer-link"
       style={{ color: "#A9A9B2" }}
     >

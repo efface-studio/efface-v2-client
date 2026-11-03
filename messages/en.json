@@ -477,6 +477,151 @@
       { "label": "Support", "note": "Help with a service we run", "email": "support@efface.dev" }
     ]
   },
+  "Profile": {
+    "close": "Close",
+    "photoAlt": "Photo of Jiwan SEO",
+    "name": "Jiwan SEO",
+    "nameAlt": "서지완",
+    "email": "xixn2@efface.dev",
+    "headline": "When I find friction, I turn it into a service.",
+    "summary": "A full-stack developer who carries a product from planning through release and operation. I build LLM-powered services and RAG pipelines myself, and treat everything from servers, databases and infrastructure on AWS to the interface as one flow. When I find an everyday inconvenience, I like turning it into a product that actually works.",
+    "careerLabel": "Career",
+    "career": [
+      {
+        "key": "efface",
+        "company": "efface",
+        "role": "Founder · CTO",
+        "period": "2026 — Present",
+        "site": "https://efface.dev"
+      },
+      {
+        "key": "hivits",
+        "company": "Hivits Inc.",
+        "role": "Software Engineer",
+        "period": "2026.03 — Present",
+        "site": "https://hi-vits.com"
+      },
+      {
+        "key": "alivebrush",
+        "company": "Alivebrush Inc.",
+        "role": "Application & Service Planning (PM)",
+        "period": "2025.11 — 2026.01",
+        "site": "https://aliverush.com"
+      },
+      {
+        "key": "uslash",
+        "company": "USLASH",
+        "role": "Co-founder · Operator",
+        "period": "2024.08 — 2025.06",
+        "site": "https://uslash.org"
+      },
+      {
+        "key": "gsm",
+        "company": "Gwangju Software Meister High School",
+        "role": "iOS Developer · PM",
+        "period": "2023.03 — 2026.02",
+        "site": "https://hellogsm.kr"
+      }
+    ],
+    "skillsLabel": "Skills",
+    "linksLabel": "Links",
+    "skills": [
+      {
+        "label": "Language",
+        "items": [
+          "Swift",
+          "JavaScript",
+          "TypeScript",
+          "Python",
+          "C",
+          "C++"
+        ]
+      },
+      {
+        "label": "iOS",
+        "items": [
+          "SwiftUI",
+          "UIKit",
+          "Swift Concurrency",
+          "Combine",
+          "RxSwift",
+          "Tuist",
+          "MVVM",
+          "MVC"
+        ]
+      },
+      {
+        "label": "Web",
+        "items": [
+          "React",
+          "Next.js",
+          "Tailwind CSS",
+          "TanStack Query",
+          "Zustand",
+          "motion",
+          "three.js",
+          "Vite"
+        ]
+      },
+      {
+        "label": "App · Desktop",
+        "items": [
+          "React Native",
+          "Expo",
+          "Electron",
+          "Tauri",
+          "Capacitor"
+        ]
+      },
+      {
+        "label": "Server · Data",
+        "items": [
+          "Node.js",
+          "NestJS",
+          "Express",
+          "Fastify",
+          "FastAPI",
+          "Socket.IO",
+          "Prisma",
+          "Drizzle",
+          "PostgreSQL",
+          "Redis",
+          "Supabase",
+          "SQLite"
+        ]
+      },
+      {
+        "label": "Infra · AI",
+        "items": [
+          "Vercel",
+          "Docker",
+          "AWS S3",
+          "AWS SES",
+          "Cloudflare Workers",
+          "GitHub Actions",
+          "Firebase (FCM)",
+          "OpenAI"
+        ]
+      }
+    ],
+    "links": [
+      {
+        "label": "GitHub",
+        "value": "xixn2",
+        "href": "https://github.com/xixn2"
+      },
+      {
+        "label": "LinkedIn",
+        "value": "xixn2",
+        "href": "https://www.linkedin.com/in/xixn2"
+      },
+      {
+        "label": "App Store",
+        "value": "Jiwan Seo",
+        "href": "https://apps.apple.com/kr/developer/jiwan-seo/id1778994453"
+      }
+    ]
+  },
   "Footer": {
     "tagline": "~Erase~ the complexity. Keep the effect.",
     "groups": [

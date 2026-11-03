@@ -53,6 +53,7 @@ export default function About() {
                         <a
                           href={m.href}
                           {...(m.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
+                          {...(m.href.includes("linkedin.com") ? { "data-profile": "" } : {})}
                           className="group inline-flex items-center gap-1.5 transition-colors hover:text-accent-bright"
                         >
                           {m.value}

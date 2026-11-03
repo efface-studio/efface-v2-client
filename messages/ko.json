@@ -477,6 +477,151 @@
       { "label": "Support", "note": "운영 중인 서비스 이용 지원", "email": "support@efface.dev" }
     ]
   },
+  "Profile": {
+    "close": "닫기",
+    "photoAlt": "서지완 사진",
+    "name": "서지완",
+    "nameAlt": "Jiwan SEO",
+    "email": "xixn2@efface.dev",
+    "headline": "불편함을 발견하면, 서비스로 만듭니다.",
+    "summary": "기획부터 배포·운영까지 끝까지 책임지는 풀스택 개발자입니다. LLM 기반 서비스와 RAG 파이프라인을 직접 구축하고, AWS 위의 서버·데이터베이스·인프라부터 화면까지 하나의 흐름으로 만듭니다. 일상의 불편함을 발견하면 실제로 작동하는 제품으로 바꾸는 일을 즐깁니다.",
+    "careerLabel": "경력",
+    "career": [
+      {
+        "key": "efface",
+        "company": "efface",
+        "role": "Founder · CTO",
+        "period": "2026 — 운영 중",
+        "site": "https://efface.dev"
+      },
+      {
+        "key": "hivits",
+        "company": "㈜하이비츠",
+        "role": "Software Engineer",
+        "period": "2026.03 — 재직 중",
+        "site": "https://hi-vits.com"
+      },
+      {
+        "key": "alivebrush",
+        "company": "㈜얼라이브러쉬",
+        "role": "어플리케이션 · 서비스 기획 (PM)",
+        "period": "2025.11 — 2026.01",
+        "site": "https://aliverush.com"
+      },
+      {
+        "key": "uslash",
+        "company": "USLASH",
+        "role": "공동 설립 · 운영",
+        "period": "2024.08 — 2025.06",
+        "site": "https://uslash.org"
+      },
+      {
+        "key": "gsm",
+        "company": "광주소프트웨어마이스터고",
+        "role": "iOS Developer · PM",
+        "period": "2023.03 — 2026.02",
+        "site": "https://hellogsm.kr"
+      }
+    ],
+    "skillsLabel": "기술",
+    "linksLabel": "링크",
+    "skills": [
+      {
+        "label": "Language",
+        "items": [
+          "Swift",
+          "JavaScript",
+          "TypeScript",
+          "Python",
+          "C",
+          "C++"
+        ]
+      },
+      {
+        "label": "iOS",
+        "items": [
+          "SwiftUI",
+          "UIKit",
+          "Swift Concurrency",
+          "Combine",
+          "RxSwift",
+          "Tuist",
+          "MVVM",
+          "MVC"
+        ]
+      },
+      {
+        "label": "Web",
+        "items": [
+          "React",
+          "Next.js",
+          "Tailwind CSS",
+          "TanStack Query",
+          "Zustand",
+          "motion",
+          "three.js",
+          "Vite"
+        ]
+      },
+      {
+        "label": "App · Desktop",
+        "items": [
+          "React Native",
+          "Expo",
+          "Electron",
+          "Tauri",
+          "Capacitor"
+        ]
+      },
+      {
+        "label": "Server · Data",
+        "items": [
+          "Node.js",
+          "NestJS",
+          "Express",
+          "Fastify",
+          "FastAPI",
+          "Socket.IO",
+          "Prisma",
+          "Drizzle",
+          "PostgreSQL",
+          "Redis",
+          "Supabase",
+          "SQLite"
+        ]
+      },
+      {
+        "label": "Infra · AI",
+        "items": [
+          "Vercel",
+          "Docker",
+          "AWS S3",
+          "AWS SES",
+          "Cloudflare Workers",
+          "GitHub Actions",
+          "Firebase (FCM)",
+          "OpenAI"
+        ]
+      }
+    ],
+    "links": [
+      {
+        "label": "GitHub",
+        "value": "xixn2",
+        "href": "https://github.com/xixn2"
+      },
+      {
+        "label": "LinkedIn",
+        "value": "xixn2",
+        "href": "https://www.linkedin.com/in/xixn2"
+      },
+      {
+        "label": "App Store",
+        "value": "Jiwan Seo",
+        "href": "https://apps.apple.com/kr/developer/jiwan-seo/id1778994453"
+      }
+    ]
+  },
   "Footer": {
     "tagline": "복잡함은 ~지우고~, 효과만 남깁니다.",
     "groups": [
