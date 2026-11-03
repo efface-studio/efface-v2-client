@@ -124,7 +124,7 @@ export default function ProfilePanel() {
         </button>
 
         {/* Header — photo, name, email. */}
-        <header className="mt-6 flex flex-wrap items-end gap-5 pr-12">
+        <header className="mt-6 flex flex-wrap items-stretch gap-5 pr-12">
           <img
             src="/about/founder-photo.webp"
             alt={t("photoAlt")}
@@ -133,7 +133,7 @@ export default function ProfilePanel() {
             // A cut-out on transparency — no frame, the panel is its background.
             className="w-24 shrink-0 md:w-28"
           />
-          <div className="min-w-0 pb-1">
+          <div className="min-w-0 self-end pb-4">
             <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
               {t("name")}
             </h2>
@@ -145,9 +145,10 @@ export default function ProfilePanel() {
               {t("email")}
             </a>
           </div>
-          {/* The motto and summary fill the space opposite the name from sm up;
-              on a phone they follow it. */}
-          <div className="w-full pb-1 sm:ml-auto sm:w-auto sm:max-w-[26rem]">
+          {/* The motto and summary fill the rest of the row from sm up, spanning
+              the photo's height (motto at its top, summary at its foot); on a
+              phone they follow the name. */}
+          <div className="w-full sm:flex sm:w-auto sm:min-w-[16rem] sm:flex-1 sm:translate-y-4 sm:flex-col sm:justify-between sm:pl-12 sm:pt-4">
             <p className="break-keep text-lg font-medium leading-snug tracking-tight md:text-xl">{t("headline")}</p>
             <p className="mt-2.5 break-keep text-sm leading-relaxed text-fg-dim">{t("summary")}</p>
           </div>
