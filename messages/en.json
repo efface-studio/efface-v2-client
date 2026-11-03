@@ -622,6 +622,30 @@
       }
     ]
   },
+  "Build": {
+    "open": "Build",
+    "title": "Building efface",
+    "loading": "Preparing preview",
+    "building": "Writing {file}",
+    "done": "Done",
+    "pause": "Pause",
+    "resume": "Resume",
+    "speed": "Speed",
+    "skip": "Skip",
+    "close": "Close",
+    "code": "Code editor",
+    "preview": "Preview of efface being built",
+    "progress": "Build progress",
+    "error": "Couldn't load the source",
+    "intro": "Building efface from scratch",
+    "outro": "Back to the site",
+    "resize": "Resize preview and editor",
+    "editor": {
+      "explorer": "Explorer",
+      "closeTab": "Close {file}",
+      "binary": "The file is not displayed in the text editor because it is binary."
+    }
+  },
   "Footer": {
     "tagline": "~Erase~ the complexity. Keep the effect.",
     "groups": [

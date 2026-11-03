@@ -5,6 +5,7 @@ import { AnimatePresence } from "motion/react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useUIStore } from "@/store/ui.store";
+import BuildButton from "@/components/BuildMode";
 import LanguageToggle from "@/components/LanguageToggle";
 import LogoMark from "@/components/LogoMark";
 import NavOverlay from "./NavOverlay";
@@ -48,7 +49,8 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-5 md:gap-7">
+          <div className="flex items-center gap-4 md:gap-7">
+            <BuildButton />
             <LanguageToggle />
             <button
               type="button"

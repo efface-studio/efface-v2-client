@@ -9,6 +9,7 @@ import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/Footer";
 import ProfilePanel from "@/components/ProfilePanel";
+import { BuildStage } from "@/components/BuildMode";
 
 export default async function Home({
   params,
@@ -33,6 +34,7 @@ export default async function Home({
       </main>
       <Footer />
       <ProfilePanel />
+      <BuildStage />
     </>
   );
 }
