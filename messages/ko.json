@@ -622,6 +622,21 @@
       }
     ]
   },
+  "Build": {
+    "open": "생성",
+    "title": "efface 생성",
+    "loading": "미리보기 준비 중",
+    "building": "{file} 작성 중",
+    "done": "완성",
+    "pause": "일시정지",
+    "resume": "계속",
+    "speed": "배속",
+    "skip": "건너뛰기",
+    "close": "닫기",
+    "code": "코드 편집기",
+    "preview": "생성 중인 efface 미리보기",
+    "progress": "생성 진행률"
+  },
   "Footer": {
     "tagline": "복잡함은 ~지우고~, 효과만 남깁니다.",
     "groups": [

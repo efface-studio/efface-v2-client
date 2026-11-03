@@ -622,6 +622,21 @@
       }
     ]
   },
+  "Build": {
+    "open": "Build",
+    "title": "Building efface",
+    "loading": "Preparing preview",
+    "building": "Writing {file}",
+    "done": "Done",
+    "pause": "Pause",
+    "resume": "Resume",
+    "speed": "Speed",
+    "skip": "Skip",
+    "close": "Close",
+    "code": "Code editor",
+    "preview": "Preview of efface being built",
+    "progress": "Build progress"
+  },
   "Footer": {
     "tagline": "~Erase~ the complexity. Keep the effect.",
     "groups": [
