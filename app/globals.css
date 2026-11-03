@@ -788,9 +788,8 @@ body {
 .build-stage [data-build-wait] {
   opacity: 0 !important;
 }
-/* Icons pop in; images and scenes unveil top-down through a soft edge,
-   settling from a slight zoom and blur. Backwards fill only, so the element's
-   own transforms and filters return once it's done. */
+/* Icons pop in; images and scenes unveil top-down, settling into place.
+   Backwards fill only, so the element's own transforms return once done. */
 .build-stage [data-build-in="pop"] {
   animation: build-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
@@ -800,30 +799,41 @@ body {
     transform: scale(0.4);
   }
 }
-@property --build-reveal {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 100%;
-}
 .build-stage [data-build-in="scan"],
-.build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas):not([data-build-in]) {
-  animation: build-unveil calc(1500ms / var(--build-speed, 1)) cubic-bezier(0.22, 1, 0.36, 1) backwards;
+.build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas):not([data-build-in], [data-build-hold], [data-build-hold] *) {
+  animation: build-unveil calc(1100ms / var(--build-speed, 1)) cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
+/* Cheap to run on big images: clip, opacity and a slight settle — no blur or
+   mask, which would repaint the whole image every frame. */
 @keyframes build-unveil {
   from {
-    --build-reveal: -30%;
-    opacity: 0.2;
-    transform: scale(1.06);
-    filter: blur(16px) saturate(0.3) brightness(1.3);
+    opacity: 0;
+    clip-path: inset(0 0 100% 0 round 12px);
+    transform: translateY(-14px) scale(1.03);
+  }
+  60% {
+    opacity: 1;
   }
   to {
-    --build-reveal: 100%;
+    clip-path: inset(0 0 0 0 round 0);
   }
 }
-.build-stage [data-build-in="scan"],
-.build-stage :is([data-build="media"], [data-build="done"]) :is(img, video, canvas):not([data-build-in]) {
-  -webkit-mask-image: linear-gradient(to bottom, #000 var(--build-reveal), transparent calc(var(--build-reveal) + 30%));
-  mask-image: linear-gradient(to bottom, #000 var(--build-reveal), transparent calc(var(--build-reveal) + 30%));
+/* An animated piece kept back until its own file grows it (`--build-grow`, 0–1):
+   drawn in top-down, or — the hero's backdrop — landing: it fades up as it
+   settles from a slight zoom, eased so it arrives early and glides in. */
+.build-stage [data-build-hold] {
+  opacity: var(--build-grow, 0) !important;
+  transition:
+    opacity 0.4s ease-out,
+    clip-path 0.3s linear,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.build-stage [data-build-hold="draw"] {
+  clip-path: inset(0 0 calc((1 - var(--build-grow, 0)) * 100%) 0);
+}
+.build-stage [data-build-hold="land"] {
+  opacity: calc(1 - (1 - var(--build-grow, 0)) * (1 - var(--build-grow, 0))) !important;
+  transform: scale(calc(1.08 - 0.08 * var(--build-grow, 0)));
 }
 @media (prefers-reduced-motion: reduce) {
   .build-studio[open],

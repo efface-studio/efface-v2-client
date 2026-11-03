@@ -15,6 +15,7 @@ import {
   BUILD_PARAM,
   BUILD_SOURCE_URL,
   DONE_CLOSE_MS,
+  FRAME_DELAY_MS,
   OUTRO_MS,
   RETURN_MS,
   SPEEDS,
@@ -91,8 +92,15 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
       onClose();
     }, OUTRO_MS);
   }, [onClose]);
-  // Built only on the client (the studio never server-renders).
+  // Built only on the client (the studio never server-renders). The preview
+  // page starts loading once the splash's mark and wordmark are in: its
+  // hydration is the heaviest moment here, and it would stall their entrance.
   const src = useMemo(() => `${location.pathname}?${BUILD_PARAM}`, []);
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setArmed(true), reducedMotion() ? 0 : FRAME_DELAY_MS);
+    return () => clearTimeout(id);
+  }, []);
 
   useEffect(() => {
     dialogRef.current?.showModal();
@@ -110,7 +118,7 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
   }, [status, leave]);
 
   const current = files?.[view.file].name ?? "";
-  const statusLabel = status === "done" ? t("done") : t("building", { file: current });
+  const statusLabel = status === "done" ? t("done") : status === "loading" ? t("loading") : t("building", { file: current });
 
   return (
     <dialog
@@ -186,7 +194,7 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
           <div className="flex min-h-0 min-w-0 shrink-0 flex-col" style={{ flexBasis: `${split * 100}%` }}>
             <PreviewPane
               frameRef={frameRef}
-              src={src}
+              src={armed ? src : "about:blank"}
               title={t("preview")}
               loadingLabel={failed ? t("error") : status === "loading" ? t("loading") : null}
               status={statusLabel}

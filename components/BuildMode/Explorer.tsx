@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { ChevronDown, ChevronRight, Ellipsis } from "lucide-react";
 import { cn } from "@/lib/cn";
 import FileIcon from "./FileIcon";
@@ -58,7 +58,7 @@ interface ExplorerProps {
 }
 
 /** VS Code's explorer over the real repo: folders open and close, files open in the editor. */
-export default function Explorer({ title, repo, entries, open, active, written, onToggle, onOpen }: ExplorerProps) {
+function Explorer({ title, repo, entries, open, active, written, onToggle, onOpen }: ExplorerProps) {
   const root = useMemo(() => toTree(entries), [entries]);
 
   const render = (folder: Folder, depth: number): React.ReactNode[] => [
@@ -110,3 +110,5 @@ export default function Explorer({ title, repo, entries, open, active, written, 
     </aside>
   );
 }
+
+export default memo(Explorer);

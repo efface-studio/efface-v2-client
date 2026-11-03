@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import { useTranslations } from "next-intl";
 import {
@@ -82,6 +82,60 @@ function toRows(tokens: BuildToken[], pos: number): Piece[][] {
   return rows;
 }
 
+/** Cuts a full line's pieces to its first `chars` characters. */
+function cutRow(row: Piece[], chars: number): Piece[] {
+  const out: Piece[] = [];
+  let left = chars;
+  for (const piece of row) {
+    if (left <= 0) break;
+    out.push(left >= piece.text.length ? piece : { ...piece, text: piece.text.slice(0, left), whole: false });
+    left -= piece.text.length;
+  }
+  return out;
+}
+
+interface LineProps {
+  pieces: Piece[];
+  no: number;
+  current: boolean;
+  folded: boolean;
+  caret: "typing" | "idle" | null;
+}
+
+/** One editor line. Memoised: while typing, only the line under the caret
+ *  changes, so every finished line above it skips re-rendering. */
+const Line = memo(function Line({ pieces, no, current, folded, caret }: LineProps) {
+  return (
+    <span className={cn("flex", current && "bg-[#16171f]")}>
+      <span aria-hidden className={cn("w-14 shrink-0 select-none pr-5 text-right", current ? "text-[#9aa5ce]" : "text-[#363b54]")}>
+        {no}
+      </span>
+      <span className="min-w-0 flex-1 whitespace-pre-wrap break-words pr-5">
+        {pieces.map((x, i) => (
+          <span key={i} className={TOKEN_CLASS[x.kind]}>
+            {/* VS Code's colour decorator: a swatch before a colour value. */}
+            {x.kind === "hex" && x.whole && (
+              <span
+                aria-hidden
+                className="mx-0.5 inline-block h-[0.75em] w-[0.75em] translate-y-[0.05em] border border-white/50"
+                style={{ background: x.text }}
+              />
+            )}
+            {x.text}
+          </span>
+        ))}
+        {caret && <span aria-hidden className={cn("build-caret", caret === "idle" && "build-caret--idle")} />}
+        {/* Folded lines (imports, hooks) between the signature and the JSX. */}
+        {folded && (
+          <span aria-hidden className="ml-2 rounded-[3px] bg-[#1f2335] px-1.5 text-[#737aa2]">
+            ⋯
+          </span>
+        )}
+      </span>
+    </span>
+  );
+});
+
 /** Folders above a path, outermost first: "a/b/c.ts" → ["a", "a/b"]. */
 const ancestors = (p: string) =>
   p
@@ -121,16 +175,26 @@ export default function CodePane({ files, tree, file, pos, label, typing }: Code
   const written = useMemo(() => new Set(files.slice(0, file + 1).map((f) => f.path)), [files, file]);
   const binary = useMemo(() => new Set(tree.filter((e) => e.binary).map((e) => e.path)), [tree]);
 
-  const openFile = (path: string) => {
+  // Stable, so the (memoised) explorer doesn't re-render with every keystroke.
+  const openFile = useCallback((path: string) => {
     setTabs((ts) => (ts.includes(path) ? ts : [...ts, path]));
     setActive(path);
     setOpen((s) => new Set([...s, ...ancestors(path)]));
-  };
+  }, []);
+  const toggleFolder = useCallback(
+    (p: string) =>
+      setOpen((s) => {
+        const next = new Set(s);
+        if (!next.delete(p)) next.add(p);
+        return next;
+      }),
+    []
+  );
 
   // Each new file being written opens and takes the editor, as it would.
   useEffect(() => {
     openFile(typingFile.path);
-  }, [typingFile.path]);
+  }, [typingFile.path, openFile]);
 
   const closeTab = (path: string) => {
     const at = tabs.indexOf(path);
@@ -162,10 +226,24 @@ export default function CodePane({ files, tree, file, pos, label, typing }: Code
     () => (text === null ? [] : CODE_FILE.test(active) || shownFile ? tokenize(text) : [{ text, kind: "plain" as const }]),
     [text, active, shownFile]
   );
-  const rows = toRows(tokens, typingView ? pos : Infinity);
-  const lastRow = rows.length - 1;
+  // Every line of the file, split once; typing shows the finished lines as they
+  // are and only cuts the one under the caret.
+  const fullRows = useMemo(() => toRows(tokens, Infinity), [tokens]);
+  const lineStarts = useMemo(() => {
+    const starts = [0];
+    for (const row of fullRows) starts.push(starts[starts.length - 1] + row.reduce((n, x) => n + x.text.length, 0) + 1);
+    return starts;
+  }, [fullRows]);
+  let lastRow = fullRows.length - 1;
+  let caretRow: Piece[] = fullRows[lastRow] ?? [];
+  if (typingView) {
+    lastRow = 0;
+    while (lastRow + 1 < fullRows.length && lineStarts[lastRow + 1] <= pos) lastRow++;
+    caretRow = cutRow(fullRows[lastRow] ?? [], pos - lineStarts[lastRow]);
+  }
+  const rows = fullRows.slice(0, lastRow + 1);
   const lineNo = (r: number) => (shownFile ? shownFile.lineNumbers[r] : r + 1);
-  const col = typingView ? rows[lastRow].reduce((n, x) => n + x.text.length, 0) + 1 : 1;
+  const col = typingView ? caretRow.reduce((n, x) => n + x.text.length, 0) + 1 : 1;
 
   // Typing keeps the caret in sight; opening another file starts at its top.
   useLayoutEffect(() => {
@@ -235,13 +313,7 @@ export default function CodePane({ files, tree, file, pos, label, typing }: Code
               open={open}
               active={active}
               written={written}
-              onToggle={(p) =>
-                setOpen((s) => {
-                  const next = new Set(s);
-                  if (!next.delete(p)) next.add(p);
-                  return next;
-                })
-              }
+              onToggle={toggleFolder}
               onOpen={openFile}
             />
           </div>
@@ -309,36 +381,14 @@ export default function CodePane({ files, tree, file, pos, label, typing }: Code
                   {rows.map((row, r) => {
                     const current = typingView && r === lastRow;
                     return (
-                      <span key={r} className={cn("flex", current && "bg-[#16171f]")}>
-                        <span
-                          aria-hidden
-                          className={cn("w-14 shrink-0 select-none pr-5 text-right", current ? "text-[#9aa5ce]" : "text-[#363b54]")}
-                        >
-                          {lineNo(r)}
-                        </span>
-                        <span className="min-w-0 flex-1 whitespace-pre-wrap break-words pr-5">
-                          {row.map((x, i) => (
-                            <span key={i} className={TOKEN_CLASS[x.kind]}>
-                              {/* VS Code's colour decorator: a swatch before a colour value. */}
-                              {x.kind === "hex" && x.whole && (
-                                <span
-                                  aria-hidden
-                                  className="mx-0.5 inline-block h-[0.75em] w-[0.75em] translate-y-[0.05em] border border-white/50"
-                                  style={{ background: x.text }}
-                                />
-                              )}
-                              {x.text}
-                            </span>
-                          ))}
-                          {current && <span aria-hidden className={cn("build-caret", !typing && "build-caret--idle")} />}
-                          {/* Folded lines (imports, hooks) between the signature and the JSX. */}
-                          {shownFile?.folds.includes(r) && r < lastRow && (
-                            <span aria-hidden className="ml-2 rounded-[3px] bg-[#1f2335] px-1.5 text-[#737aa2]">
-                              ⋯
-                            </span>
-                          )}
-                        </span>
-                      </span>
+                      <Line
+                        key={r}
+                        pieces={current ? caretRow : row}
+                        no={lineNo(r)}
+                        current={current}
+                        folded={!!shownFile?.folds.includes(r) && r < lastRow}
+                        caret={current ? (typing ? "typing" : "idle") : null}
+                      />
                     );
                   })}
                 </code>
