@@ -39,18 +39,18 @@ export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number;
 ];
 
 /** Typing speed at 1×, in characters per second — real files are long. */
-export const TYPE_CPS = 230;
+export const TYPE_CPS = 345;
 /** However fast the code goes, letters appear at most this fast (per second, at
  *  1×): the typing slows through a letters phase so each one can be seen. */
-export const LETTERS_PER_SEC = 28;
+export const LETTERS_PER_SEC = 42;
 /** Typing cost of a line break, and of a comment's characters (skimmed). */
 export const NEWLINE_COST = 3;
 export const COMMENT_COST = 0.3;
 
 /** Time for the preview to scroll to a section before its code starts. */
-export const ENTER_WAIT_MS = 800;
+export const ENTER_WAIT_MS = 540;
 /** Beat on the finished section before the next file opens. */
-export const SECTION_END_WAIT_MS = 700;
+export const SECTION_END_WAIT_MS = 470;
 /** How long "Done" stays up before the studio closes itself. */
 export const DONE_CLOSE_MS = 2000;
 /** The opening splash: shortest it stays, and its lift-off (match globals.css). */
