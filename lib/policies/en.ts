@@ -47,7 +47,7 @@ export const EN: PolicyContent = {
         {
           kind: "h",
           heading: "6. Data protection officer",
-          text: "Seojiwan Suh · xixn2@efface.dev",
+          text: "Jiwan SEO · xixn2@efface.dev",
         },
       ],
     },
