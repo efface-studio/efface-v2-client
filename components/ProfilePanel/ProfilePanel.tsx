@@ -131,7 +131,8 @@ export default function ProfilePanel() {
             width={400}
             height={514}
             // A cut-out on transparency — no frame, the panel is its background.
-            className="w-24 shrink-0 md:w-28"
+            // self-start keeps the row's stretch from pulling it out of ratio.
+            className="h-auto w-24 shrink-0 self-start md:w-28"
           />
           <div className="min-w-0 self-end pb-4">
             <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
