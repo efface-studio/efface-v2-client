@@ -1,5 +1,7 @@
 /** One role on the founder's career line. */
 export interface ProfileCareer {
+  /** Stable id for the logo lookup — the name itself is localised. */
+  key: string;
   company: string;
   role: string;
   period: string;
