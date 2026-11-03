@@ -1,3 +1,5 @@
+import type { BuildPlanEntry } from "./BuildMode.types";
+
 /** Query flag that turns a page into the studio's preview stage. */
 export const BUILD_PARAM = "build";
 
@@ -6,21 +8,41 @@ export const BUILD_PARAM = "build";
 export const BUILD_SOURCE_URL = "/build-source.json";
 export const REPO_FILE_URL = "/build-source/";
 
-/** The components typed out, in page order — one per block of the preview. */
-export const BUILD_SOURCES = [
-  "components/sections/Hero/Hero.tsx",
-  "components/sections/EffaceIntro/EffaceIntro.tsx",
-  "components/sections/Work/Work.tsx",
-  "components/sections/CapabilitiesScene/CapabilitiesDesktop.tsx",
-  "components/sections/Approach/Approach.tsx",
-  "components/sections/About/About.tsx",
-  "components/sections/Testimonials/Testimonials.tsx",
-  "components/sections/Contact/Contact.tsx",
-  "components/Footer/Footer.tsx",
+/**
+ * The source typed out, in page order, and what each builds in the preview:
+ * `sec` is the block; `regions` builds the block's parts one after another as
+ * the page scrolls through them; `detail` opens a view (by clicking it) and
+ * builds that; `grow` is one animated piece of the block, kept back until its
+ * own file grows it. `pace` sets each file's typing speed against the default:
+ * the regions type slower so each part gets its moment; the long detail and
+ * animation files pour in faster.
+ */
+export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number; whole?: boolean }[] = [
+  { path: "components/sections/Hero/Hero.tsx", plan: { sec: 0 } },
+  { path: "components/three/glassScene.ts", plan: { sec: 0, grow: "main > section:first-of-type canvas", land: true }, pace: 5, whole: true },
+  { path: "components/sections/EffaceIntro/EffaceIntro.tsx", plan: { sec: 1 } },
+  {
+    path: "components/sections/Work/Work.tsx",
+    plan: { sec: 2, regions: '#work > div:first-child, [data-tour="featured"] > div > *, [data-tour="more"]' },
+    pace: 0.7,
+  },
+  { path: "components/sections/Work/WorkDetail.tsx", plan: { sec: 2, detail: "#work [data-tour='more'] button[data-project]" }, pace: 1.8 },
+  { path: "components/sections/CapabilitiesScene/CapabilitiesDesktop.tsx", plan: { sec: 3 } },
+  { path: "components/sections/Approach/Approach.tsx", plan: { sec: 4 } },
+  { path: "components/sections/About/About.tsx", plan: { sec: 5 } },
+  { path: "components/LogoParticle/ParticleLogo.tsx", plan: { sec: 5, grow: '[data-tour="about-logo"]' }, pace: 3, whole: true },
+  { path: "components/sections/Testimonials/Testimonials.tsx", plan: { sec: 6 } },
+  { path: "components/sections/Contact/Contact.tsx", plan: { sec: 7 } },
+  { path: "components/FluidInk/FluidInk.tsx", plan: { sec: 7, grow: "#contact canvas" }, pace: 4.5, whole: true },
+  { path: "components/Footer/Footer.tsx", plan: { sec: 8 } },
+  { path: "components/Footer/wordmarkCanvas.ts", plan: { sec: 8, grow: "footer canvas" }, pace: 3, whole: true },
 ];
 
 /** Typing speed at 1×, in characters per second — real files are long. */
 export const TYPE_CPS = 230;
+/** However fast the code goes, letters appear at most this fast (per second, at
+ *  1×): the typing slows through a letters phase so each one can be seen. */
+export const LETTERS_PER_SEC = 28;
 /** Typing cost of a line break, and of a comment's characters (skimmed). */
 export const NEWLINE_COST = 3;
 export const COMMENT_COST = 0.3;
@@ -34,6 +56,8 @@ export const DONE_CLOSE_MS = 2000;
 /** The opening splash: shortest it stays, and its lift-off (match globals.css). */
 export const SPLASH_MIN_MS = 1800;
 export const SPLASH_LIFT_MS = 900;
+/** The preview page loads only after the splash's entrance (see BuildStudio). */
+export const FRAME_DELAY_MS = 1400;
 /** The hand-back to the site, and the page's own fade-up after (match globals.css). */
 export const OUTRO_MS = 1500;
 export const RETURN_MS = 1100;
@@ -52,8 +76,10 @@ export const PREVIEW_MIN_ASPECT = { desktop: 0.56, phone: 1.6 };
 export const PREVIEW_PHONE_BELOW = 560;
 
 /** The camera's closest zoom, and how much of the pane the focused block may fill. */
-export const CAMERA_MAX_ZOOM = 1.7;
+export const CAMERA_MAX_ZOOM = 1.45;
 export const CAMERA_FILL = 0.62;
+/** Shortest hold on one shot before the camera moves to the next. */
+export const CAMERA_DWELL_MS = 600;
 
 /** The preview's share of the studio, and how far the divider may drag it. */
 export const SPLIT_DEFAULT = 0.6;

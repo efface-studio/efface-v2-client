@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import type { BuildCommand, BuildEnvelope, BuildFile, BuildRect, BuildReply, BuildStatus } from "./BuildMode.types";
-import { ENTER_WAIT_MS, SECTION_END_WAIT_MS, TYPE_CPS } from "./BuildMode.constants";
+import { ENTER_WAIT_MS, LETTERS_PER_SEC, SECTION_END_WAIT_MS, TYPE_CPS } from "./BuildMode.constants";
+
+/** Shortest gap between editor redraws while typing (about 30 fps). */
+const VIEW_FRAME_MS = 32;
 
 /**
  * Types the files out against the clock and tells the preview what each
@@ -32,7 +35,19 @@ export function useBuildPlayer(
     speedRef.current = speed;
   }, [status, speed]);
   // file, caret, typing budget, time in the current wait, and the next event
-  const play = useRef({ file: 0, pos: 0, budget: 0, wait: 0, phase: "enter" as "enter" | "type" | "end", event: 0 });
+  const play = useRef({
+    file: 0,
+    pos: 0,
+    budget: 0,
+    wait: 0,
+    phase: "enter" as "enter" | "type" | "end",
+    event: 0,
+    drawn: 0,
+    // Typing slows by `slow` until `slowUntil`, so a letters phase lasts long
+    // enough for its letters to be seen one by one.
+    slow: 1,
+    slowUntil: 0,
+  });
 
   const post = useCallback(
     (msg: BuildCommand) => {
@@ -49,11 +64,24 @@ export function useBuildPlayer(
       if (e.data?.efface !== "build") return;
       const msg = e.data.msg;
       if (msg.type === "ready") setPreviewReady(true);
-      else setFocus(msg.rect);
+      else if (msg.type === "focus") setFocus(msg.rect);
+      else {
+        const s = play.current;
+        const file = files?.[s.file];
+        if (!file) return;
+        const end = Math.min(
+          file.code.length,
+          msg.span === undefined ? file.textSpan[1] : s.pos + Math.round(msg.span * file.code.length)
+        );
+        const natural = (file.costSum[end] - file.costSum[s.pos]) / TYPE_CPS;
+        const needed = msg.units / LETTERS_PER_SEC;
+        s.slow = natural > 0 ? Math.max(1, needed / natural) : 1;
+        s.slowUntil = end;
+      }
     };
     addEventListener("message", onMessage);
     return () => removeEventListener("message", onMessage);
-  }, [frameRef]);
+  }, [frameRef, files]);
 
   useEffect(() => {
     if (!files) return;
@@ -68,36 +96,48 @@ export function useBuildPlayer(
       const file = files[s.file];
 
       if (s.phase === "enter") {
-        if (s.wait === 0) post({ type: "enter", sec: s.file });
+        if (s.wait === 0) {
+          // The preview learns what every file builds before the first one starts.
+          if (s.file === 0) post({ type: "plan", files: files.map((f) => f.plan) });
+          post({ type: "enter", file: s.file });
+        }
         s.wait += dt || 1;
         if (s.wait >= ENTER_WAIT_MS) Object.assign(s, { phase: "type", wait: 0 });
         return;
       }
 
       if (s.phase === "type") {
-        s.budget += (dt / 1000) * TYPE_CPS;
+        s.budget += ((dt / 1000) * TYPE_CPS) / (s.pos < s.slowUntil ? s.slow : 1);
         const before = s.pos;
         while (s.pos < file.code.length && s.budget >= file.cost[s.pos]) {
           s.budget -= file.cost[s.pos];
           // Reaching an event's offset moves the preview to its next stage.
           while (s.event < file.events.length && file.events[s.event].at <= s.pos) {
-            post({ type: "stage", sec: s.file, stage: file.events[s.event].event, speed: speedRef.current });
+            post({ type: "stage", file: s.file, stage: file.events[s.event].event, speed: speedRef.current });
             s.event++;
           }
           s.pos++;
         }
         if (s.pos !== before) {
           const stage = file.events[s.event - 1]?.event;
-          if (stage === "layout") {
-            post({ type: "layout", sec: s.file, p: Math.min(1, s.pos / Math.max(1, file.textSpan[0])) });
+          if (file.driven) {
+            post({ type: "progress", file: s.file, p: s.pos / file.code.length, speed: speedRef.current });
+          } else if (stage === "layout") {
+            post({ type: "layout", file: s.file, p: Math.min(1, s.pos / Math.max(1, file.textSpan[0])) });
           } else if (stage === "text") {
             const [from, to] = file.textSpan;
-            post({ type: "text", sec: s.file, p: Math.min(1, (s.pos - from) / Math.max(1, to - from)) });
+            post({ type: "text", file: s.file, p: Math.min(1, (s.pos - from) / Math.max(1, to - from)) });
           }
-          setView({ file: s.file, pos: s.pos });
+          // The editor redraws at most every other frame — typing reads the
+          // same, and the preview keeps the main thread it shares with us.
+          if (now - s.drawn >= VIEW_FRAME_MS || s.pos >= file.code.length) {
+            s.drawn = now;
+            setView({ file: s.file, pos: s.pos });
+          }
         }
         if (s.pos >= file.code.length) {
-          post({ type: "stage", sec: s.file, stage: "done", speed: speedRef.current });
+          if (!file.driven) post({ type: "stage", file: s.file, stage: "done", speed: speedRef.current });
+          post({ type: "fileDone", file: s.file });
           Object.assign(s, { phase: "end", wait: 0, budget: 0 });
         }
         return;
@@ -106,7 +146,7 @@ export function useBuildPlayer(
       s.wait += dt;
       if (s.wait < SECTION_END_WAIT_MS) return;
       if (s.file + 1 < files.length) {
-        Object.assign(s, { file: s.file + 1, pos: 0, phase: "enter", wait: 0, event: 0 });
+        Object.assign(s, { file: s.file + 1, pos: 0, phase: "enter", wait: 0, event: 0, slow: 1, slowUntil: 0 });
         setView({ file: s.file, pos: 0 });
       } else {
         post({ type: "finish" });

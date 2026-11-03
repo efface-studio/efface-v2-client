@@ -29,7 +29,10 @@ export function toBuildFile(source: BuildSource): BuildFile {
   const textSpan: [number, number] = [Math.max(0, Math.min(copyStart, copyEnd - Math.round(code.length / 3))), copyEnd];
   const lineEnd = code.indexOf("\n", copyEnd);
   const colorAt = lineEnd < 0 ? copyEnd : lineEnd;
-  const events: { at: number; event: BuildEvent }[] = [
+  // Region, detail and animation files pace the preview off their progress
+  // instead (see previewStage), so they carry no stages.
+  const driven = !!(source.plan.regions || source.plan.detail || source.plan.grow);
+  const events: { at: number; event: BuildEvent }[] = driven ? [] : [
     { at: 0, event: "layout" },
     { at: textSpan[0], event: "text" },
     { at: colorAt, event: "color" },
@@ -43,15 +46,23 @@ export function toBuildFile(source: BuildSource): BuildFile {
     for (let k = 0; k < tok.text.length; k++)
       cost.push(tok.text[k] === "\n" ? NEWLINE_COST : tok.kind === "comment" ? COMMENT_COST : 1);
   for (let i = 1; i < code.length; i++) if (code[i] === " " && (code[i - 1] === "\n" || cost[i - 1] === 0)) cost[i] = 0;
+  const pace = source.pace ?? 1;
+  if (pace !== 1) for (let i = 0; i < cost.length; i++) cost[i] /= pace;
+
+  const costSum = new Float64Array(cost.length + 1);
+  for (let i = 0; i < cost.length; i++) costSum[i + 1] = costSum[i] + cost[i];
 
   return {
     name: source.path.split("/").at(-1) ?? source.path,
     path: source.path,
+    plan: source.plan,
+    driven: driven,
     code,
     lineNumbers,
     folds,
     events,
     textSpan,
     cost,
+    costSum,
   };
 }
