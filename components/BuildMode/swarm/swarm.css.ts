@@ -47,9 +47,9 @@ export const SWARM_CSS = `
 .house.lit .win{fill:#ffd23f}
 .house.lit .glow{opacity:1}
 .house .glow{opacity:0;transition:opacity .5s}
-.cursor{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.cursor{position:absolute;left:0;top:0;width:0;height:0;will-change:transform}
 .cursor svg{display:block}
-.sel{position:absolute;left:0;top:0;border:1px solid ${SWARM_BLUE};will-change:transform}
+.sel{position:absolute;left:0;top:0;border:1px solid ${SWARM_BLUE}}
 .sel.plain{border-color:rgba(13,153,255,.75)}
 .sel .ph{position:absolute;inset:0;background:rgba(255,255,255,.07)}
 .sel .ph.media{background:rgba(255,255,255,.09) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%23ffffff55' stroke-width='1.6'%3E%3Crect x='2' y='3' width='18' height='16' rx='2'/%3E%3Ccircle cx='8' cy='9' r='2'/%3E%3Cpath d='m20 15-5-5L4 19'/%3E%3C/svg%3E") center/22px no-repeat}
