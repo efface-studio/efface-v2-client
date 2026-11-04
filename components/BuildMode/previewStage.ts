@@ -16,6 +16,8 @@ const SWEEP_MS = 900;
  *  scrolling past the pinned scenes would run their per-frame work all the way. */
 const CUT_BEYOND = 1.5;
 const CUT_MS = 220;
+/** How long a detail view's follow-on scroll glides. */
+const FOLLOW_MS = 450;
 /** Longest wait for the hero's 3D scene before reporting ready anyway. */
 const SCENE_WAIT_MS = 5000;
 /** A region's share of its span spent on each step: outlines, letters, colour, then media. */
@@ -44,6 +46,8 @@ interface Unit {
   cursor: number;
   /** Region and detail units: the share of their file the letters phase spans. */
   span?: number;
+  /** A detail view's own scroll box: it builds all of itself, scrolling to follow. */
+  scroller?: HTMLElement;
   highlight: Highlight | null;
 }
 
@@ -75,6 +79,8 @@ export function startBuildStage() {
   let regions: HTMLElement[] = [];
   let regionAt = -1;
   let focused: Element | null = null;
+  /** Until when a detail view's scroll is still gliding. */
+  let followUntil = 0;
   /** Where a scroll-through runs, from and to, while it plays. */
   let scrubFrom: [number, number] | null = null;
 
@@ -142,11 +148,14 @@ export function startBuildStage() {
   // hidden. Those would take their turn with nothing changing on screen.
   // Faded-out copy is skipped too where the page stays put; a region scrolls
   // as it builds, and the page's own scroll scenes fade that copy in.
-  const across = (r: DOMRect) => r.right > 0 && r.left < innerWidth;
+  const across = (r: DOMRect, u?: Unit) => {
+    const box = u?.scroller?.getBoundingClientRect();
+    return r.right > (box?.left ?? 0) && r.left < (box?.right ?? innerWidth);
+  };
   const shows = (el: Element | null, faded: boolean) =>
     !el || !el.checkVisibility || el.checkVisibility({ visibilityProperty: true, opacityProperty: faded });
   const fits = (u: Unit, r: DOMRect, el: Element | null) =>
-    across(r) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly);
+    across(r, u) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly);
 
   // The camera: the block holding the piece being built, sent whenever the
   // build moves into a new one. Nothing (pull back) for blocks too big to be
@@ -249,7 +258,21 @@ export function startBuildStage() {
     if (u.highlight) CSS.highlights.set(HIDDEN, u.highlight);
     const it = u.items[u.cursor];
     const el = it && ("range" in it ? it.node.parentElement : it.node);
+    // While the dialog scrolls on, the camera pulls back; it closes in again after.
+    if (u.scroller && el && follow(u.scroller, el)) return void focusOn(null);
     focusOn(el?.closest("h1, h2, h3, h4, p, li, a, dt, dd, small, blockquote") ?? el ?? null);
+  };
+
+  /** Scrolls a detail view on once the build nears its foot, leaving the piece a third of the way down. */
+  const follow = (box: HTMLElement, el: Element) => {
+    // One glide at a time: a new target every frame would keep restarting it.
+    if (performance.now() < followUntil) return true;
+    const b = box.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (r.top > b.top + b.height * 0.15 && r.bottom < b.top + b.height * 0.8) return false;
+    box.scrollTo({ top: box.scrollTop + r.top - (b.top + b.height / 3), behavior: "smooth" });
+    followUntil = performance.now() + FOLLOW_MS;
+    return true;
   };
 
   /** Everything still waiting appears; the letter mask comes off. */
@@ -413,8 +436,9 @@ export function startBuildStage() {
           if (!unit) {
             const dialog = document.querySelector<HTMLElement>("dialog[open]");
             if (dialog) {
-              // What's below the dialog's fold isn't on screen to build.
-              unit = newUnit([dialog], true);
+              // All of it, the dialog scrolling to follow (see `follow`).
+              unit = newUnit([dialog], false);
+              unit.scroller = dialog;
               unit.span = TEXT_END - LAYOUT_END;
               stageUnit(unit, "blank");
             }
