@@ -22,13 +22,14 @@ const ARRIVE_MS = 1500;
 const FOLLOW_MS = 450;
 /** Longest wait for the hero's 3D scene before reporting ready anyway. */
 const SCENE_WAIT_MS = 5000;
-/** A region's share of its span spent on each step: outlines, letters, colour, then media. */
-const LAYOUT_END = 0.18;
-const TEXT_END = 0.72;
+/** A region's share of its span spent on each step: outlines, letters, colour, then media.
+ *  Media is short: its images have mostly appeared in their turn among the letters. */
+const LAYOUT_END = 0.16;
+const TEXT_END = 0.8;
 const REGION_STEPS: [BuildStageName, number][] = [
   ["layout", LAYOUT_END],
   ["text", TEXT_END],
-  ["color", 0.8],
+  ["color", 0.92],
   ["media", 1],
 ];
 
@@ -236,8 +237,13 @@ export function startBuildStage() {
         }
       }
     }
-    // Writes after all the reads: everything starts hidden.
-    for (const it of items) if (!("range" in it)) it.node.setAttribute("data-build-wait", "");
+    // Writes after all the reads: everything starts hidden. Images decode now,
+    // off the main thread, so their turn doesn't stall on it.
+    for (const it of items)
+      if (!("range" in it)) {
+        it.node.setAttribute("data-build-wait", "");
+        if (it.node instanceof HTMLImageElement) it.node.decode().catch(() => {});
+      }
     u.items = items;
     u.itemTotal = items.reduce((sum, it) => sum + it.units, 0);
     u.cursor = 0;
