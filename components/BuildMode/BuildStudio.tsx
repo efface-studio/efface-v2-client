@@ -15,6 +15,7 @@ import {
   BUILD_PARAM,
   BUILD_SOURCE_URL,
   DONE_CLOSE_MS,
+  BUILD_DURATION_MS,
   FRAME_DELAY_MS,
   OUTRO_MS,
   RETURN_MS,
@@ -68,7 +69,9 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
     return () => clearTimeout(id);
   }, []);
 
-  const player = useBuildPlayer(files, frameRef, speed, phase !== "intro");
+  // The run is to be done a set time after it opened, splash included (sooner at a higher speed).
+  const [openedAt] = useState(() => performance.now());
+  const player = useBuildPlayer(files, frameRef, speed, phase !== "intro", openedAt + BUILD_DURATION_MS / speed);
   const { loaded, status, view, progress, focus, skip } = player;
 
   // The splash lifts once the studio behind it is ready (or has failed to be).

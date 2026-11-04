@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import type { BuildCommand, BuildEnvelope, BuildFile, BuildRect, BuildReply, BuildStatus } from "./BuildMode.types";
-import { ENTER_WAIT_MS, LETTERS_PER_SEC, SECTION_END_WAIT_MS, TYPE_CPS } from "./BuildMode.constants";
+import {
+  BUILD_PACE_MAX,
+  BUILD_PACE_MIN,
+  ENTER_WAIT_MS,
+  LETTERS_PER_SEC,
+  SECTION_END_WAIT_MS,
+  TYPE_CPS,
+} from "./BuildMode.constants";
 
 /** Shortest gap between editor redraws while typing (about 30 fps). */
 const VIEW_FRAME_MS = 32;
@@ -18,7 +25,9 @@ export function useBuildPlayer(
   frameRef: RefObject<HTMLIFrameElement | null>,
   speed: number,
   /** Held back until the opening splash has lifted. */
-  started: boolean
+  started: boolean,
+  /** When the whole run is to be done (a performance.now() time): playback keeps to it. */
+  deadline: number
 ) {
   const [previewReady, setPreviewReady] = useState(false);
   const [state, setState] = useState<Exclude<BuildStatus, "loading">>("playing");
@@ -30,10 +39,12 @@ export function useBuildPlayer(
   // The frame loop reads these without restarting on every change.
   const statusRef = useRef(status);
   const speedRef = useRef(speed);
+  const deadlineRef = useRef(deadline);
   useEffect(() => {
     statusRef.current = status;
     speedRef.current = speed;
-  }, [status, speed]);
+    deadlineRef.current = deadline;
+  }, [status, speed, deadline]);
   // file, caret, typing budget, time in the current wait, and the next event
   const play = useRef({
     file: 0,
@@ -47,6 +58,10 @@ export function useBuildPlayer(
     // enough for its letters to be seen one by one.
     slow: 1,
     slowUntil: 0,
+    // Pacing: a multiple on the clock, steered so the run ends on its deadline.
+    pace: 1,
+    runStart: 0,
+    spent: 0,
   });
 
   const post = useCallback(
@@ -56,6 +71,11 @@ export function useBuildPlayer(
     },
     [frameRef]
   );
+
+  /** A file's length at 1× with no slow-downs: its typing plus the waits around it (ms). */
+  const natural = (f: BuildFile) => (f.costSum[f.code.length] / TYPE_CPS) * 1000 / f.speed + ENTER_WAIT_MS + SECTION_END_WAIT_MS;
+  const totalNatural = files?.reduce((n, f) => n + natural(f), 0) || 1;
+  const finishRef = useRef<() => void>(() => {});
 
   // The preview says when it has loaded and wiped itself, and what it's building.
   useEffect(() => {
@@ -90,7 +110,28 @@ export function useBuildPlayer(
     let last = performance.now();
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      const dt = Math.min(now - last, 100) * speedRef.current;
+      const s0 = play.current;
+      if (statusRef.current === "playing" && !s0.runStart) s0.runStart = now;
+      if (statusRef.current === "playing" && files) {
+        // What's left at 1× (each file's typing plus its waits), and how much 1× time a
+        // scaled millisecond has bought so far (letter slow-downs cost extra), give the
+        // pace that lands the run on its deadline. Eased toward, so it never lurches.
+        const real = Math.min(now - last, 100);
+        const at = files.slice(0, s0.file).reduce((n, f) => n + natural(f), 0) + (files[s0.file] ? natural(files[s0.file]) * (s0.pos / files[s0.file].code.length) : 0);
+        s0.spent += real * s0.pace * speedRef.current;
+        const yieldPer = s0.spent > 3000 ? Math.min(1, at / s0.spent) : 0.7;
+        const left = Math.max(1, deadlineRef.current - now);
+        const want = (totalNatural - at) / Math.max(0.2, yieldPer) / left / speedRef.current;
+        const target = Math.min(BUILD_PACE_MAX, Math.max(BUILD_PACE_MIN, want));
+        s0.pace += (target - s0.pace) * Math.min(1, real / 900);
+        // Out of time: the rest goes in at once.
+        if (now >= deadlineRef.current - 200 && s0.phase !== "end") {
+          last = now;
+          finishRef.current();
+          return;
+        }
+      }
+      const dt = Math.min(now - last, 100) * speedRef.current * s0.pace;
       last = now;
       if (statusRef.current !== "playing") return;
       const s = play.current;
@@ -167,6 +208,10 @@ export function useBuildPlayer(
     post({ type: "finish" });
     setState("done");
   }, [files, post]);
+
+  useEffect(() => {
+    finishRef.current = skip;
+  }, [skip]);
 
   const total = files?.reduce((sum, f) => sum + f.code.length, 0) ?? 0;
   const done = (files?.slice(0, view.file).reduce((sum, f) => sum + f.code.length, 0) ?? 0) + view.pos;
