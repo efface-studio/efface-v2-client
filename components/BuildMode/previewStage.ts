@@ -75,6 +75,8 @@ export function startBuildStage() {
   let regions: HTMLElement[] = [];
   let regionAt = -1;
   let focused: Element | null = null;
+  /** Where a scroll-through runs, from and to, while it plays. */
+  let scrubFrom: [number, number] | null = null;
 
   const reply = (msg: BuildReply) => {
     const envelope: BuildEnvelope<BuildReply> = { efface: "build", msg };
@@ -448,7 +450,26 @@ export function startBuildStage() {
         regions = [];
         break;
       }
+      case "scrub": {
+        // The block's own scroll scene, played by scrolling through it — eased
+        // in and out, a frame at a time, so the scene paints every step.
+        const f = entry(msg.file);
+        const el = f && (groups()[f.sec] ?? []).find((e) => e.tagName !== "HEADER");
+        if (!el) break;
+        if (!scrubFrom) {
+          focusOn(null);
+          const top = Math.round(el.getBoundingClientRect().top + scrollY);
+          scrubFrom = [top, top + Math.max(0, el.offsetHeight - innerHeight)];
+        }
+        const [from, to] = scrubFrom;
+        const e = msg.p < 0.5 ? 2 * msg.p * msg.p : 1 - (-2 * msg.p + 2) ** 2 / 2;
+        scrollTo({ top: Math.round(from + (to - from) * e), behavior: "instant" });
+        target = scrollY;
+        if (msg.p >= 1) scrubFrom = null;
+        break;
+      }
       case "finish":
+        scrubFrom = null;
         groups().forEach((_, i) => (stages[i] = "done"));
         if (unit) settle(unit);
         unit = null;
@@ -460,7 +481,7 @@ export function startBuildStage() {
         scrollTo({ top: 0, behavior: "instant" });
         break;
     }
-    if (msg.type !== "layout" && msg.type !== "text" && msg.type !== "progress") paint();
+    if (msg.type !== "layout" && msg.type !== "text" && msg.type !== "progress" && msg.type !== "scrub") paint();
   };
 
   addEventListener("message", (e: MessageEvent<BuildEnvelope<BuildCommand>>) => {

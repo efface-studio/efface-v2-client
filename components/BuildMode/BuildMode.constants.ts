@@ -21,7 +21,7 @@ export const REPO_FILE_URL = "/build-source/";
 export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number; speed?: number; whole?: boolean }[] = [
   { path: "components/sections/Hero/Hero.tsx", plan: { sec: 0 } },
   { path: "components/three/glassScene.ts", plan: { sec: 0, grow: "main > section:first-of-type canvas", land: true }, pace: 5, whole: true },
-  { path: "components/sections/EffaceIntro/EffaceIntro.tsx", plan: { sec: 1 } },
+  { path: "components/sections/EffaceIntro/EffaceIntro.tsx", plan: { sec: 1, scrub: 4300 } },
   {
     path: "components/sections/Work/Work.tsx",
     plan: { sec: 2, regions: '#work > div:first-child, [data-tour="featured"] > div > *, [data-tour="more"]' },
@@ -29,7 +29,7 @@ export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number;
     speed: 1.8,
   },
   { path: "components/sections/Work/WorkDetail.tsx", plan: { sec: 2, detail: "#work [data-tour='more'] button[data-project]" }, pace: 1.8 },
-  { path: "components/sections/CapabilitiesScene/CapabilitiesDesktop.tsx", plan: { sec: 3 } },
+  { path: "components/sections/CapabilitiesScene/CapabilitiesDesktop.tsx", plan: { sec: 3, scrub: 3800 } },
   { path: "components/sections/Approach/Approach.tsx", plan: { sec: 4 } },
   { path: "components/sections/About/About.tsx", plan: { sec: 5 } },
   { path: "components/LogoParticle/ParticleLogo.tsx", plan: { sec: 5, grow: '[data-tour="about-logo"]' }, pace: 3, whole: true },
@@ -41,10 +41,10 @@ export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number;
 ];
 
 /** Typing speed at 1×, in characters per second — real files are long. */
-export const TYPE_CPS = 450;
+export const TYPE_CPS = 540;
 /** However fast the code goes, letters appear at most this fast (per second, at
  *  1×): the typing slows through a letters phase so each one can be seen. */
-export const LETTERS_PER_SEC = 55;
+export const LETTERS_PER_SEC = 66;
 /** Typing cost of a line break, and of a comment's characters (skimmed). */
 export const NEWLINE_COST = 3;
 export const COMMENT_COST = 0.3;
@@ -53,9 +53,9 @@ export const COMMENT_COST = 0.3;
 export const TAIL_SPEED = 3;
 
 /** Time for the preview to scroll to a section before its code starts. */
-export const ENTER_WAIT_MS = 415;
+export const ENTER_WAIT_MS = 345;
 /** Beat on the finished section before the next file opens. */
-export const SECTION_END_WAIT_MS = 360;
+export const SECTION_END_WAIT_MS = 300;
 /** How long "Done" stays up before the studio closes itself. */
 export const DONE_CLOSE_MS = 2000;
 /** The opening splash: shortest it stays, and its lift-off (match globals.css). */
