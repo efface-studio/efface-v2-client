@@ -105,7 +105,8 @@ const rectOf = (el: Element) => el.getBoundingClientRect();
 
 const cursorSvg = (mode: SwarmCursorMode, c: string) =>
   mode === "arrow"
-    ? `<svg width="20" height="20" viewBox="0 0 20 20" style="transform:translate(-3px,-2px)"><path d="M3 2 17 8.4 10.2 10.2 8.4 17Z" fill="${c}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`
+    ? // The shadow is a second, offset shape: a CSS filter on every moving cursor costs a repaint each.
+      `<svg width="22" height="22" viewBox="0 0 22 22" style="transform:translate(-3px,-2px)"><path d="M3 3 17 9.4 10.2 11.2 8.4 18Z" fill="rgba(0,0,0,.35)" stroke="rgba(0,0,0,.35)" stroke-width="2.6" stroke-linejoin="round"/><path d="M3 2 17 8.4 10.2 10.2 8.4 17Z" fill="${c}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`
     : mode === "cross"
       ? `<svg width="20" height="20" viewBox="0 0 20 20" style="transform:translate(-10px,-10px)"><path d="M10 2v16M2 10h16" stroke="#fff" stroke-width="3.4"/><path d="M10 2v16M2 10h16" stroke="${c}" stroke-width="1.5"/></svg>`
       : `<svg width="14" height="22" viewBox="0 0 14 22" style="transform:translate(-7px,-11px)"><path d="M3 2h8M7 2v18M3 20h8" stroke="#fff" stroke-width="3.4" fill="none"/><path d="M3 2h8M7 2v18M3 20h8" stroke="${c}" stroke-width="1.5" fill="none"/></svg>`;
@@ -199,19 +200,29 @@ export function createSwarm(o: SwarmOptions) {
     o.stage.prepend(d);
     return d;
   };
+  // Overlay writes wait for the end of the frame: written straight away, each would
+  // dirty layout, and the next agent's read of the page would force it all again.
+  const pending = new Map<HTMLElement, [number, number, number, number]>();
   const place = (d: HTMLElement, x: number, y: number, w: number, h: number) => {
-    d.style.transform = `translate3d(${Math.round(x)}px,${Math.round(y)}px,0)`;
-    d.style.width = `${Math.max(0, Math.round(w))}px`;
-    d.style.height = `${Math.max(0, Math.round(h))}px`;
+    pending.set(d, [Math.round(x), Math.round(y), Math.max(0, Math.round(w)), Math.max(0, Math.round(h))]);
+  };
+  const flush = () => {
+    for (const [d, [x, y, w, h]] of pending) {
+      if (!d.isConnected) continue;
+      d.style.transform = `translate3d(${x}px,${y}px,0)`;
+      d.style.width = `${w}px`;
+      d.style.height = `${h}px`;
+      const badge = d.querySelector("em");
+      if (badge) badge.textContent = `${w} × ${h}`;
+    }
+    pending.clear();
   };
   const selection = (fill: "none" | "box" | "media") => {
     const wrap = deco("sel");
     wrap.innerHTML = `${fill === "none" ? "" : `<i class="ph${fill === "media" ? " media" : ""}"></i>`}<b></b><b></b><b></b><b></b><em></em>`;
-    const badge = wrap.querySelector("em")!;
     return {
       set(x: number, y: number, w: number, h: number) {
         place(wrap, x, y, w, h);
-        badge.textContent = `${Math.round(w)} × ${Math.round(h)}`;
       },
       fade(k: number) {
         wrap.style.opacity = String(k);
@@ -413,6 +424,12 @@ export function createSwarm(o: SwarmOptions) {
       box.set(r.left, r.top, r.width * k, r.height * k);
     }
     setMode(a, "ibeam");
+    // Only text being typed is masked; the rest of the page's waits hidden as it is.
+    for (const t of nodes) {
+      const r = ranges.get(t);
+      if (r) highlight?.add(r);
+    }
+    masked = true;
     mark(L, "on");
     const total = L.chars;
     const ms = Math.min(SWARM_TYPE_MAX_MS, (total / SWARM_TYPE_CPS) * 1000);
@@ -664,10 +681,19 @@ export function createSwarm(o: SwarmOptions) {
   };
 
   // ── Rulers, along the top and left, with the work in hand marked on them.
+  let rulerKey = "";
+  let rulerAt = 0;
   const drawRulers = () => {
     const show = innerWidth >= SWARM_RULERS_FROM && (phase === "build" || phase === "done");
-    for (const c of [o.rulerTop, o.rulerLeft]) c.style.opacity = show ? "1" : "0";
+    const shown = show ? "1" : "0";
+    for (const c of [o.rulerTop, o.rulerLeft]) if (c.style.opacity !== shown) c.style.opacity = shown;
     if (!show) return;
+    // Redrawn only when the scroll or the boxes in hand change, at most ~30 times a second.
+    const now = performance.now();
+    const key = `${Math.round(scrollY)}|${innerWidth}|${agents.map((a) => (a.sel ? `${a.sel.left | 0},${a.sel.top | 0},${a.sel.width | 0}` : "")).join(";")}`;
+    if (key === rulerKey || now - rulerAt < 33) return;
+    rulerKey = key;
+    rulerAt = now;
     const dpr = Math.min(2, devicePixelRatio || 1);
     const top = o.rulerTop;
     const left = o.rulerLeft;
@@ -1175,6 +1201,7 @@ export function createSwarm(o: SwarmOptions) {
       else towardHome(now, real);
     }
     popOut(now);
+    flush();
     if (masked && highlight) CSS.highlights.set(HIDDEN, highlight);
     masked = false;
     render();
@@ -1211,7 +1238,16 @@ export function createSwarm(o: SwarmOptions) {
       }
     }
     if (hasHighlights) {
-      highlight = new Highlight(...ranges.values());
+      // Text that shares its element with a box shows the moment the box is drawn, so
+      // it's masked from the start; other text is hidden with its element till typed.
+      const boxes = new Set(layers.filter((L) => L.kind === "box").map((L) => L.el));
+      highlight = new Highlight();
+      for (const L of layers)
+        if (L.kind === "text" && boxes.has(L.el))
+          for (const t of L.text ?? []) {
+            const r = ranges.get(t);
+            if (r) highlight.add(r);
+          }
       CSS.highlights.set(HIDDEN, highlight);
     }
     html.classList.add("swarm-on");
