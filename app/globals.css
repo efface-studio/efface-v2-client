@@ -753,6 +753,12 @@ body {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+/* An app icon's tile colour is part of its art: it shows with the logo, once
+   that has its turn among the letters, not with the rest of the colour. */
+.build-stage [data-build="text"] [data-build-tile]:has(> img:not([data-build-wait])),
+.build-stage [data-build="text"][data-build-tile]:has(> img:not([data-build-wait])) {
+  background-color: var(--tile-bg) !important;
+}
 /* Boxes outline one by one as the layout code goes in (`data-build-box`). */
 .build-stage :is([data-build="layout"], [data-build="text"]) [data-build-box],
 .build-stage :is([data-build="layout"], [data-build="text"])[data-build-box] {
