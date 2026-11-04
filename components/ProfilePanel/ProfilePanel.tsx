@@ -135,7 +135,7 @@ export default function ProfilePanel() {
               height={514}
               // A cut-out on transparency — no frame, the panel is its background.
               // From sm up it sits a touch below the name's line.
-              className="h-auto w-24 shrink-0 sm:translate-y-2 md:w-28"
+              className="h-auto w-24 shrink-0 sm:translate-y-3 md:w-28"
             />
             <div className="min-w-0 translate-y-1.5">
               <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
@@ -161,7 +161,7 @@ export default function ProfilePanel() {
               summary's length doesn't push them away. */}
           <ul
             aria-label={t("linksLabel")}
-            className="mt-1 flex w-full flex-wrap gap-x-6 gap-y-3 self-start sm:col-start-1 sm:row-start-2 sm:mt-6"
+            className="mt-1 flex w-full flex-wrap gap-x-6 gap-y-3 self-start sm:col-start-1 sm:row-start-2 sm:mt-7"
           >
             {links.map((l) => (
               <li key={l.label}>
