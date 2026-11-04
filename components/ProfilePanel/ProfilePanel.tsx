@@ -124,16 +124,21 @@ export default function ProfilePanel() {
         </button>
 
         {/* Header — photo, name, email. */}
-        <header className="mt-6 flex flex-wrap items-stretch gap-5 pr-12">
-          {/* The name sits on the photo's foot, whatever height the row takes. */}
-          <div className="flex min-w-0 items-end gap-5 self-start">
+        {/* From sm up the header sits a little lower; the links' gap gives the
+            same back, so they stay where they were. */}
+        <header className="mt-6 flex flex-wrap items-stretch gap-5 pr-12 sm:mt-9">
+          {/* The name sits on the photo's foot, whatever height the row takes.
+              The padding keeps the links clear of the lowered photo when the
+              summary beside it is short. */}
+          <div className="flex min-w-0 items-end gap-5 self-start sm:pb-4">
             <img
               src="/about/founder-photo.webp"
               alt={t("photoAlt")}
               width={400}
               height={514}
               // A cut-out on transparency — no frame, the panel is its background.
-              className="h-auto w-24 shrink-0 md:w-28"
+              // From sm up it sits a touch below the name's line.
+              className="h-auto w-24 shrink-0 sm:translate-y-2 md:w-28"
             />
             <div className="min-w-0 translate-y-1.5">
               <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
@@ -158,7 +163,7 @@ export default function ProfilePanel() {
         </header>
 
         {/* Links sit right under the name, where they're looked for first. */}
-        <ul aria-label={t("linksLabel")} className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+        <ul aria-label={t("linksLabel")} className="mt-6 flex flex-wrap gap-x-6 gap-y-3 sm:mt-3">
           {links.map((l) => (
             <li key={l.label}>
               <a
