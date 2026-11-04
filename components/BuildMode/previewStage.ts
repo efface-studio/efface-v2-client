@@ -16,17 +16,20 @@ const SWEEP_MS = 900;
  *  scrolling past the pinned scenes would run their per-frame work all the way. */
 const CUT_BEYOND = 1.5;
 const CUT_MS = 220;
+/** Longest a pinned region waits for its scroll to land. */
+const ARRIVE_MS = 1500;
 /** How long a detail view's follow-on scroll glides. */
 const FOLLOW_MS = 450;
 /** Longest wait for the hero's 3D scene before reporting ready anyway. */
 const SCENE_WAIT_MS = 5000;
-/** A region's share of its span spent on each step: outlines, letters, colour, then media. */
-const LAYOUT_END = 0.18;
-const TEXT_END = 0.72;
+/** A region's share of its span spent on each step: outlines, letters, colour, then media.
+ *  Media is short: its images have mostly appeared in their turn among the letters. */
+const LAYOUT_END = 0.16;
+const TEXT_END = 0.8;
 const REGION_STEPS: [BuildStageName, number][] = [
   ["layout", LAYOUT_END],
   ["text", TEXT_END],
-  ["color", 0.8],
+  ["color", 0.92],
   ["media", 1],
 ];
 
@@ -83,6 +86,8 @@ export function startBuildStage() {
   let followUntil = 0;
   /** Whether the region being built holds a pinned scene. */
   let regionPinned = false;
+  /** Latest a pinned region waits to be scrolled to before building anyway. */
+  let arrivedBy = 0;
   /** Where a scroll-through runs, from and to, while it plays. */
   let scrubFrom: [number, number] | null = null;
 
@@ -128,10 +133,10 @@ export function startBuildStage() {
     });
   };
 
-  /** Gets to `y`: a scroll when it's near, a cut when it's far. */
-  const go = (y: number) => {
+  /** Gets to `y`: a scroll when it's near, a cut when it's far (or when `cut`). */
+  const go = (y: number, cut = false) => {
     const top = Math.max(0, y);
-    if (Math.abs(top - scrollY) <= innerHeight * CUT_BEYOND) return void scrollTo({ top });
+    if (!cut && Math.abs(top - scrollY) <= innerHeight * CUT_BEYOND) return void scrollTo({ top });
     html.style.transition = `opacity ${CUT_MS}ms ease`;
     html.style.opacity = "0";
     setTimeout(() => {
@@ -156,8 +161,20 @@ export function startBuildStage() {
   };
   const shows = (el: Element | null, faded: boolean) =>
     !el || !el.checkVisibility || el.checkVisibility({ visibilityProperty: true, opacityProperty: faded });
+  /** Whether `r` shows through each box above `el` that clips its overflow — a
+   *  shot lane, a strip — bar the unit's own scroll box, which scrolls to it. */
+  const unclipped = (u: Unit, r: DOMRect, el: Element | null) => {
+    for (let a = el?.parentElement; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
+      const b = a.getBoundingClientRect();
+      if (cs.overflowX !== "visible" && (r.right <= b.left || r.left >= b.right)) return false;
+      if (cs.overflowY !== "visible" && a !== u.scroller && (r.bottom <= b.top || r.top >= b.bottom)) return false;
+    }
+    return true;
+  };
   const fits = (u: Unit, r: DOMRect, el: Element | null) =>
-    across(r, u) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly);
+    across(r, u) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly) && unclipped(u, r, el);
 
   // The camera: the block holding the piece being built, sent whenever the
   // build moves into a new one. Nothing (pull back) for blocks too big to be
@@ -220,8 +237,13 @@ export function startBuildStage() {
         }
       }
     }
-    // Writes after all the reads: everything starts hidden.
-    for (const it of items) if (!("range" in it)) it.node.setAttribute("data-build-wait", "");
+    // Writes after all the reads: everything starts hidden. Images decode now,
+    // off the main thread, so their turn doesn't stall on it.
+    for (const it of items)
+      if (!("range" in it)) {
+        it.node.setAttribute("data-build-wait", "");
+        if (it.node instanceof HTMLImageElement) it.node.decode().catch(() => {});
+      }
     u.items = items;
     u.itemTotal = items.reduce((sum, it) => sum + it.units, 0);
     u.cursor = 0;
@@ -357,12 +379,20 @@ export function startBuildStage() {
     const run = Math.max(0, region.offsetHeight - innerHeight);
     if (fresh) regionPinned = [...region.children].some((c) => getComputedStyle(c).position === "sticky");
     const along = regionPinned ? 1 : Math.min(1, q / 0.95);
-    const y = top + Math.round(along * run) - (run ? 0 : Math.max(0, (innerHeight - region.offsetHeight) / 3));
+    const y = Math.min(
+      html.scrollHeight - innerHeight,
+      top + Math.round(along * run) - (run ? 0 : Math.max(0, (innerHeight - region.offsetHeight) / 3))
+    );
     // A new region is reached by a scroll (or a cut); within one, the page
     // follows the build frame by frame.
     // (Larger gaps mean that scroll or cut is still under way — leave it be.)
-    if (fresh) go(y);
+    // A pinned row is cut to: a glide would play its scene on the way and land late.
+    if (fresh) go(y, regionPinned);
     else if (Math.abs(scrollY - y) > 1 && Math.abs(scrollY - y) < 80) scrollTo({ top: Math.max(0, y), behavior: "instant" });
+    // A pinned scene builds once it's there — what's in frame depends on where
+    // it's scrolled to — or after a moment, should it never quite arrive.
+    if (fresh) arrivedBy = performance.now() + ARRIVE_MS;
+    if (regionPinned && Math.abs(scrollY - Math.max(0, y)) > 2 && performance.now() < arrivedBy) return;
     target = scrollY;
     let start = 0;
     for (const [stage, end] of REGION_STEPS) {
@@ -378,6 +408,22 @@ export function startBuildStage() {
   };
 
   const entry = (file: number) => plan[file];
+
+  /** A block's own scroll scene, played by scrolling through it as its code
+   *  types — eased in and out, a frame at a time, so the scene paints every step. */
+  const scrubThrough = (f: BuildPlanEntry, p: number) => {
+    const el = (groups()[f.sec] ?? []).find((e) => e.tagName !== "HEADER");
+    if (!el) return;
+    if (!scrubFrom) {
+      focusOn(null);
+      const top = Math.round(el.getBoundingClientRect().top + scrollY);
+      scrubFrom = [top, top + Math.max(0, el.offsetHeight - innerHeight)];
+    }
+    const [from, to] = scrubFrom;
+    const e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+    scrollTo({ top: Math.round(from + (to - from) * e), behavior: "instant" });
+    target = scrollY;
+  };
 
   const run = (msg: BuildCommand) => {
     switch (msg.type) {
@@ -401,6 +447,9 @@ export function startBuildStage() {
           // An animated piece: bring it into view and let it grow there.
           const el = document.querySelector<HTMLElement>(f.grow);
           if (el) go(el.getBoundingClientRect().top + scrollY - innerHeight * 0.25);
+          focusOn(null);
+        } else if (f.scrub) {
+          // A scroll scene: the block is built; its code now plays it through.
           focusOn(null);
         } else if (f.detail) {
           // A detail view: open it the way a visitor would.
@@ -436,7 +485,8 @@ export function startBuildStage() {
         if (!f) break;
         if (f.grow) {
           document.querySelectorAll<HTMLElement>(f.grow).forEach((el) => el.style.setProperty("--build-grow", msg.p.toFixed(3)));
-        } else if (f.regions) buildRegions(msg.p, msg.speed);
+        } else if (f.scrub) scrubThrough(f, msg.p);
+        else if (f.regions) buildRegions(msg.p, msg.speed);
         else if (f.detail) {
           // The dialog mounts a beat after the click; build it once it's there.
           if (!unit) {
@@ -470,6 +520,7 @@ export function startBuildStage() {
       case "fileDone": {
         const f = entry(msg.file);
         if (!f) break;
+        scrubFrom = null;
         if (f.grow) release(f.grow);
         if (unit) stageUnit(unit, "done");
         if (f.detail) {
@@ -478,24 +529,6 @@ export function startBuildStage() {
         }
         unit = null;
         regions = [];
-        break;
-      }
-      case "scrub": {
-        // The block's own scroll scene, played by scrolling through it — eased
-        // in and out, a frame at a time, so the scene paints every step.
-        const f = entry(msg.file);
-        const el = f && (groups()[f.sec] ?? []).find((e) => e.tagName !== "HEADER");
-        if (!el) break;
-        if (!scrubFrom) {
-          focusOn(null);
-          const top = Math.round(el.getBoundingClientRect().top + scrollY);
-          scrubFrom = [top, top + Math.max(0, el.offsetHeight - innerHeight)];
-        }
-        const [from, to] = scrubFrom;
-        const e = msg.p < 0.5 ? 2 * msg.p * msg.p : 1 - (-2 * msg.p + 2) ** 2 / 2;
-        scrollTo({ top: Math.round(from + (to - from) * e), behavior: "instant" });
-        target = scrollY;
-        if (msg.p >= 1) scrubFrom = null;
         break;
       }
       case "finish":
@@ -511,7 +544,7 @@ export function startBuildStage() {
         scrollTo({ top: 0, behavior: "instant" });
         break;
     }
-    if (msg.type !== "layout" && msg.type !== "text" && msg.type !== "progress" && msg.type !== "scrub") paint();
+    if (msg.type !== "layout" && msg.type !== "text" && msg.type !== "progress") paint();
   };
 
   addEventListener("message", (e: MessageEvent<BuildEnvelope<BuildCommand>>) => {

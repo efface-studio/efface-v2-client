@@ -753,6 +753,17 @@ body {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+/* A dialog keeps its ground through the wireframe: without it the blurred page
+   behind would show through the outlines. */
+.build-stage dialog:is([data-build="layout"], [data-build="text"]) {
+  background-color: var(--color-surface) !important;
+}
+/* The page behind a dialog stays dim but unblurred: re-blurring it under every
+   step of the dialog's follow-on scroll costs whole frames. */
+.build-stage dialog::backdrop {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
 /* An app icon's tile colour is part of its art: it shows with the logo, once
    that has its turn among the letters, not with the rest of the colour. */
 .build-stage [data-build="text"] [data-build-tile]:has(> img:not([data-build-wait])),

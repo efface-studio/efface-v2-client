@@ -29,9 +29,9 @@ export function toBuildFile(source: BuildSource): BuildFile {
   const textSpan: [number, number] = [Math.max(0, Math.min(copyStart, copyEnd - Math.round(code.length / 3))), copyEnd];
   const lineEnd = code.indexOf("\n", copyEnd);
   const colorAt = lineEnd < 0 ? copyEnd : lineEnd;
-  // Region, detail and animation files pace the preview off their progress
+  // Region, detail, animation and scroll-scene files pace the preview off their progress
   // instead (see previewStage), so they carry no stages.
-  const driven = !!(source.plan.regions || source.plan.detail || source.plan.grow);
+  const driven = !!(source.plan.regions || source.plan.detail || source.plan.grow || source.plan.scrub);
   const events: { at: number; event: BuildEvent }[] = driven ? [] : [
     { at: 0, event: "layout" },
     { at: textSpan[0], event: "text" },
