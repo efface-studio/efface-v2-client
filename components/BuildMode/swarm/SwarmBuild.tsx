@@ -1,0 +1,171 @@
+"use client";
+
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
+import { Volume2, VolumeX, X } from "lucide-react";
+import LogoMark from "@/components/LogoMark";
+import { createSwarm, type Swarm } from "./engine";
+import { SWARM_COLORS, SWARM_INITIALS, SWARM_SPEEDS } from "./swarm.constants";
+import { SWARM_CSS } from "./swarm.css";
+import type { SwarmState } from "./swarm.types";
+
+interface SwarmBuildProps {
+  onClose: () => void;
+}
+
+const ROOTS = "body > header, body > main, body > footer";
+/** Left out of the rebuild: the overlay, the nav's build menu, dev tooling. */
+const skip = (el: Element) =>
+  el.hasAttribute("data-swarm-ui") || el.hasAttribute("data-build-menu") || el.tagName === "NEXTJS-PORTAL";
+
+/**
+ * Build 2 — the swarm. Its overlay lives in a shadow root on the body, so
+ * neither the page's styles nor its hide-everything rule reach it; the engine
+ * does the rest on the real page.
+ */
+export default function SwarmBuild({ onClose }: SwarmBuildProps) {
+  const t = useTranslations("Build.swarm");
+  const [root, setRoot] = useState<ShadowRoot | null>(null);
+  const [state, setState] = useState<SwarmState>({ phase: "scan", agents: 0, done: 0, total: 0, tour: true, speed: 1, sound: true });
+  const swarm = useRef<Swarm | null>(null);
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const cover = useRef<HTMLDivElement>(null);
+  const logo = useRef<HTMLDivElement>(null);
+  const rulerTop = useRef<HTMLCanvasElement>(null);
+  const rulerLeft = useRef<HTMLCanvasElement>(null);
+
+  useLayoutEffect(() => {
+    const host = document.createElement("div");
+    host.setAttribute("data-swarm-ui", "");
+    document.body.append(host);
+    const shadow = host.attachShadow({ mode: "open" });
+    const css = document.createElement("style");
+    css.textContent = SWARM_CSS;
+    shadow.append(css);
+    hostRef.current = host;
+    setRoot(shadow);
+    return () => host.remove();
+  }, []);
+
+  useEffect(() => {
+    if (!root || !stage.current || !cover.current || !logo.current || !rulerTop.current || !rulerLeft.current) return;
+    const s = createSwarm({
+      stage: stage.current,
+      cover: cover.current,
+      logo: logo.current,
+      rulerTop: rulerTop.current,
+      rulerLeft: rulerLeft.current,
+      roots: () => [...document.querySelectorAll(ROOTS)],
+      skip,
+      onState: setState,
+    });
+    swarm.current = s;
+    s.start();
+    return () => {
+      s.destroy();
+      swarm.current = null;
+    };
+  }, [root]);
+
+  /** Go live: the overlay fades and the real page is back, clickable. */
+  const live = useCallback(() => {
+    const host = hostRef.current;
+    if (!host) return onClose();
+    host.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: "forwards" }).onfinish = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if ((e.key === "m" || e.key === "M") && !e.metaKey && !e.ctrlKey) swarm.current?.setSound(!state.sound);
+    };
+    addEventListener("keydown", onKey);
+    return () => removeEventListener("keydown", onKey);
+  }, [onClose, state.sound]);
+
+  if (!root) return null;
+  const s = swarm.current;
+  const ratio = state.total ? state.done / state.total : 0;
+
+  return createPortal(
+    <>
+      <div className="shield" aria-hidden />
+      <div ref={cover} className="cover" />
+      <canvas ref={rulerTop} className="ruler top" aria-hidden />
+      <canvas ref={rulerLeft} className="ruler left" aria-hidden />
+      <div ref={stage} className="stage" aria-hidden />
+      <div ref={logo} className="logo" aria-hidden>
+        <LogoMark />
+      </div>
+      <section className="bar" role="toolbar" aria-label={t("label")}>
+        {state.phase === "scan" || state.phase === "orbit" ? (
+          <>
+            <span className="dim" aria-live="polite">{t("scanning")}</span>
+            <span className="track scan" aria-hidden>
+              <i />
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="faces hide-sm" aria-hidden>
+              {SWARM_INITIALS.map((c, i) => (
+                <span key={i} style={{ background: SWARM_COLORS[i] }}>
+                  {c}
+                </span>
+              ))}
+            </span>
+            <span>
+              <strong>{state.agents}</strong> <span className="dim">{t("agents")}</span>
+            </span>
+            <span className="sep hide-sm" aria-hidden />
+            <span aria-live="polite">
+              {state.phase === "done" ? (
+                t("done")
+              ) : (
+                <>
+                  <strong>{state.done}</strong>
+                  <span className="dim"> / {t("layers", { total: state.total })}</span>
+                </>
+              )}
+            </span>
+            <span className="track hide-sm" role="progressbar" aria-label={t("progress")} aria-valuenow={Math.round(ratio * 100)} aria-valuemin={0} aria-valuemax={100}>
+              <i style={{ width: `${ratio * 100}%` }} />
+            </span>
+          </>
+        )}
+        {state.phase === "done" ? (
+          <>
+            <button type="button" className="primary" onClick={live}>
+              {t("live")}
+            </button>
+            <button type="button" onClick={() => void s?.replay()}>
+              {t("replay")}
+            </button>
+          </>
+        ) : (
+          <>
+            <button type="button" aria-pressed={state.tour} onClick={() => s?.setTour(!state.tour)}>
+              {t("tour")}
+            </button>
+            <button
+              type="button"
+              aria-label={t("speed")}
+              onClick={() => s?.setSpeed(SWARM_SPEEDS[(SWARM_SPEEDS.indexOf(state.speed) + 1) % SWARM_SPEEDS.length])}
+            >
+              {state.speed}×
+            </button>
+          </>
+        )}
+        <button type="button" className="icon" aria-label={state.sound ? t("soundOff") : t("soundOn")} onClick={() => s?.setSound(!state.sound)}>
+          {state.sound ? <Volume2 aria-hidden /> : <VolumeX aria-hidden />}
+        </button>
+        <button type="button" className="icon" aria-label={t("close")} onClick={onClose}>
+          <X aria-hidden />
+        </button>
+      </section>
+    </>,
+    root
+  );
+}
