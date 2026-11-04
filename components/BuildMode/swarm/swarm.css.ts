@@ -20,14 +20,14 @@ export const SWARM_CSS = `
 .logo .word{position:relative;font-size:46px;font-weight:600;letter-spacing:-.035em;line-height:1;white-space:nowrap}
 .logo .word span{display:inline-block;max-width:0;overflow:hidden;vertical-align:bottom}
 .logo .caret{display:inline-block;width:2.5px;height:42px;margin-left:3px;vertical-align:-5px;background:#0d99ff;opacity:0}
-.logo.play::before{animation:sp-glow 1.6s ease-out forwards}
-.logo.play .back{animation:sp-draw .42s cubic-bezier(.22,1,.36,1) .15s forwards}
-.logo.play .front{animation:sp-draw .42s cubic-bezier(.22,1,.36,1) .72s forwards}
-.logo.play .box{animation:sp-box 1.25s cubic-bezier(.22,1,.36,1) .1s forwards}
+.logo.play::before{animation:sp-glow 1s ease-out forwards}
+.logo.play .back{animation:sp-draw .3s cubic-bezier(.22,1,.36,1) .08s forwards}
+.logo.play .front{animation:sp-draw .3s cubic-bezier(.22,1,.36,1) .44s forwards}
+.logo.play .box{animation:sp-box .8s cubic-bezier(.22,1,.36,1) .05s forwards}
 .logo.play .box em::after{content:"39 × 39"}
-.logo.play .caret{animation:sp-caret 1.9s steps(1) .95s forwards}
+.logo.play .caret{animation:sp-caret 1.1s steps(1) .6s forwards}
 .logo.play .word span{animation:sp-type .01s linear forwards}
-.logo.play .word span:nth-child(1){animation-delay:1.25s}.logo.play .word span:nth-child(2){animation-delay:1.34s}.logo.play .word span:nth-child(3){animation-delay:1.43s}.logo.play .word span:nth-child(4){animation-delay:1.52s}.logo.play .word span:nth-child(5){animation-delay:1.61s}.logo.play .word span:nth-child(6){animation-delay:1.7s}
+.logo.play .word span:nth-child(1){animation-delay:0.66s}.logo.play .word span:nth-child(2){animation-delay:0.72s}.logo.play .word span:nth-child(3){animation-delay:0.78s}.logo.play .word span:nth-child(4){animation-delay:0.84s}.logo.play .word span:nth-child(5){animation-delay:0.9s}.logo.play .word span:nth-child(6){animation-delay:0.96s}
 @keyframes sp-glow{to{opacity:1}}
 @keyframes sp-draw{to{clip-path:inset(0 0 0 0 round 11px)}}
 @keyframes sp-box{0%{opacity:1;left:16.5px;top:16.5px;width:0;height:0}38%{opacity:1;left:16.5px;top:16.5px;width:39px;height:39px}48%{opacity:1;left:40.5px;top:40.5px;width:0;height:0}86%{opacity:1;left:40.5px;top:40.5px;width:39px;height:39px}100%{opacity:0;left:40.5px;top:40.5px;width:39px;height:39px}}

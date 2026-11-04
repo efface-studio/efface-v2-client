@@ -19,8 +19,8 @@ export const SWARM_BLUE = "#0d99ff";
 export const SWARM_RED = "#ff3b30";
 
 /** Timings at 1× (ms). */
-export const SWARM_FADE_MS = 700;
-export const SWARM_ORBIT_MS = 2600;
+export const SWARM_FADE_MS = 350;
+export const SWARM_ORBIT_MS = 1600;
 export const SWARM_FAN_MS = 450;
 export const SWARM_DRAG_MS = 420;
 export const SWARM_REVEAL_MS = 380;
@@ -40,6 +40,26 @@ export const SWARM_ENTER_MS = 340;
 export const SWARM_EXIT_MS = 280;
 /** In the finale, the cursors go home once the pointer has rested this long. */
 export const SWARM_HOME_IDLE_MS = 1200;
+/** The site's pages, in the order a run goes through them (from wherever it starts). Just the
+ *  page it starts on for now; the engine can turn to more (see `turn`). */
+export const SWARM_ROUTES: readonly string[] = [];
+/** The whole run, splash and every page included (ms at 1×). */
+export const SWARM_DURATION_MS = 60_000;
+/** Pacing: where it starts and its bounds (multiples of the 1× timings). */
+export const SWARM_PACE_START = 1.6;
+export const SWARM_PACE_MIN = 0.5;
+export const SWARM_PACE_MAX = 12;
+/** The first page's share of the build time (the rest goes to the pages after), and a page turn's length. */
+export const SWARM_FIRST_SHARE = 0.74;
+export const SWARM_TURN_MS = 1100;
+/** On the first page, how long each block takes against its height: the opening gets
+ *  more time to be watched, the reviews and footer go by quicker. */
+export const SWARM_WEIGHTS: Record<string, number> = {
+  hero: 2.6,
+  efface: 1.4,
+  testimonials: 0.4,
+  footer: 0.9,
+};
 /** Speeds the toolbar offers. */
 export const SWARM_SPEEDS = [1, 2, 3];
 

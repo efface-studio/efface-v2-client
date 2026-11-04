@@ -15,7 +15,11 @@ import {
   SWARM_REST_MS,
   SWARM_MAX_AGENTS,
   SWARM_MAX_CARRY,
+  SWARM_FIRST_SHARE,
   SWARM_ORBIT_MS,
+  SWARM_PACE_MAX,
+  SWARM_PACE_MIN,
+  SWARM_PACE_START,
   SWARM_REVEAL_MS,
   SWARM_RULER,
   SWARM_RULERS_FROM,
@@ -23,6 +27,7 @@ import {
   SWARM_TOUR_FRONT,
   SWARM_TOUR_EMPTY,
   SWARM_TOUR_MAX,
+  SWARM_TURN_MS,
   SWARM_TYPE_CPS,
   SWARM_TYPE_MAX_MS,
   SWARM_VIEW_BOTTOM,
@@ -69,8 +74,15 @@ export interface SwarmOptions {
   house: HTMLElement;
   rulerTop: HTMLCanvasElement;
   rulerLeft: HTMLCanvasElement;
-  /** The page's blocks to rebuild, top to bottom. */
-  roots: () => Element[];
+  /** The page's blocks to rebuild, top to bottom (for the `page`th page of the run). */
+  roots: (page: number) => Element[];
+  /** Pages in the run; the engine moves on to the next through `turn`, which resolves once it's there. */
+  pages: number;
+  turn: (page: number) => Promise<void>;
+  /** The whole run, splash included, from start to done (ms at 1×). */
+  duration: number;
+  /** How long a stretch of the page should take, relative to its height (1: its fair share). */
+  weigh: (block: Element, index: number, page: number) => number;
   /** Elements left out (the overlay itself, the nav's build button). */
   skip: (el: Element) => boolean;
   onState: (s: SwarmState) => void;
@@ -124,6 +136,12 @@ export function createSwarm(o: SwarmOptions) {
   let phase: SwarmPhase = "scan";
   let phaseAt = 0;
   let speed = 1;
+  /** Pacing: the run keeps to its time — each page to its deadline, sped up or eased off as it goes. */
+  let pace = SWARM_PACE_START;
+  let endAt = 0;
+  let page = 0;
+  let pageStart = 0;
+  let pageEnd = 0;
   let tour = true;
   let raf = 0;
   let last = 0;
@@ -617,7 +635,7 @@ export function createSwarm(o: SwarmOptions) {
     // Nothing left on screen (a pinned scene's runway): glide through faster.
     const ahead = Math.min(lead, innerHeight) - innerHeight * SWARM_TOUR_FRONT;
     if (ahead <= 0) return;
-    const v = (lead > innerHeight ? SWARM_TOUR_EMPTY : Math.min(SWARM_TOUR_MAX, 80 + ahead * 2.2)) * speed;
+    const v = (lead > innerHeight ? SWARM_TOUR_EMPTY : Math.min(SWARM_TOUR_MAX, 80 + ahead * 2.2)) * speed * pace * local();
     window.scrollBy(0, (v * dt) / 1000);
   };
 
@@ -986,17 +1004,106 @@ export function createSwarm(o: SwarmOptions) {
     emit(true);
   };
 
+  /** Deadlines for the page just begun: the time left, less the turns still to come, shared out. */
+  const startPage = (now: number) => {
+    pageStart = now;
+    plotTime();
+    const turns = o.pages - 1 - page;
+    const left = Math.max(1000, endAt - now - turns * SWARM_TURN_MS);
+    pageEnd = now + (turns > 0 ? left * SWARM_FIRST_SHARE : left);
+  };
+  /** The page's time plan: blocks top to bottom, as (share of the page, share of the time). */
+  let plan: { at: number; to: number; t0: number; t1: number }[] = [];
+  const plotTime = () => {
+    const blocks = o.roots(page).flatMap((r) => (r.tagName === "MAIN" ? [...r.children] : [r]));
+    const height = Math.max(1, html.scrollHeight);
+    let weight = 0;
+    const rows = blocks
+      .map((el, i) => {
+        const r = rectOf(el);
+        const top = r.top + scrollY;
+        return { at: top / height, to: (top + r.height) / height, w: (r.height / height) * o.weigh(el, i, page) };
+      })
+      .filter((b) => b.to > b.at);
+    for (const b of rows) weight += b.w;
+    let t = 0;
+    plan = rows.map((b) => {
+      const t0 = t;
+      t += b.w / (weight || 1);
+      return { at: b.at, to: b.to, t0, t1: t };
+    });
+  };
+  /** The block in view's own pace: quicker through the light ones, slower through the heavy. */
+  const local = () => {
+    const y = (scrollY + innerHeight * 0.5) / Math.max(1, html.scrollHeight);
+    const b = plan.find((p) => y >= p.at && y < p.to);
+    if (!b) return 1;
+    const share = (b.t1 - b.t0) / Math.max(1e-6, b.to - b.at);
+    return clamp(1 / share, 0.35, 3);
+  };
+  /** Progress (share of the page) that a share of the time should have reached. */
+  const along = (f: number) => {
+    for (const b of plan) if (f <= b.t1) return b.at + (b.to - b.at) * ((f - b.t0) / Math.max(1e-6, b.t1 - b.t0));
+    return f;
+  };
+  /** Keeps the page to its deadline: progress (layers in, and how far the tour has scrolled) against time spent. */
+  const steer = (now: number, real: number) => {
+    const span = pageEnd - pageStart;
+    if (span <= 0 || !layers.length) return;
+    const f = clamp((now - pageStart) / span, 0, 1);
+    const max = html.scrollHeight - innerHeight;
+    const p = 0.5 * (built / layers.length) + 0.5 * (max > 0 ? clamp(scrollY / max, 0, 1) : 1);
+    // Where it should be by now: the page's stretches each take their weighted share of the time.
+    const want = along(f);
+    pace = clamp(pace * Math.exp((want - p) * 3.2 * (real / 1000)), SWARM_PACE_MIN, SWARM_PACE_MAX);
+    // Out of time: what's left goes in at once.
+    if (now > pageEnd - 250) wrapUp();
+  };
+  /** Everything still to come is put in place, the work in hand let go. */
+  const wrapUp = () => {
+    for (const a of agents) {
+      a.script = null;
+      a.sel = null;
+    }
+    o.stage.querySelectorAll(".sel,.ghost,.measure,.guide,.pen").forEach((d) => d.remove());
+    guides = 0;
+    carried.clear();
+    for (const L of layers) finish(L);
+    front = layers.length;
+  };
+  /** On to the next page: cover, move there, read it, uncover, build. */
+  let turning = false;
+  const turnPage = async () => {
+    if (turning) return;
+    turning = true;
+    enter("turn");
+    await o.cover.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reduce ? 0 : SWARM_TURN_MS * 0.35, fill: "forwards" }).finished;
+    if (stopped) return;
+    page++;
+    await o.turn(page);
+    if (stopped) return;
+    scrollTo({ top: 0, behavior: "instant" });
+    await prepare();
+    if (stopped) return;
+    await o.cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduce ? 0 : SWARM_TURN_MS * 0.35, fill: "forwards" }).finished;
+    if (stopped) return;
+    turning = false;
+    startPage(performance.now());
+    enter("build");
+  };
+
   const tick = (now: number) => {
     if (stopped) return;
     raf = requestAnimationFrame(tick);
     const real = Math.min(50, now - last || 16);
     last = now;
-    const dt = real * speed;
+    const dt = real * speed * (phase === "build" ? pace * local() : 1);
 
     if (phase === "orbit") {
       orbit(now, real);
       if (now - phaseAt > (reduce ? 0 : SWARM_ORBIT_MS)) {
-        // Fan out across the page and get to work.
+        // Fan out across the page and get to work, each page given its share of the time left.
+        startPage(now);
         enter("build");
         o.logo.animate([{ opacity: 1, filter: "blur(0)" }, { opacity: 0, filter: "blur(6px)" }], { duration: 420, fill: "forwards" });
         sound.arpeggio();
@@ -1046,8 +1153,12 @@ export function createSwarm(o: SwarmOptions) {
       }
       tourStep(real);
       unstick(now);
+      steer(now, real);
       while (front < layers.length && status[front] === 2) front++;
-      if (front >= layers.length && agents.every((a) => !a.script)) {
+      if (front >= layers.length && agents.every((a) => !a.script) && page + 1 < o.pages) {
+        void turnPage();
+      } else if (front >= layers.length && agents.every((a) => !a.script) && now >= endAt - 300) {
+        // Done — and not before its time: ahead of it, the cursors rest in the house till then.
         // Every layer is in; the hide-all rule stays until Go live, where its
         // lifting (a whole-page restyle) hides under the overlay's fade.
         enter("done");
@@ -1074,7 +1185,7 @@ export function createSwarm(o: SwarmOptions) {
   /** Reads the page a slice a frame (so the scan bar keeps moving), then hides it all. */
   const prepare = async () => {
     const clock = { until: 0 };
-    const walk = snapshot(o.roots(), o.skip, clock);
+    const walk = snapshot(o.roots(page), o.skip, clock);
     for (;;) {
       clock.until = performance.now() + 10;
       const step = walk.next();
@@ -1136,13 +1247,14 @@ export function createSwarm(o: SwarmOptions) {
       const [x, y] = edgePoint(i);
       addAgent(x, y);
     }
-    await cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduce ? 0 : 400, fill: "forwards" }).finished;
+    await cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduce ? 0 : 250, fill: "forwards" }).finished;
     if (stopped) return;
     enter("orbit");
   };
 
   return {
     start() {
+      endAt = performance.now() + o.duration;
       listen(true);
       enter("scan");
       last = performance.now();
@@ -1150,6 +1262,11 @@ export function createSwarm(o: SwarmOptions) {
       void begin();
     },
     setSpeed(v: number) {
+      // The time left shrinks (or grows) with the speed.
+      const now = performance.now();
+      const k = speed / v;
+      endAt = now + (endAt - now) * k;
+      if (phase === "build") pageEnd = now + (pageEnd - now) * k;
       speed = v;
       emit(true);
     },
@@ -1175,6 +1292,14 @@ export function createSwarm(o: SwarmOptions) {
       tour = true;
       await o.cover.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reduce ? 0 : 400, fill: "forwards" }).finished;
       if (stopped) return;
+      // From the first page again, with the full time.
+      if (page !== 0) {
+        page = 0;
+        await o.turn(0);
+        if (stopped) return;
+      }
+      endAt = performance.now() + o.duration;
+      pace = SWARM_PACE_START;
       scrollTo({ top: 0, behavior: "instant" });
       await prepare();
       if (stopped) return;

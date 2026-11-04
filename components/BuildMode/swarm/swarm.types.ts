@@ -15,7 +15,7 @@ export interface SwarmLayer {
   chars: number;
 }
 
-export type SwarmPhase = "scan" | "orbit" | "build" | "done";
+export type SwarmPhase = "scan" | "orbit" | "build" | "turn" | "done";
 
 /** What the toolbar shows; the engine sends it a few times a second. */
 export interface SwarmState {
