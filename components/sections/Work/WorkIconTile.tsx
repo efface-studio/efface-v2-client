@@ -21,7 +21,13 @@ export default function WorkIconTile({ name, icon, zoom }: WorkIconTileProps) {
   }
 
   return (
-    <div aria-hidden className={TILE} style={{ background: icon.bg }}>
+    // `data-build-tile`: build mode keeps the colour with the art (see globals.css).
+    <div
+      aria-hidden
+      data-build-tile
+      className={TILE}
+      style={{ background: icon.bg, ["--tile-bg" as string]: icon.bg }}
+    >
       <img
         src={icon.src}
         alt=""
