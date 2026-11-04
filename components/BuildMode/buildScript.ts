@@ -57,6 +57,7 @@ export function toBuildFile(source: BuildSource): BuildFile {
     path: source.path,
     plan: source.plan,
     driven: driven,
+    speed: source.speed ?? 1,
     code,
     lineNumbers,
     folds,
