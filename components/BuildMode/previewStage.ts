@@ -135,13 +135,26 @@ export function startBuildStage() {
     return r.width > 0 && r.height > 0 && top > -r.height && top < innerHeight;
   };
 
+  // Only what a viewer could see gets built piece by piece: not the copies a
+  // marquee keeps off to the side, the cards of a sideways scroller, or what's
+  // hidden. Those would take their turn with nothing changing on screen.
+  // Faded-out copy is skipped too where the page stays put; a region scrolls
+  // as it builds, and the page's own scroll scenes fade that copy in.
+  const across = (r: DOMRect) => r.right > 0 && r.left < innerWidth;
+  const shows = (el: Element | null, faded: boolean) =>
+    !el || !el.checkVisibility || el.checkVisibility({ visibilityProperty: true, opacityProperty: faded });
+  const fits = (u: Unit, r: DOMRect, el: Element | null) =>
+    across(r) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly);
+
   // The camera: the block holding the piece being built, sent whenever the
   // build moves into a new one. Nothing (pull back) for blocks too big to be
   // worth a close-up.
   const focusOn = (el: Element | null) => {
     if (el === focused) return;
-    focused = el;
     const r = el?.getBoundingClientRect();
+    // Never to somewhere off screen: the camera would pan over nothing.
+    if (r && !(across(r) && r.bottom > 0 && r.top < innerHeight)) return;
+    focused = el;
     const worth = r && r.width > 0 && r.width < innerWidth * 0.85 && r.height < innerHeight * 0.6;
     reply({ type: "focus", rect: worth ? { x: r.left, y: r.top, w: r.width, h: r.height } : null });
   };
@@ -154,7 +167,7 @@ export function startBuildStage() {
         if (found.length >= MAX_BOXES) break;
         if (/^(SPAN|BR|SCRIPT|STYLE)$/.test(el.tagName) || el.closest("svg, [data-build-hold]")) continue;
         const r = el.getBoundingClientRect();
-        if (r.width > 4 && r.height > 4 && (!u.onScreenOnly || onScreen(r))) found.push(el);
+        if (r.width > 4 && r.height > 4 && fits(u, r, el)) found.push(el);
       }
     u.boxes = found;
     u.boxesShown = 0;
@@ -183,14 +196,14 @@ export function startBuildStage() {
         if (n.nodeType === Node.TEXT_NODE) {
           const range = document.createRange();
           range.selectNodeContents(n);
-          if (!u.onScreenOnly || onScreen(range.getBoundingClientRect()))
+          if (fits(u, range.getBoundingClientRect(), n.parentElement))
             items.push({ node: n as Text, units: (n as Text).length, range });
         } else {
           const el = n as Element;
           // An svg's own parts aren't walked into — the icon appears whole.
           if (el.tagName !== "svg" && el.closest("svg")) continue;
           const r = el.getBoundingClientRect();
-          if (!u.onScreenOnly || onScreen(r)) items.push({ node: el, units: MEDIA_UNITS, big: r.width > SCAN_ABOVE || r.height > SCAN_ABOVE });
+          if (fits(u, r, el)) items.push({ node: el, units: MEDIA_UNITS, big: r.width > SCAN_ABOVE || r.height > SCAN_ABOVE });
         }
       }
     }
@@ -398,7 +411,8 @@ export function startBuildStage() {
           if (!unit) {
             const dialog = document.querySelector<HTMLElement>("dialog[open]");
             if (dialog) {
-              unit = newUnit([dialog], false);
+              // What's below the dialog's fold isn't on screen to build.
+              unit = newUnit([dialog], true);
               unit.span = TEXT_END - LAYOUT_END;
               stageUnit(unit, "blank");
             }

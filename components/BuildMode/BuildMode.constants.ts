@@ -41,18 +41,21 @@ export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number;
 ];
 
 /** Typing speed at 1×, in characters per second — real files are long. */
-export const TYPE_CPS = 345;
+export const TYPE_CPS = 450;
 /** However fast the code goes, letters appear at most this fast (per second, at
  *  1×): the typing slows through a letters phase so each one can be seen. */
-export const LETTERS_PER_SEC = 42;
+export const LETTERS_PER_SEC = 55;
 /** Typing cost of a line break, and of a comment's characters (skimmed). */
 export const NEWLINE_COST = 3;
 export const COMMENT_COST = 0.3;
+/** The code after a block's colour lands (closing tags, mostly) types this much faster:
+ *  by then the preview has nothing left to show for it. */
+export const TAIL_SPEED = 3;
 
 /** Time for the preview to scroll to a section before its code starts. */
-export const ENTER_WAIT_MS = 540;
+export const ENTER_WAIT_MS = 415;
 /** Beat on the finished section before the next file opens. */
-export const SECTION_END_WAIT_MS = 470;
+export const SECTION_END_WAIT_MS = 360;
 /** How long "Done" stays up before the studio closes itself. */
 export const DONE_CLOSE_MS = 2000;
 /** The opening splash: shortest it stays, and its lift-off (match globals.css). */
@@ -80,6 +83,10 @@ export const PREVIEW_PHONE_BELOW = 560;
 /** The camera's closest zoom, and how much of the pane the focused block may fill. */
 export const CAMERA_MAX_ZOOM = 1.45;
 export const CAMERA_FILL = 0.62;
+/** The camera moves on once what's being built comes this close (a share of the pane) to the frame's edge… */
+export const CAMERA_MARGIN = 0.06;
+/** …or once it could come this many times closer than it is. */
+export const CAMERA_CLOSER = 1.25;
 /** Shortest hold on one shot before the camera moves to the next. */
 export const CAMERA_DWELL_MS = 600;
 
