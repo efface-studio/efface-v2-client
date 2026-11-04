@@ -48,10 +48,9 @@ export default function BuildButton() {
     }
   };
 
-  // Each build gets an app-icon tile, as a macOS menu would show it.
-  const builds: { kind: BuildKind; icon: typeof CodeXml; tile: string; load: () => Promise<unknown> }[] = [
-    { kind: "studio", icon: CodeXml, tile: "from-[#3b8bff] to-[#2456d6]", load: loadStudio },
-    { kind: "swarm", icon: MousePointer2, tile: "from-[#b46cff] to-[#6a3be5]", load: loadSwarm },
+  const builds: { kind: BuildKind; icon: typeof CodeXml; load: () => Promise<unknown> }[] = [
+    { kind: "studio", icon: CodeXml, load: loadStudio },
+    { kind: "swarm", icon: MousePointer2, load: loadSwarm },
   ];
 
   return (
@@ -79,7 +78,7 @@ export default function BuildButton() {
           onKeyDown={onMenuKey}
           className="build-menu absolute right-0 top-full z-50 mt-2 w-[19rem] origin-top-right rounded-[12px] border-[0.5px] border-white/15 bg-[rgba(36,36,40,0.72)] p-[5px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.6),0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-[1.8]"
         >
-          {builds.map(({ kind, icon: Icon, tile, load }, i) => (
+          {builds.map(({ kind, icon: Icon, load }, i) => (
             <button
               key={kind}
               ref={(el) => {
@@ -92,12 +91,11 @@ export default function BuildButton() {
               onFocus={() => void load()}
               className="group flex w-full cursor-pointer items-center gap-3 rounded-[7px] px-2.5 py-2 text-left hover:bg-[#0a84ff] focus-visible:bg-[#0a84ff] focus-visible:outline-none"
             >
-              <span
+              <Icon
                 aria-hidden
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-b ${tile} shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35),0_1px_2px_rgba(0,0,0,0.4)]`}
-              >
-                <Icon className="h-[15px] w-[15px] text-white" strokeWidth={2.25} />
-              </span>
+                className="h-[18px] w-[18px] shrink-0 text-white/70 group-hover:text-white group-focus-visible:text-white"
+                strokeWidth={1.75}
+              />
               <span className="min-w-0">
                 <span className="block text-[13px] font-medium leading-tight tracking-[-0.01em] text-white">{t(`menu.${kind}`)}</span>
                 <span className="mt-0.5 block break-keep text-[11.5px] leading-snug text-white/55 group-hover:text-white/85 group-focus-visible:text-white/85">
