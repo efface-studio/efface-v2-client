@@ -125,26 +125,28 @@ export default function ProfilePanel() {
 
         {/* Header — photo, name, email. */}
         <header className="mt-6 flex flex-wrap items-stretch gap-5 pr-12">
-          <img
-            src="/about/founder-photo.webp"
-            alt={t("photoAlt")}
-            width={400}
-            height={514}
-            // A cut-out on transparency — no frame, the panel is its background.
-            // self-start keeps the row's stretch from pulling it out of ratio.
-            className="h-auto w-24 shrink-0 self-start md:w-28"
-          />
-          <div className="min-w-0 self-end pb-4">
-            <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
-              {t("name")}
-            </h2>
-            <p className="mt-1 text-sm text-fg-faint">{t("nameAlt")}</p>
-            <a
-              href={`mailto:${t("email")}`}
-              className="mt-3 inline-block text-sm text-fg-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg hover:decoration-white/60"
-            >
-              {t("email")}
-            </a>
+          {/* The name sits on the photo's foot, whatever height the row takes. */}
+          <div className="flex min-w-0 items-end gap-5 self-start">
+            <img
+              src="/about/founder-photo.webp"
+              alt={t("photoAlt")}
+              width={400}
+              height={514}
+              // A cut-out on transparency — no frame, the panel is its background.
+              className="h-auto w-24 shrink-0 md:w-28"
+            />
+            <div className="min-w-0">
+              <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
+                {t("name")}
+              </h2>
+              <p className="mt-1 text-sm text-fg-faint">{t("nameAlt")}</p>
+              <a
+                href={`mailto:${t("email")}`}
+                className="mt-3 inline-block text-sm text-fg-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg hover:decoration-white/60"
+              >
+                {t("email")}
+              </a>
+            </div>
           </div>
           {/* The motto and summary fill the rest of the row from sm up, spanning
               the photo's height (motto at its top, summary at its foot); on a
