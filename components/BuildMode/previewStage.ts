@@ -16,6 +16,8 @@ const SWEEP_MS = 900;
  *  scrolling past the pinned scenes would run their per-frame work all the way. */
 const CUT_BEYOND = 1.5;
 const CUT_MS = 220;
+/** Loops the stand-in pointer draws over an animation while its code types. */
+const BRUSH_LOOPS = 3;
 /** Longest a pinned region waits for its scroll to land. */
 const ARRIVE_MS = 1500;
 /** How long a detail view's follow-on scroll glides. */
@@ -409,6 +411,32 @@ export function startBuildStage() {
 
   const entry = (file: number) => plan[file];
 
+  // The animations answer the pointer — the ink trails it, the particles part
+  // round it, the wordmark lights under it — and the preview takes no input.
+  // So while an animation's code types, a pointer of its own draws loops over
+  // it, paced by that typing: the piece visibly comes alive with its code.
+  const brush = (sel: string, p: number) => {
+    const el = document.querySelector<HTMLElement>(sel);
+    // Drawn over the drawing surface itself and sent from it, so it reaches
+    // listeners on it and on everything around it (a wrapper's would miss a child's).
+    const target = el?.querySelector("canvas") ?? el;
+    const r = target?.getBoundingClientRect();
+    if (!el || !target || !r || r.bottom < 0 || r.top > innerHeight || !r.width) return;
+    focusOn(target);
+    const a = p * Math.PI * 2 * BRUSH_LOOPS;
+    const clientX = r.left + r.width * (0.5 + 0.38 * Math.sin(a));
+    const clientY = Math.min(innerHeight - 8, r.top + r.height * (0.5 + 0.3 * Math.sin(2 * a + 0.6)));
+    const at = { clientX, clientY, bubbles: true };
+    target.dispatchEvent(new PointerEvent("pointermove", { ...at, pointerType: "mouse" }));
+    target.dispatchEvent(new MouseEvent("mousemove", at));
+  };
+  const brushAway = (sel: string) =>
+    document.querySelectorAll(sel).forEach((el) => {
+      const target = el.querySelector("canvas") ?? el;
+      target.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "mouse" }));
+      target.parentElement?.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "mouse" }));
+    });
+
   /** A block's own scroll scene, played by scrolling through it as its code
    *  types — eased in and out, a frame at a time, so the scene paints every step. */
   const scrubThrough = (f: BuildPlanEntry, p: number) => {
@@ -444,7 +472,8 @@ export function startBuildStage() {
         regions = [];
         regionAt = -1;
         if (f.grow) {
-          // An animated piece: bring it into view and let it grow there.
+          // An animated piece: bring it into view and let it grow there, the
+          // camera on it (or pulled back, for a piece too big to frame).
           const el = document.querySelector<HTMLElement>(f.grow);
           if (el) go(el.getBoundingClientRect().top + scrollY - innerHeight * 0.25);
           focusOn(null);
@@ -485,6 +514,7 @@ export function startBuildStage() {
         if (!f) break;
         if (f.grow) {
           document.querySelectorAll<HTMLElement>(f.grow).forEach((el) => el.style.setProperty("--build-grow", msg.p.toFixed(3)));
+          brush(f.grow, msg.p);
         } else if (f.scrub) scrubThrough(f, msg.p);
         else if (f.regions) buildRegions(msg.p, msg.speed);
         else if (f.detail) {
@@ -521,7 +551,10 @@ export function startBuildStage() {
         const f = entry(msg.file);
         if (!f) break;
         scrubFrom = null;
-        if (f.grow) release(f.grow);
+        if (f.grow) {
+          release(f.grow);
+          brushAway(f.grow);
+        }
         if (unit) stageUnit(unit, "done");
         if (f.detail) {
           const dialog = unit?.els[0];
