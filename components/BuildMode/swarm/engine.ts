@@ -275,9 +275,16 @@ export function createSwarm(o: SwarmOptions) {
     }
     s.remove();
   }
+  /** An image is shown once it's loaded and decoded (off the main thread), within limits. */
   function* untilLoaded(el: Element): Script {
     if (!(el instanceof HTMLImageElement)) return;
     for (let t = 0; t < 1500 && !(el.complete && el.naturalWidth); ) t += yield;
+    let decoded = false;
+    el.decode().then(
+      () => (decoded = true),
+      () => (decoded = true)
+    );
+    for (let t = 0; t < 400 && !decoded; ) t += yield;
   }
 
   /** A repeated sibling: select the master, ⌥-drag a copy into place with a red measure. */
@@ -737,7 +744,6 @@ export function createSwarm(o: SwarmOptions) {
     ranges = new Map();
     for (const L of layers) {
       mark(L, "wait");
-      if (L.el instanceof HTMLImageElement && L.el.loading === "lazy") L.el.loading = "eager";
       for (const t of L.text ?? []) {
         const r = document.createRange();
         r.selectNodeContents(t);
