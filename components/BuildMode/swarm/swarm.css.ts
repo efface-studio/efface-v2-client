@@ -9,6 +9,14 @@ export const SWARM_CSS = `
 .stage{position:fixed;inset:0;overflow:hidden}
 .logo{position:fixed;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:16px;background:#1b1b21;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 12px 40px rgba(0,0,0,.5);display:grid;place-items:center;opacity:0;color:#f4f4f6}
 .logo svg{width:36px;height:36px}
+.house{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
+.house svg{position:absolute;left:-22px;top:-30px;width:44px;height:44px;opacity:0;transform:translateY(10px) scale(.6);transform-origin:50% 100%;transition:opacity .25s,transform .35s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.house.show svg{opacity:1;transform:none}
+.house.leave svg{opacity:0;transform:translateY(8px) scale(.7);transition:opacity .35s .15s,transform .35s .15s ease-in}
+.house .win{fill:#2a2a31;transition:fill .4s}
+.house.lit .win{fill:#ffd23f}
+.house.lit .glow{opacity:1}
+.house .glow{opacity:0;transition:opacity .5s}
 .cursor{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
 .cursor svg{display:block}
 .sel{position:absolute;left:0;top:0;border:1px solid ${SWARM_BLUE};will-change:transform}
