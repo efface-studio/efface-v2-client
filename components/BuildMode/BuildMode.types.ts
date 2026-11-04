@@ -10,6 +10,8 @@ export interface BuildSource {
   /** What it builds in the preview, and its typing speed against the default. */
   plan: BuildPlanEntry;
   pace?: number;
+  /** Plays this file this many times faster, its letters included. */
+  speed?: number;
 }
 
 /** A file of the repo as the explorer lists it. */
@@ -34,6 +36,8 @@ export interface BuildFile {
   plan: BuildPlanEntry;
   /** True when the preview paces itself off `progress` (regions, detail, grow). */
   driven: boolean;
+  /** Playback multiplier for the whole file, letters included. */
+  speed: number;
   code: string;
   /** The real line number of each line of `code`. */
   lineNumbers: number[];

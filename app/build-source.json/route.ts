@@ -12,10 +12,10 @@ export const dynamic = "force-static";
 
 export async function GET() {
   const files = await Promise.all(
-    BUILD_SOURCES.map(async ({ path: rel, plan, pace, whole }) => {
+    BUILD_SOURCES.map(async ({ path: rel, plan, pace, speed, whole }) => {
       const src = stripComments(await readFile(path.join(/*turbopackIgnore: true*/ process.cwd(), rel), "utf8"));
       // An animation's file is the animation: shown whole, not cut to its JSX.
-      return { path: rel, plan, pace, blocks: whole ? [{ start: 1, code: src.trimEnd() }] : excerpt(src) };
+      return { path: rel, plan, pace, speed, blocks: whole ? [{ start: 1, code: src.trimEnd() }] : excerpt(src) };
     })
   );
   return Response.json({ files, tree: await listRepo() });

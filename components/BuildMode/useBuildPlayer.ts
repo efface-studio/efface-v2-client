@@ -75,6 +75,7 @@ export function useBuildPlayer(
         );
         const natural = (file.costSum[end] - file.costSum[s.pos]) / TYPE_CPS;
         const needed = msg.units / LETTERS_PER_SEC;
+        // The budget applies the file's speed to both, so the ratio holds.
         s.slow = natural > 0 ? Math.max(1, needed / natural) : 1;
         s.slowUntil = end;
       }
@@ -107,7 +108,7 @@ export function useBuildPlayer(
       }
 
       if (s.phase === "type") {
-        s.budget += ((dt / 1000) * TYPE_CPS) / (s.pos < s.slowUntil ? s.slow : 1);
+        s.budget += ((dt / 1000) * TYPE_CPS * file.speed) / (s.pos < s.slowUntil ? s.slow : 1);
         const before = s.pos;
         while (s.pos < file.code.length && s.budget >= file.cost[s.pos]) {
           s.budget -= file.cost[s.pos];
