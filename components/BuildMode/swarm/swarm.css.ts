@@ -7,8 +7,33 @@ export const SWARM_CSS = `
 .shield{position:fixed;inset:0;pointer-events:auto;cursor:default;background:transparent}
 .cover{position:fixed;inset:0;opacity:0;background:#0a0a0b}
 .stage{position:fixed;inset:0;overflow:hidden}
-.logo{position:fixed;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:16px;background:#1b1b21;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 12px 40px rgba(0,0,0,.5);display:grid;place-items:center;opacity:0;color:#f4f4f6}
-.logo svg{width:36px;height:36px}
+.logo{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:22px;opacity:0;color:#f4f4f6;pointer-events:none}
+.logo::before{content:"";position:absolute;left:50%;top:50%;width:520px;height:320px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(59,98,229,.22),transparent);opacity:0;z-index:-1}
+.logo .mark{position:relative;width:96px;height:96px;flex:none}
+.logo .sq{position:absolute;width:39px;height:39px;border-radius:11px;clip-path:inset(0 100% 100% 0 round 11px)}
+.logo .sq.back{left:16.5px;top:16.5px;background:#f4f4f6}
+.logo .sq.front{left:40.5px;top:40.5px;background:#3b62e5}
+.logo .box{position:absolute;left:16.5px;top:16.5px;width:0;height:0;border:1px solid #0d99ff;opacity:0}
+.logo .box::before,.logo .box::after{content:"";position:absolute;width:6px;height:6px;background:#fff;border:1px solid #0d99ff}
+.logo .box::before{left:-4px;top:-4px}.logo .box::after{right:-4px;bottom:-4px}
+.logo .box em{position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;font-style:normal;color:#fff;background:#0d99ff;padding:3px 5px;border-radius:3px;white-space:nowrap}
+.logo .word{position:relative;font-size:46px;font-weight:600;letter-spacing:-.035em;line-height:1;white-space:nowrap}
+.logo .word span{display:inline-block;max-width:0;overflow:hidden;vertical-align:bottom}
+.logo .caret{display:inline-block;width:2.5px;height:42px;margin-left:3px;vertical-align:-5px;background:#0d99ff;opacity:0}
+.logo.play::before{animation:sp-glow 1.6s ease-out forwards}
+.logo.play .back{animation:sp-draw .42s cubic-bezier(.22,1,.36,1) .15s forwards}
+.logo.play .front{animation:sp-draw .42s cubic-bezier(.22,1,.36,1) .72s forwards}
+.logo.play .box{animation:sp-box 1.25s cubic-bezier(.22,1,.36,1) .1s forwards}
+.logo.play .box em::after{content:"39 × 39"}
+.logo.play .caret{animation:sp-caret 1.9s steps(1) .95s forwards}
+.logo.play .word span{animation:sp-type .01s linear forwards}
+.logo.play .word span:nth-child(1){animation-delay:1.25s}.logo.play .word span:nth-child(2){animation-delay:1.34s}.logo.play .word span:nth-child(3){animation-delay:1.43s}.logo.play .word span:nth-child(4){animation-delay:1.52s}.logo.play .word span:nth-child(5){animation-delay:1.61s}.logo.play .word span:nth-child(6){animation-delay:1.7s}
+@keyframes sp-glow{to{opacity:1}}
+@keyframes sp-draw{to{clip-path:inset(0 0 0 0 round 11px)}}
+@keyframes sp-box{0%{opacity:1;left:16.5px;top:16.5px;width:0;height:0}38%{opacity:1;left:16.5px;top:16.5px;width:39px;height:39px}48%{opacity:1;left:40.5px;top:40.5px;width:0;height:0}86%{opacity:1;left:40.5px;top:40.5px;width:39px;height:39px}100%{opacity:0;left:40.5px;top:40.5px;width:39px;height:39px}}
+@keyframes sp-caret{0%,20%,40%,60%,80%{opacity:1}10%,30%,50%,70%,90%{opacity:0}100%{opacity:0}}
+@keyframes sp-type{to{max-width:1em}}
+@media (max-width:640px){.logo{gap:14px;transform:translate(-50%,-50%) scale(.72)}}
 .house{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
 .house svg{position:absolute;left:-22px;top:-30px;width:44px;height:44px;opacity:0;transform:translateY(10px) scale(.6);transform-origin:50% 100%;transition:opacity .25s,transform .35s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
 .house.show svg{opacity:1;transform:none}
@@ -61,5 +86,5 @@ export const SWARM_CSS = `
 .bar button.icon:hover{color:#f4f4f6}
 .bar svg{display:block;width:14px;height:14px}
 @media (max-width:640px){.bar{gap:9px;padding:7px 8px 7px 12px;bottom:14px;font-size:12px}.bar .hide-sm{display:none}}
-@media (prefers-reduced-motion:reduce){.bar,.track.scan i{animation:none}}
+@media (prefers-reduced-motion:reduce){.bar,.track.scan i{animation:none}.logo.play *,.logo.play::before{animation-duration:.01s!important;animation-delay:0s!important}}
 `;

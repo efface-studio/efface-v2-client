@@ -4,7 +4,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Volume2, VolumeX, X } from "lucide-react";
-import LogoMark from "@/components/LogoMark";
 import { createSwarm, type Swarm } from "./engine";
 import { SWARM_COLORS, SWARM_INITIALS, SWARM_SPEEDS } from "./swarm.constants";
 import { SWARM_CSS } from "./swarm.css";
@@ -109,8 +108,21 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
           </svg>
         </div>
       </div>
+      {/* The splash: the mark's two squares dragged out like any layer, then the name typed beside it. */}
       <div ref={logo} className="logo" aria-hidden>
-        <LogoMark />
+        <div className="mark">
+          <i className="sq back" />
+          <i className="sq front" />
+          <b className="box">
+            <em />
+          </b>
+        </div>
+        <span className="word">
+          {"efface".split("").map((c, i) => (
+            <span key={i}>{c}</span>
+          ))}
+          <i className="caret" />
+        </span>
       </div>
       <section className="bar" role="toolbar" aria-label={t("label")}>
         {state.phase === "scan" || state.phase === "orbit" ? (
