@@ -16,6 +16,8 @@ const SWEEP_MS = 900;
  *  scrolling past the pinned scenes would run their per-frame work all the way. */
 const CUT_BEYOND = 1.5;
 const CUT_MS = 220;
+/** Longest a pinned region waits for its scroll to land. */
+const ARRIVE_MS = 1500;
 /** How long a detail view's follow-on scroll glides. */
 const FOLLOW_MS = 450;
 /** Longest wait for the hero's 3D scene before reporting ready anyway. */
@@ -83,6 +85,8 @@ export function startBuildStage() {
   let followUntil = 0;
   /** Whether the region being built holds a pinned scene. */
   let regionPinned = false;
+  /** Latest a pinned region waits to be scrolled to before building anyway. */
+  let arrivedBy = 0;
   /** Where a scroll-through runs, from and to, while it plays. */
   let scrubFrom: [number, number] | null = null;
 
@@ -128,10 +132,10 @@ export function startBuildStage() {
     });
   };
 
-  /** Gets to `y`: a scroll when it's near, a cut when it's far. */
-  const go = (y: number) => {
+  /** Gets to `y`: a scroll when it's near, a cut when it's far (or when `cut`). */
+  const go = (y: number, cut = false) => {
     const top = Math.max(0, y);
-    if (Math.abs(top - scrollY) <= innerHeight * CUT_BEYOND) return void scrollTo({ top });
+    if (!cut && Math.abs(top - scrollY) <= innerHeight * CUT_BEYOND) return void scrollTo({ top });
     html.style.transition = `opacity ${CUT_MS}ms ease`;
     html.style.opacity = "0";
     setTimeout(() => {
@@ -369,12 +373,20 @@ export function startBuildStage() {
     const run = Math.max(0, region.offsetHeight - innerHeight);
     if (fresh) regionPinned = [...region.children].some((c) => getComputedStyle(c).position === "sticky");
     const along = regionPinned ? 1 : Math.min(1, q / 0.95);
-    const y = top + Math.round(along * run) - (run ? 0 : Math.max(0, (innerHeight - region.offsetHeight) / 3));
+    const y = Math.min(
+      html.scrollHeight - innerHeight,
+      top + Math.round(along * run) - (run ? 0 : Math.max(0, (innerHeight - region.offsetHeight) / 3))
+    );
     // A new region is reached by a scroll (or a cut); within one, the page
     // follows the build frame by frame.
     // (Larger gaps mean that scroll or cut is still under way — leave it be.)
-    if (fresh) go(y);
+    // A pinned row is cut to: a glide would play its scene on the way and land late.
+    if (fresh) go(y, regionPinned);
     else if (Math.abs(scrollY - y) > 1 && Math.abs(scrollY - y) < 80) scrollTo({ top: Math.max(0, y), behavior: "instant" });
+    // A pinned scene builds once it's there — what's in frame depends on where
+    // it's scrolled to — or after a moment, should it never quite arrive.
+    if (fresh) arrivedBy = performance.now() + ARRIVE_MS;
+    if (regionPinned && Math.abs(scrollY - Math.max(0, y)) > 2 && performance.now() < arrivedBy) return;
     target = scrollY;
     let start = 0;
     for (const [stage, end] of REGION_STEPS) {
