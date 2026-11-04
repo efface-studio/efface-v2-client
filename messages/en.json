@@ -640,6 +640,28 @@
     "intro": "Building efface from scratch",
     "outro": "Back to the site",
     "resize": "Resize preview and editor",
+    "menu": {
+      "label": "Choose a build",
+      "studio": "Build 1 · Code editor",
+      "studioHint": "Types the site's real code in VS Code and builds it from scratch",
+      "swarm": "Build 2 · Swarm",
+      "swarmHint": "A swarm of cursors wipes this very page and draws it back"
+    },
+    "swarm": {
+      "label": "Swarm build",
+      "scanning": "Scanning page…",
+      "agents": "agents",
+      "layers": "{total} layers",
+      "progress": "Rebuild progress",
+      "done": "Done",
+      "tour": "Tour",
+      "speed": "Change speed",
+      "soundOn": "Turn sound on",
+      "soundOff": "Turn sound off",
+      "live": "Go live",
+      "replay": "Replay",
+      "close": "Close"
+    },
     "editor": {
       "explorer": "Explorer",
       "closeTab": "Close {file}",

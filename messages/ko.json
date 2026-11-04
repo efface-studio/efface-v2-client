@@ -640,6 +640,28 @@
     "intro": "efface를 처음부터 만들어 봅니다",
     "outro": "사이트로 돌아갑니다",
     "resize": "미리보기와 코드 창 비율 조절",
+    "menu": {
+      "label": "생성 방식 선택",
+      "studio": "빌드 1 · 코드 에디터",
+      "studioHint": "VS Code에서 실제 코드를 치며 사이트를 처음부터 만듭니다",
+      "swarm": "빌드 2 · 스웜",
+      "swarmHint": "커서 무리가 지금 보고 있는 이 페이지를 지우고 다시 그립니다"
+    },
+    "swarm": {
+      "label": "스웜 생성 모드",
+      "scanning": "페이지 분석 중…",
+      "agents": "에이전트",
+      "layers": "{total} 레이어",
+      "progress": "다시 그리기 진행률",
+      "done": "완성",
+      "tour": "투어",
+      "speed": "속도 바꾸기",
+      "soundOn": "소리 켜기",
+      "soundOff": "소리 끄기",
+      "live": "사이트로 돌아가기",
+      "replay": "다시 보기",
+      "close": "닫기"
+    },
     "editor": {
       "explorer": "탐색기",
       "closeTab": "{file} 닫기",
