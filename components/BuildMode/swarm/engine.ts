@@ -712,9 +712,11 @@ export function createSwarm(o: SwarmOptions) {
     agents.forEach((a, i) => {
       // Two flocks circling the mark, half a turn apart, each a loose clump.
       const ang = (now - phaseAt) / 900 + a.flock * Math.PI + (a.slot % 7) * 0.11;
-      const rad = 150 + Math.sin(now / 700 + i) * 18;
-      const tx = cx + Math.cos(ang) * rad + Math.sin(i * 7.3) * 26;
-      const ty = cy + Math.sin(ang) * rad * 0.82 + Math.cos(i * 3.1) * 22;
+      // A wide ellipse, so the flocks circle the mark and its name, not cross them.
+      const wide = Math.min(1, innerWidth / 900);
+      const rad = 1 + Math.sin(now / 700 + i) * 0.08;
+      const tx = cx + Math.cos(ang) * 250 * wide * rad + Math.sin(i * 7.3) * 26;
+      const ty = cy + Math.sin(ang) * 135 * rad + Math.cos(i * 3.1) * 22;
       a.vx += ((tx - a.x) * 9 - a.vx * 4.2) * s;
       a.vy += ((ty - a.y) * 9 - a.vy * 4.2) * s;
       a.x += a.vx * s;
@@ -905,6 +907,14 @@ export function createSwarm(o: SwarmOptions) {
     for (const a of agents) a.el.style.transform = `translate3d(${a.x.toFixed(1)}px,${a.y.toFixed(1)}px,0)`;
   };
 
+  /** The splash plays from the top: squares drawn, then the name typed. */
+  const playSplash = () => {
+    o.logo.classList.remove("play");
+    void o.logo.offsetWidth;
+    o.logo.classList.add("play");
+    o.logo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, fill: "forwards" });
+  };
+
   const enter = (p: SwarmPhase) => {
     phase = p;
     phaseAt = performance.now();
@@ -928,7 +938,7 @@ export function createSwarm(o: SwarmOptions) {
       if (now - phaseAt > (reduce ? 0 : SWARM_ORBIT_MS)) {
         // Fan out across the page and get to work.
         enter("build");
-        o.logo.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.8)" }], { duration: 400, fill: "forwards" });
+        o.logo.animate([{ opacity: 1, filter: "blur(0)" }, { opacity: 0, filter: "blur(6px)" }], { duration: 420, fill: "forwards" });
         sound.arpeggio();
         for (const a of agents) {
           const tx = SWARM_RULER + Math.random() * (innerWidth - SWARM_RULER * 2);
@@ -1060,7 +1070,7 @@ export function createSwarm(o: SwarmOptions) {
     scrollTo({ top: 0, behavior: "instant" });
     await prepare();
     if (stopped) return;
-    o.logo.animate([{ opacity: 0, transform: "scale(.8)" }, { opacity: 1, transform: "scale(1)" }], { duration: 400, fill: "forwards" });
+    playSplash();
     for (let i = 0; i < SWARM_AGENTS; i++) {
       const [x, y] = edgePoint(i);
       addAgent(x, y);
@@ -1107,7 +1117,7 @@ export function createSwarm(o: SwarmOptions) {
       scrollTo({ top: 0, behavior: "instant" });
       await prepare();
       if (stopped) return;
-      o.logo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, fill: "forwards" });
+      playSplash();
       await o.cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduce ? 0 : 400, fill: "forwards" }).finished;
       if (!stopped) enter("orbit");
     },
