@@ -38,6 +38,11 @@ export const SWARM_CSS = `
 .house svg{position:absolute;left:-22px;top:-30px;width:44px;height:44px;opacity:0;transform:translateY(10px) scale(.6);transform-origin:50% 100%;transition:opacity .25s,transform .35s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
 .house.show svg{opacity:1;transform:none}
 .house.leave svg{opacity:0;transform:translateY(8px) scale(.7);transition:opacity .35s .15s,transform .35s .15s ease-in}
+.house .door{transform-box:fill-box;transform-origin:0% 50%}
+.house.knock .door{animation:door-swing .32s ease-out}
+.house.knock svg{animation:house-bump .32s cubic-bezier(.34,1.56,.64,1)}
+@keyframes door-swing{40%{transform:scaleX(.35)}}
+@keyframes house-bump{45%{scale:1.06 .95}}
 .house .win{fill:#2a2a31;transition:fill .4s}
 .house.lit .win{fill:#ffd23f}
 .house.lit .glow{opacity:1}

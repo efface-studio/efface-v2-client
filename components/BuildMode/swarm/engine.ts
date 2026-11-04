@@ -5,7 +5,10 @@ import {
   SWARM_COLORS,
   SWARM_CARRY_MAX_MS,
   SWARM_CARRY_REACH_MS,
+  SWARM_DOOR_REACH,
   SWARM_DRAG_MS,
+  SWARM_ENTER_MS,
+  SWARM_EXIT_MS,
   SWARM_FADE_MS,
   SWARM_FAN_MS,
   SWARM_HOME_IDLE_MS,
@@ -50,6 +53,11 @@ interface Agent {
   /** Resting during the build: since when it's had nothing to do, and whether it's on its way in. */
   idleSince?: number;
   goingHome?: boolean;
+  /** Stepping through the door: since when, and from where. Coming out: since when. */
+  enterAt?: number;
+  ex?: number;
+  ey?: number;
+  popAt?: number;
 }
 
 export interface SwarmOptions {
@@ -776,13 +784,19 @@ export function createSwarm(o: SwarmOptions) {
     resting = false;
     o.house.classList.add("leave");
     sound.arpeggio();
+    knock();
     const d = door();
     agents.forEach((a, k) => {
       // Those inside come out of the door; the rest turn back from where they are.
-      if (a.inside) {
+      if (a.inside || a.enterAt !== undefined) {
         a.x = d.x;
         a.y = d.y;
+        a.popAt = performance.now() + k * 22;
+      } else {
+        a.el.style.opacity = "";
+        a.el.style.scale = "";
       }
+      a.enterAt = undefined;
       // Out through the door in a burst, each its own way.
       const ang = -Math.PI / 2 + ((k / agents.length) - 0.5) * Math.PI * 1.6;
       const v = 380 + (k % 4) * 90;
@@ -791,14 +805,63 @@ export function createSwarm(o: SwarmOptions) {
       a.inside = false;
       a.goingHome = false;
       a.homeAt = 0;
-      a.el.style.opacity = "";
-      a.el.style.scale = "";
     });
   };
 
   // ── Resting: during the build, an agent with nothing to do for a moment
   // walks to the house in the corner and goes in; given work, it comes back
   // out of the door and flies off to it.
+  /** Through the door: close enough, it slides in, shrinking and fading; true once inside. */
+  const stepIn = (a: Agent, now: number, d: { x: number; y: number }, force = false) => {
+    if (a.inside) return true;
+    if (a.enterAt === undefined) {
+      if (!force && Math.hypot(a.x - d.x, a.y - d.y) > SWARM_DOOR_REACH) return false;
+      a.enterAt = now;
+      a.ex = a.x;
+      a.ey = a.y;
+      a.popAt = undefined;
+      knock();
+    }
+    const k = clamp((now - a.enterAt) / SWARM_ENTER_MS, 0, 1);
+    const glide = easeOut(k);
+    const shrink = k * k;
+    a.x = (a.ex ?? d.x) + (d.x - (a.ex ?? d.x)) * glide;
+    a.y = (a.ey ?? d.y) + (d.y - (a.ey ?? d.y)) * glide;
+    a.el.style.scale = String(1 - 0.85 * shrink);
+    a.el.style.opacity = String(clamp(1 - (k - 0.35) / 0.65, 0, 1));
+    if (k < 1) return false;
+    a.inside = true;
+    a.enterAt = undefined;
+    a.el.style.opacity = "0";
+    return true;
+  };
+  /** Out of the door: it appears small and grows to size as it goes. */
+  const popOut = (now: number) => {
+    for (const a of agents) {
+      if (a.popAt === undefined) continue;
+      const k = clamp((now - a.popAt) / SWARM_EXIT_MS, 0, 1);
+      // A touch past full size before settling.
+      const grow = 1 + 2.2 * (k - 1) ** 3 + 1.2 * (k - 1) ** 2;
+      a.el.style.scale = String(0.2 + 0.8 * grow);
+      a.el.style.opacity = String(Math.min(1, k * 3));
+      if (k >= 1) {
+        a.popAt = undefined;
+        a.el.style.scale = "";
+        a.el.style.opacity = "";
+      }
+    }
+  };
+  /** The door swings and the house gives a little bounce: someone's come or gone. */
+  const knock = () => {
+    const now = performance.now();
+    if (now - knockedAt < 110) return;
+    knockedAt = now;
+    o.house.classList.remove("knock");
+    void o.house.offsetWidth;
+    o.house.classList.add("knock");
+  };
+  let knockedAt = 0;
+
   const restSpot = () => ({ x: 62, y: innerHeight - (innerWidth < 640 ? 118 : 62) });
   let resting = false;
   const showRestHouse = () => {
@@ -812,15 +875,19 @@ export function createSwarm(o: SwarmOptions) {
   /** Back out of the door, ready for work. */
   const wake = (a: Agent) => {
     if (!a.inside && !a.goingHome) return;
-    if (a.inside) {
+    if (a.inside || a.enterAt !== undefined) {
       const d = door();
       a.x = d.x;
       a.y = d.y;
+      a.popAt = performance.now();
+      knock();
+    } else {
+      a.el.style.opacity = "";
+      a.el.style.scale = "";
     }
     a.inside = false;
     a.goingHome = false;
-    a.el.style.opacity = "";
-    a.el.style.scale = "";
+    a.enterAt = undefined;
   };
   const restHome = (now: number, dt: number) => {
     const s = dt / 1000;
@@ -841,18 +908,14 @@ export function createSwarm(o: SwarmOptions) {
         continue;
       }
       const d = door();
-      a.vx += ((d.x - a.x) * 10 - a.vx * 4.8) * s;
-      a.vy += ((d.y - a.y) * 10 - a.vy * 4.8) * s;
-      a.x += a.vx * s;
-      a.y += a.vy * s;
-      const dist = Math.hypot(a.x - d.x, a.y - d.y);
-      const k = clamp(dist / 40, 0, 1);
-      a.el.style.scale = String(0.35 + 0.65 * k);
-      a.el.style.opacity = String(0.2 + 0.8 * k);
-      if (dist < 9) {
+      if (a.enterAt === undefined) {
+        a.vx += ((d.x - a.x) * 10 - a.vx * 4.8) * s;
+        a.vy += ((d.y - a.y) * 10 - a.vy * 4.8) * s;
+        a.x += a.vx * s;
+        a.y += a.vy * s;
+      }
+      if (stepIn(a, now, d)) {
         a.goingHome = false;
-        a.inside = true;
-        a.el.style.opacity = "0";
         inside++;
       }
     }
@@ -874,7 +937,9 @@ export function createSwarm(o: SwarmOptions) {
         inside++;
         continue;
       }
-      if (now < (a.homeAt ?? 0)) {
+      if (a.enterAt !== undefined) {
+        // Already stepping through the door.
+      } else if (now < (a.homeAt ?? 0)) {
         // Waiting its turn: drift toward the door, slowly.
         a.vx += ((d.x - 30 - a.x) * 1.4 - a.vx * 2.6) * s;
         a.vy += ((d.y - a.y) * 1.4 - a.vy * 2.6) * s;
@@ -882,17 +947,12 @@ export function createSwarm(o: SwarmOptions) {
         a.vx += ((d.x - a.x) * 14 - a.vx * 5.5) * s;
         a.vy += ((d.y - a.y) * 14 - a.vy * 5.5) * s;
       }
-      a.x += a.vx * s;
-      a.y += a.vy * s;
-      const dist = Math.hypot(a.x - d.x, a.y - d.y);
-      // Shrinking through the doorway.
-      const k = clamp(dist / 40, 0, 1);
-      a.el.style.scale = String(0.35 + 0.65 * k);
-      a.el.style.opacity = String(0.2 + 0.8 * k);
-      // In once at the door (or, should it dawdle, a little after its turn).
-      if (now >= (a.homeAt ?? 0) && (dist < 9 || now > (a.homeAt ?? 0) + 1400)) {
-        a.inside = true;
-        a.el.style.opacity = "0";
+      if (a.enterAt === undefined) {
+        a.x += a.vx * s;
+        a.y += a.vy * s;
+      }
+      // In at the door, once its turn has come (or, should it dawdle, a little after).
+      if (now >= (a.homeAt ?? 0) && (stepIn(a, now, d) || (now > (a.homeAt ?? 0) + 1400 && stepIn(a, now, d, true)))) {
         inside++;
         sound.key(pan(a.x), false);
       }
@@ -1002,6 +1062,7 @@ export function createSwarm(o: SwarmOptions) {
       if (homeState === 0) flock(real);
       else towardHome(now, real);
     }
+    popOut(now);
     if (masked && highlight) CSS.highlights.set(HIDDEN, highlight);
     masked = false;
     render();

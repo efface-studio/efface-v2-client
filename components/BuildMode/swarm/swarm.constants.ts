@@ -34,6 +34,10 @@ export const SWARM_CARRY_REACH_MS = 220;
 export const SWARM_CARRY_MAX_MS = 2600;
 /** During the build, an agent with nothing to do this long goes to rest in the house. */
 export const SWARM_REST_MS = 700;
+/** Through the door: how near it starts, how long going in and coming out take (ms). */
+export const SWARM_DOOR_REACH = 22;
+export const SWARM_ENTER_MS = 340;
+export const SWARM_EXIT_MS = 280;
 /** In the finale, the cursors go home once the pointer has rested this long. */
 export const SWARM_HOME_IDLE_MS = 1200;
 /** Speeds the toolbar offers. */
