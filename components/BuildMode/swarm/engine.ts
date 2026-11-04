@@ -230,6 +230,14 @@ export function createSwarm(o: SwarmOptions) {
       plain() {
         wrap.classList.add("plain");
       },
+      /** The placeholder draws back toward the foot, uncovering the image top-down (a transform: compositor-only). */
+      sweep(ms: number) {
+        wrap.querySelector(".ph")?.animate([{ transform: "scaleY(1)" }, { transform: "scaleY(0)" }], {
+          duration: ms,
+          easing: "cubic-bezier(.22,1,.36,1)",
+          fill: "forwards",
+        });
+      },
       /** Held and moving: handles, no size badge. */
       moving() {
         wrap.classList.add("move");
@@ -256,15 +264,13 @@ export function createSwarm(o: SwarmOptions) {
   const fadeIn = (el: Element, kind: SwarmLayer["kind"], side?: SwarmLayer["side"]) => {
     if (reduce) return;
     const ms = (kind === "media" ? SWARM_SWEEP_MS : SWARM_REVEAL_MS) / speed;
-    const frames: Keyframe[] =
-      kind === "media"
-        ? [{ clipPath: "inset(0 0 100% 0)", opacity: 0.6 }, { clipPath: "inset(0 0 0% 0)", opacity: 1 }]
-        : kind === "line"
-          ? side === "left" || side === "right"
-            ? [{ clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)" }]
-            : [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)" }]
-          : [{ opacity: 0 }, { opacity: 1 }];
-    el.animate(frames, { duration: ms, easing: "cubic-bezier(.22,1,.36,1)" });
+    // Opacity only: it stays on the compositor. A clip on the page's (often large)
+    // images would repaint them every frame — the sweep is drawn in the overlay.
+    void side;
+    el.animate(kind === "media" ? [{ opacity: 0.35 }, { opacity: 1 }] : [{ opacity: 0 }, { opacity: 1 }], {
+      duration: ms,
+      easing: "cubic-bezier(.22,1,.36,1)",
+    });
   };
 
   // ── Task scripts.
@@ -316,6 +322,7 @@ export function createSwarm(o: SwarmOptions) {
     if (L.kind === "media") yield* untilLoaded(L.el);
     mark(L, "on");
     fadeIn(L.el, L.kind);
+    if (L.kind === "media") s.sweep(SWARM_SWEEP_MS / speed);
     setMode(a, "arrow");
     yield* trail(s, L);
     finish(L);
