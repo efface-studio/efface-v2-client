@@ -28,6 +28,10 @@ export const SWARM_SWEEP_MS = 700;
 /** Typing: characters a second for one agent, and the longest a block may take. */
 export const SWARM_TYPE_CPS = 34;
 export const SWARM_TYPE_MAX_MS = 2200;
+/** Carrying the page's own motion: most agents on it at once, the reach to grab, the longest hold. */
+export const SWARM_MAX_CARRY = 6;
+export const SWARM_CARRY_REACH_MS = 220;
+export const SWARM_CARRY_MAX_MS = 2600;
 /** Speeds the toolbar offers. */
 export const SWARM_SPEEDS = [1, 2, 3];
 

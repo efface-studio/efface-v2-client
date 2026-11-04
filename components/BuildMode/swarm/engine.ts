@@ -3,10 +3,13 @@ import { snapshot } from "./snapshot";
 import {
   SWARM_AGENTS,
   SWARM_COLORS,
+  SWARM_CARRY_MAX_MS,
+  SWARM_CARRY_REACH_MS,
   SWARM_DRAG_MS,
   SWARM_FADE_MS,
   SWARM_FAN_MS,
   SWARM_MAX_AGENTS,
+  SWARM_MAX_CARRY,
   SWARM_ORBIT_MS,
   SWARM_REVEAL_MS,
   SWARM_RULER,
@@ -113,6 +116,7 @@ export function createSwarm(o: SwarmOptions) {
   let lastBuilt = 0;
   let idleUntil = 0;
   let guides = 0;
+  let carryAt = 0;
   let stuckSince = 0;
   /** The letter mask changed this frame (re-registered once, after every agent's step). */
   let masked = false;
@@ -176,6 +180,10 @@ export function createSwarm(o: SwarmOptions) {
       },
       plain() {
         wrap.classList.add("plain");
+      },
+      /** Held and moving: handles, no size badge. */
+      moving() {
+        wrap.classList.add("move");
       },
       remove: () => wrap.remove(),
     };
@@ -448,6 +456,93 @@ export function createSwarm(o: SwarmOptions) {
     finish(L);
   }
 
+  // ── Carrying: the page's own motion — a block rising into place as it
+  // scrolls in, a pinned scene's words and pieces — is taken in hand. Its
+  // script moves elements through their inline style; while one is moving on
+  // screen, an agent grabs it and moves with it, as if bringing it in.
+  const moving = new Map<Element, { first: number; last: number }>();
+  const carried = new Set<Element>();
+  /** Elements that never stop moving (a marquee): not worth an agent, for a while. */
+  const restless = new Map<Element, number>();
+  const watcher = typeof MutationObserver === "undefined" ? null : new MutationObserver((records) => {
+    const now = performance.now();
+    for (const r of records) {
+      const el = r.target as Element;
+      const m = moving.get(el);
+      if (m) m.last = now;
+      else moving.set(el, { first: now, last: now });
+    }
+  });
+  const shown = (el: Element) => !el.checkVisibility || el.checkVisibility({ visibilityProperty: true });
+
+  function* carry(a: Agent, el: Element): Script {
+    carried.add(el);
+    setMode(a, "arrow");
+    const grab = (): [number, number] => {
+      const r = rectOf(el);
+      return [r.left + r.width / 2, r.top + Math.min(r.height / 2, 28)];
+    };
+    const reach = SWARM_CARRY_REACH_MS;
+    const sx = a.x;
+    const sy = a.y;
+    for (let t = 0; t < reach; ) {
+      t += yield;
+      const k = easeOut(Math.min(1, t / reach));
+      const [x, y] = grab();
+      a.x = sx + (x - sx) * k;
+      a.y = sy + (y - sy) * k;
+    }
+    sound.press(pan(a.x));
+    const s = selection("none");
+    s.moving();
+    for (let t = 0; t < SWARM_CARRY_MAX_MS; ) {
+      t += yield;
+      const m = moving.get(el);
+      if (!m || performance.now() - m.last > 260 || !el.isConnected) break;
+      const r = rectOf(el);
+      [a.x, a.y] = grab();
+      a.sel = r;
+      s.set(r.left, r.top, r.width, r.height);
+    }
+    s.remove();
+    carried.delete(el);
+  }
+
+  /** Hands out what's moving on screen to idle agents (more join if needed), a few at a time. */
+  const assignCarries = (now: number) => {
+    if (now < carryAt || front >= layers.length) return;
+    carryAt = now + 80;
+    let busy = carried.size;
+    const wanted: { el: Element; area: number }[] = [];
+    for (const [el, m] of moving) {
+      if (now - m.last > 260) {
+        moving.delete(el);
+        continue;
+      }
+      if (carried.has(el) || (restless.get(el) ?? 0) > now) continue;
+      if (now - m.first > 3000) {
+        restless.set(el, now + 10_000);
+        continue;
+      }
+      if (el.closest("[data-swarm-ui]") || !shown(el)) continue;
+      const r = rectOf(el);
+      if (r.width < 10 || r.height < 10 || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) continue;
+      wanted.push({ el, area: r.width * r.height });
+    }
+    wanted.sort((x, y) => y.area - x.area);
+    for (const { el } of wanted) {
+      if (busy >= SWARM_MAX_CARRY) break;
+      let a = agents.find((g) => !g.script);
+      if (!a && agents.length < SWARM_MAX_AGENTS + SWARM_MAX_CARRY) {
+        const [x, y] = edgePoint(agents.length);
+        a = addAgent(x, y);
+      }
+      if (!a) break;
+      a.script = carry(a, el);
+      busy++;
+    }
+  };
+
   const scriptFor = (a: Agent, L: SwarmLayer): Script => {
     if (L.master !== undefined && status[L.master] === 2 && L.kind === "box") return duplicate(a, L, layers[L.master]);
     if (L.kind === "text") return typeText(a, L);
@@ -646,6 +741,11 @@ export function createSwarm(o: SwarmOptions) {
   const enter = (p: SwarmPhase) => {
     phase = p;
     phaseAt = performance.now();
+    if (p === "build") watcher?.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["style"] });
+    else {
+      watcher?.disconnect();
+      moving.clear();
+    }
     emit(true);
   };
 
@@ -679,6 +779,7 @@ export function createSwarm(o: SwarmOptions) {
         }
       }
     } else if (phase === "build") {
+      assignCarries(now);
       // One fruitless look for work holds the rest off for a moment: they'd find nothing either.
       let looking = now >= idleUntil;
       for (const a of agents) {
@@ -834,6 +935,7 @@ export function createSwarm(o: SwarmOptions) {
     /** Puts the page back as it was: every layer shown, nothing of the swarm left. */
     destroy() {
       stopped = true;
+      watcher?.disconnect();
       cancelAnimationFrame(raf);
       listen(false);
       html.classList.remove("swarm-on", "swarm-run");

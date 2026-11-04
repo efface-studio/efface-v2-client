@@ -19,7 +19,8 @@ export const SWARM_CSS = `
 .sel b:nth-of-type(1){left:-4px;top:-4px}.sel b:nth-of-type(2){right:-4px;top:-4px}.sel b:nth-of-type(3){left:-4px;bottom:-4px}.sel b:nth-of-type(4){right:-4px;bottom:-4px}
 .sel.plain b{display:none}
 .sel em{position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;font-style:normal;color:#fff;background:${SWARM_BLUE};padding:3px 5px;border-radius:3px;white-space:nowrap}
-.sel.plain em{display:none}
+.sel.plain em,.sel.move em{display:none}
+.sel.move{border-color:rgba(13,153,255,.9)}
 .ghost{position:absolute;left:0;top:0;border:1px dashed ${SWARM_BLUE};background:rgba(13,153,255,.08)}
 .measure{position:absolute;left:0;top:0;background:${SWARM_RED}}
 .measure::after{content:attr(data-gap);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:600 10px/1 ui-monospace,Menlo,monospace;color:#fff;background:${SWARM_RED};padding:2px 4px;border-radius:3px}
