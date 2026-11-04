@@ -9,6 +9,7 @@ import {
   SWARM_FADE_MS,
   SWARM_FAN_MS,
   SWARM_HOME_IDLE_MS,
+  SWARM_REST_MS,
   SWARM_MAX_AGENTS,
   SWARM_MAX_CARRY,
   SWARM_ORBIT_MS,
@@ -46,6 +47,9 @@ interface Agent {
   /** Home: when its turn at the door comes, and whether it's gone in. */
   homeAt?: number;
   inside?: boolean;
+  /** Resting during the build: since when it's had nothing to do, and whether it's on its way in. */
+  idleSince?: number;
+  goingHome?: boolean;
 }
 
 export interface SwarmOptions {
@@ -545,6 +549,7 @@ export function createSwarm(o: SwarmOptions) {
         a = addAgent(x, y);
       }
       if (!a) break;
+      wake(a);
       a.script = carry(a, el);
       busy++;
     }
@@ -766,23 +771,98 @@ export function createSwarm(o: SwarmOptions) {
   };
   const leaveHome = () => {
     homeState = 0;
+    resting = false;
     o.house.classList.add("leave");
     sound.arpeggio();
     const d = door();
     agents.forEach((a, k) => {
-      a.x = d.x;
-      a.y = d.y;
+      // Those inside come out of the door; the rest turn back from where they are.
+      if (a.inside) {
+        a.x = d.x;
+        a.y = d.y;
+      }
       // Out through the door in a burst, each its own way.
       const ang = -Math.PI / 2 + ((k / agents.length) - 0.5) * Math.PI * 1.6;
       const v = 380 + (k % 4) * 90;
       a.vx = Math.cos(ang) * v;
       a.vy = Math.sin(ang) * v;
       a.inside = false;
+      a.goingHome = false;
       a.homeAt = 0;
       a.el.style.opacity = "";
       a.el.style.scale = "";
     });
   };
+
+  // ── Resting: during the build, an agent with nothing to do for a moment
+  // walks to the house in the corner and goes in; given work, it comes back
+  // out of the door and flies off to it.
+  const restSpot = () => ({ x: 62, y: innerHeight - (innerWidth < 640 ? 118 : 62) });
+  let resting = false;
+  const showRestHouse = () => {
+    if (resting) return;
+    resting = true;
+    home = restSpot();
+    o.house.style.transform = `translate3d(${home.x}px,${home.y}px,0)`;
+    o.house.classList.remove("leave", "lit");
+    o.house.classList.add("show");
+  };
+  /** Back out of the door, ready for work. */
+  const wake = (a: Agent) => {
+    if (!a.inside && !a.goingHome) return;
+    if (a.inside) {
+      const d = door();
+      a.x = d.x;
+      a.y = d.y;
+    }
+    a.inside = false;
+    a.goingHome = false;
+    a.el.style.opacity = "";
+    a.el.style.scale = "";
+  };
+  const restHome = (now: number, dt: number) => {
+    const s = dt / 1000;
+    let home_ = 0;
+    let inside = 0;
+    for (const a of agents) {
+      if (a.script) continue;
+      if (!a.goingHome && !a.inside) {
+        if (now - (a.idleSince ?? now) < SWARM_REST_MS) continue;
+        showRestHouse();
+        a.goingHome = true;
+        a.vx = 0;
+        a.vy = 0;
+      }
+      home_++;
+      if (a.inside) {
+        inside++;
+        continue;
+      }
+      const d = door();
+      a.vx += ((d.x - a.x) * 10 - a.vx * 4.8) * s;
+      a.vy += ((d.y - a.y) * 10 - a.vy * 4.8) * s;
+      a.x += a.vx * s;
+      a.y += a.vy * s;
+      const dist = Math.hypot(a.x - d.x, a.y - d.y);
+      const k = clamp(dist / 40, 0, 1);
+      a.el.style.scale = String(0.35 + 0.65 * k);
+      a.el.style.opacity = String(0.2 + 0.8 * k);
+      if (dist < 9) {
+        a.goingHome = false;
+        a.inside = true;
+        a.el.style.opacity = "0";
+        inside++;
+      }
+    }
+    if (!resting) return;
+    o.house.classList.toggle("lit", inside > 0);
+    // Everyone's out at work: the house sinks away until it's needed again.
+    if (!home_) {
+      resting = false;
+      o.house.classList.add("leave");
+    }
+  };
+
   const towardHome = (now: number, dt: number) => {
     const s = dt / 1000;
     const d = door();
@@ -878,13 +958,16 @@ export function createSwarm(o: SwarmOptions) {
             a.sel = null;
             continue;
           }
+          wake(a);
           a.script = scriptFor(a, L);
         }
         if (a.script.next(dt).done) {
           a.script = null;
           a.sel = null;
+          a.idleSince = now;
         }
       }
+      restHome(now, real);
       // More hands while there's a backlog on screen.
       const idle = agents.filter((a) => !a.script).length;
       if (!idle && agents.length < SWARM_MAX_AGENTS && now - phaseAt > 1200 && Math.random() < real / 600) {
@@ -898,6 +981,8 @@ export function createSwarm(o: SwarmOptions) {
         // Every layer is in; the hide-all rule stays until Go live, where its
         // lifting (a whole-page restyle) hides under the overlay's fade.
         enter("done");
+        // Out of the house for the finale: they flock to the pointer.
+        if (agents.some((a) => a.inside || a.goingHome)) leaveHome();
         sound.chord();
       }
     } else if (phase === "done") {
