@@ -135,7 +135,7 @@ export default function ProfilePanel() {
               // A cut-out on transparency — no frame, the panel is its background.
               className="h-auto w-24 shrink-0 md:w-28"
             />
-            <div className="min-w-0">
+            <div className="min-w-0 translate-y-1.5">
               <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
                 {t("name")}
               </h2>
