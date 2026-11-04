@@ -48,6 +48,9 @@ export const LETTERS_PER_SEC = 42;
 /** Typing cost of a line break, and of a comment's characters (skimmed). */
 export const NEWLINE_COST = 3;
 export const COMMENT_COST = 0.3;
+/** The code after a block's colour lands (closing tags, mostly) types this much faster:
+ *  by then the preview has nothing left to show for it. */
+export const TAIL_SPEED = 3;
 
 /** Time for the preview to scroll to a section before its code starts. */
 export const ENTER_WAIT_MS = 540;

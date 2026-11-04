@@ -1,5 +1,5 @@
 import { tokenize } from "./highlight";
-import { COMMENT_COST, NEWLINE_COST } from "./BuildMode.constants";
+import { COMMENT_COST, NEWLINE_COST, TAIL_SPEED } from "./BuildMode.constants";
 import type { BuildEvent, BuildFile, BuildSource } from "./BuildMode.types";
 
 // Copy as the JSX renders it: a `t("key")` / `t.raw("key")` call, or a bare
@@ -46,6 +46,7 @@ export function toBuildFile(source: BuildSource): BuildFile {
     for (let k = 0; k < tok.text.length; k++)
       cost.push(tok.text[k] === "\n" ? NEWLINE_COST : tok.kind === "comment" ? COMMENT_COST : 1);
   for (let i = 1; i < code.length; i++) if (code[i] === " " && (code[i - 1] === "\n" || cost[i - 1] === 0)) cost[i] = 0;
+  if (!driven) for (let i = colorAt; i < cost.length; i++) cost[i] /= TAIL_SPEED;
   const pace = source.pace ?? 1;
   if (pace !== 1) for (let i = 0; i < cost.length; i++) cost[i] /= pace;
 
