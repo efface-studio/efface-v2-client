@@ -61,10 +61,15 @@ export const SECTION_END_WAIT_MS = 300;
 /** How long "Done" stays up before the studio closes itself. */
 export const DONE_CLOSE_MS = 2000;
 /** The opening splash: shortest it stays, and its lift-off (match globals.css). */
-export const SPLASH_MIN_MS = 1800;
-export const SPLASH_LIFT_MS = 900;
+/** The whole run, splash included, from the click to done (ms at 1×). */
+export const BUILD_DURATION_MS = 60_000;
+/** Pacing bounds: playback is sped up or eased off within these to land on time. */
+export const BUILD_PACE_MIN = 0.5;
+export const BUILD_PACE_MAX = 6;
+export const SPLASH_MIN_MS = 1000;
+export const SPLASH_LIFT_MS = 500;
 /** The preview page loads only after the splash's entrance (see BuildStudio). */
-export const FRAME_DELAY_MS = 1400;
+export const FRAME_DELAY_MS = 800;
 /** The hand-back to the site, and the page's own fade-up after (match globals.css). */
 export const OUTRO_MS = 1500;
 export const RETURN_MS = 1100;

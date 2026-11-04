@@ -4,8 +4,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Volume2, VolumeX, X } from "lucide-react";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { createSwarm, type Swarm } from "./engine";
-import { SWARM_COLORS, SWARM_INITIALS, SWARM_SPEEDS } from "./swarm.constants";
+import { SWARM_COLORS, SWARM_DURATION_MS, SWARM_INITIALS, SWARM_ROUTES, SWARM_SPEEDS, SWARM_WEIGHTS } from "./swarm.constants";
 import { SWARM_CSS } from "./swarm.css";
 import type { SwarmState } from "./swarm.types";
 
@@ -13,7 +14,20 @@ interface SwarmBuildProps {
   onClose: () => void;
 }
 
-const ROOTS = "body > header, body > main, body > footer";
+/** What's rebuilt: the whole page first; after a page turn the nav (if any) is already built. */
+const rootsFor = (page: number) => [...document.querySelectorAll(page ? "body > main, body > footer" : "body > header, body > main, body > footer")];
+
+/** Resolves once the page in view has been swapped for a new one (and has painted), or after a while regardless. */
+const arrival = (old: Element | null) =>
+  new Promise<void>((done) => {
+    const until = performance.now() + 4000;
+    const check = () => {
+      const now = document.querySelector("body > main");
+      if ((now && now !== old) || performance.now() > until) requestAnimationFrame(() => requestAnimationFrame(() => done()));
+      else requestAnimationFrame(check);
+    };
+    check();
+  });
 /** Left out of the rebuild: the overlay, the nav's build menu, dev tooling. */
 const skip = (el: Element) =>
   el.hasAttribute("data-swarm-ui") || el.hasAttribute("data-build-menu") || el.tagName === "NEXTJS-PORTAL";
@@ -25,6 +39,13 @@ const skip = (el: Element) =>
  */
 export default function SwarmBuild({ onClose }: SwarmBuildProps) {
   const t = useTranslations("Build.swarm");
+  const router = useRouter();
+  const pathname = usePathname();
+  // The run: the page it started on, then the rest of the site's pages.
+  const [route] = useState(() => {
+    const start = pathname;
+    return { start, pages: [start, ...SWARM_ROUTES.filter((r) => r !== start)] };
+  });
   const [root, setRoot] = useState<ShadowRoot | null>(null);
   const [state, setState] = useState<SwarmState>({ phase: "scan", agents: 0, done: 0, total: 0, tour: true, speed: 1, sound: true });
   const swarm = useRef<Swarm | null>(null);
@@ -58,7 +79,15 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
       house: house.current,
       rulerTop: rulerTop.current,
       rulerLeft: rulerLeft.current,
-      roots: () => [...document.querySelectorAll(ROOTS)],
+      roots: rootsFor,
+      pages: route.pages.length,
+      turn: (page) => {
+        const old = document.querySelector("body > main");
+        router.push(route.pages[page], { scroll: false });
+        return arrival(old);
+      },
+      duration: SWARM_DURATION_MS,
+      weigh: (el, i, page) => (page ? 1 : (SWARM_WEIGHTS[el.id || (i === 0 ? "hero" : el.tagName.toLowerCase())] ?? 1)),
       skip,
       onState: setState,
     });
@@ -68,23 +97,34 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
       s.destroy();
       swarm.current = null;
     };
+    // Created once per run; the router and route are stable for its life.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [root]);
 
+  /** Leaving: back to the page the run started on, if it moved on. */
+  const here = useRef(pathname);
+  useEffect(() => {
+    here.current = pathname;
+  }, [pathname]);
+  const exit = useCallback(() => {
+    if (here.current !== route.start) router.push(route.start, { scroll: false });
+    onClose();
+  }, [onClose, route.start, router]);
   /** Go live: the overlay fades and the real page is back, clickable. */
   const live = useCallback(() => {
     const host = hostRef.current;
-    if (!host) return onClose();
-    host.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: "forwards" }).onfinish = onClose;
-  }, [onClose]);
+    if (!host) return exit();
+    host.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: "forwards" }).onfinish = exit;
+  }, [exit]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") exit();
       else if ((e.key === "m" || e.key === "M") && !e.metaKey && !e.ctrlKey) swarm.current?.setSound(!state.sound);
     };
     addEventListener("keydown", onKey);
     return () => removeEventListener("keydown", onKey);
-  }, [onClose, state.sound]);
+  }, [exit, state.sound]);
 
   if (!root) return null;
   const s = swarm.current;
@@ -187,7 +227,7 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
         <button type="button" className="icon" aria-label={state.sound ? t("soundOff") : t("soundOn")} onClick={() => s?.setSound(!state.sound)}>
           {state.sound ? <Volume2 aria-hidden /> : <VolumeX aria-hidden />}
         </button>
-        <button type="button" className="icon" aria-label={t("close")} onClick={onClose}>
+        <button type="button" className="icon" aria-label={t("close")} onClick={exit}>
           <X aria-hidden />
         </button>
       </section>

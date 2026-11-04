@@ -1,16 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import { useUIStore } from "@/store/ui.store";
 import { ChevronDown, CodeXml, MousePointer2 } from "lucide-react";
 
-// Each build loads on the first pick (or on intent), not with the page.
+// Each build loads on the first pick (or on intent), not with the page; BuildHost runs it.
 const loadStudio = () => import("./BuildStudio");
 const loadSwarm = () => import("./swarm/SwarmBuild");
-const BuildStudio = dynamic(loadStudio, { ssr: false });
-const SwarmBuild = dynamic(loadSwarm, { ssr: false });
 
 type BuildKind = "studio" | "swarm";
 
@@ -18,7 +15,7 @@ type BuildKind = "studio" | "swarm";
 export default function BuildButton() {
   const t = useTranslations("Build");
   const [menu, setMenu] = useState(false);
-  const [open, setOpen] = useState<BuildKind | null>(null);
+  const setBuild = useUIStore((s) => s.setBuild);
   const wrap = useRef<HTMLDivElement>(null);
   const items = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -34,7 +31,7 @@ export default function BuildButton() {
 
   const choose = (kind: BuildKind) => {
     setMenu(false);
-    setOpen(kind);
+    setBuild(kind);
   };
   const onMenuKey = (e: React.KeyboardEvent) => {
     const list = items.current.filter(Boolean) as HTMLButtonElement[];
@@ -106,9 +103,6 @@ export default function BuildButton() {
           ))}
         </div>
       )}
-      {/* Portalled out of the nav, which fades and slides away on scroll. */}
-      {open === "studio" && createPortal(<BuildStudio onClose={() => setOpen(null)} />, document.body)}
-      {open === "swarm" && <SwarmBuild onClose={() => setOpen(null)} />}
     </div>
   );
 }
