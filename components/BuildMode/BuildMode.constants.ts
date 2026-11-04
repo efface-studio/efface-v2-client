@@ -15,9 +15,10 @@ export const REPO_FILE_URL = "/build-source/";
  * builds that; `grow` is one animated piece of the block, kept back until its
  * own file grows it. `pace` sets each file's typing speed against the default:
  * the regions type slower so each part gets its moment; the long detail and
- * animation files pour in faster.
+ * animation files pour in faster. `speed` plays a whole file faster, its
+ * letters included (`pace` alone still waits on the letters).
  */
-export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number; whole?: boolean }[] = [
+export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number; speed?: number; whole?: boolean }[] = [
   { path: "components/sections/Hero/Hero.tsx", plan: { sec: 0 } },
   { path: "components/three/glassScene.ts", plan: { sec: 0, grow: "main > section:first-of-type canvas", land: true }, pace: 5, whole: true },
   { path: "components/sections/EffaceIntro/EffaceIntro.tsx", plan: { sec: 1 } },
@@ -25,6 +26,7 @@ export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number;
     path: "components/sections/Work/Work.tsx",
     plan: { sec: 2, regions: '#work > div:first-child, [data-tour="featured"] > div > *, [data-tour="more"]' },
     pace: 0.7,
+    speed: 1.8,
   },
   { path: "components/sections/Work/WorkDetail.tsx", plan: { sec: 2, detail: "#work [data-tour='more'] button[data-project]" }, pace: 1.8 },
   { path: "components/sections/CapabilitiesScene/CapabilitiesDesktop.tsx", plan: { sec: 3 } },
