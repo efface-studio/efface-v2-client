@@ -379,6 +379,22 @@ export function startBuildStage() {
 
   const entry = (file: number) => plan[file];
 
+  /** A block's own scroll scene, played by scrolling through it as its code
+   *  types — eased in and out, a frame at a time, so the scene paints every step. */
+  const scrubThrough = (f: BuildPlanEntry, p: number) => {
+    const el = (groups()[f.sec] ?? []).find((e) => e.tagName !== "HEADER");
+    if (!el) return;
+    if (!scrubFrom) {
+      focusOn(null);
+      const top = Math.round(el.getBoundingClientRect().top + scrollY);
+      scrubFrom = [top, top + Math.max(0, el.offsetHeight - innerHeight)];
+    }
+    const [from, to] = scrubFrom;
+    const e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+    scrollTo({ top: Math.round(from + (to - from) * e), behavior: "instant" });
+    target = scrollY;
+  };
+
   const run = (msg: BuildCommand) => {
     switch (msg.type) {
       case "reset":
@@ -401,6 +417,9 @@ export function startBuildStage() {
           // An animated piece: bring it into view and let it grow there.
           const el = document.querySelector<HTMLElement>(f.grow);
           if (el) go(el.getBoundingClientRect().top + scrollY - innerHeight * 0.25);
+          focusOn(null);
+        } else if (f.scrub) {
+          // A scroll scene: the block is built; its code now plays it through.
           focusOn(null);
         } else if (f.detail) {
           // A detail view: open it the way a visitor would.
@@ -436,7 +455,8 @@ export function startBuildStage() {
         if (!f) break;
         if (f.grow) {
           document.querySelectorAll<HTMLElement>(f.grow).forEach((el) => el.style.setProperty("--build-grow", msg.p.toFixed(3)));
-        } else if (f.regions) buildRegions(msg.p, msg.speed);
+        } else if (f.scrub) scrubThrough(f, msg.p);
+        else if (f.regions) buildRegions(msg.p, msg.speed);
         else if (f.detail) {
           // The dialog mounts a beat after the click; build it once it's there.
           if (!unit) {
@@ -470,6 +490,7 @@ export function startBuildStage() {
       case "fileDone": {
         const f = entry(msg.file);
         if (!f) break;
+        scrubFrom = null;
         if (f.grow) release(f.grow);
         if (unit) stageUnit(unit, "done");
         if (f.detail) {
@@ -478,24 +499,6 @@ export function startBuildStage() {
         }
         unit = null;
         regions = [];
-        break;
-      }
-      case "scrub": {
-        // The block's own scroll scene, played by scrolling through it — eased
-        // in and out, a frame at a time, so the scene paints every step.
-        const f = entry(msg.file);
-        const el = f && (groups()[f.sec] ?? []).find((e) => e.tagName !== "HEADER");
-        if (!el) break;
-        if (!scrubFrom) {
-          focusOn(null);
-          const top = Math.round(el.getBoundingClientRect().top + scrollY);
-          scrubFrom = [top, top + Math.max(0, el.offsetHeight - innerHeight)];
-        }
-        const [from, to] = scrubFrom;
-        const e = msg.p < 0.5 ? 2 * msg.p * msg.p : 1 - (-2 * msg.p + 2) ** 2 / 2;
-        scrollTo({ top: Math.round(from + (to - from) * e), behavior: "instant" });
-        target = scrollY;
-        if (msg.p >= 1) scrubFrom = null;
         break;
       }
       case "finish":
@@ -511,7 +514,7 @@ export function startBuildStage() {
         scrollTo({ top: 0, behavior: "instant" });
         break;
     }
-    if (msg.type !== "layout" && msg.type !== "text" && msg.type !== "progress" && msg.type !== "scrub") paint();
+    if (msg.type !== "layout" && msg.type !== "text" && msg.type !== "progress") paint();
   };
 
   addEventListener("message", (e: MessageEvent<BuildEnvelope<BuildCommand>>) => {

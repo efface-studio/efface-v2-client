@@ -145,10 +145,7 @@ export function useBuildPlayer(
       }
 
       s.wait += dt;
-      // A scroll scene plays through first, then the usual beat.
-      const scrub = file.plan.scrub ?? 0;
-      if (scrub) post({ type: "scrub", file: s.file, p: Math.min(1, s.wait / scrub) });
-      if (s.wait < scrub + SECTION_END_WAIT_MS) return;
+      if (s.wait < SECTION_END_WAIT_MS) return;
       if (s.file + 1 < files.length) {
         Object.assign(s, { file: s.file + 1, pos: 0, phase: "enter", wait: 0, event: 0, slow: 1, slowUntil: 0 });
         setView({ file: s.file, pos: 0 });

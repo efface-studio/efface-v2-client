@@ -65,8 +65,8 @@ export interface BuildPlanEntry {
   grow?: string;
   /** The grown piece lands (fades in, settling from a slight zoom) rather than drawing in top-down. */
   land?: boolean;
-  /** Once built, the block is scrolled through over this long (ms at 1×), so its scroll scene plays. */
-  scrub?: number;
+  /** The file drives the block's scroll scene: as it types, the block scrolls through, so the scene plays with its code. */
+  scrub?: boolean;
 }
 
 /** Studio → preview. Files are referred to by their index in the plan. */
@@ -81,8 +81,6 @@ export type BuildCommand =
   /** Region, detail and animation files: how far the file is typed, 0–1. */
   | { type: "progress"; file: number; p: number; speed: number }
   | { type: "fileDone"; file: number }
-  /** Scroll-through progress after a `scrub` file is done. */
-  | { type: "scrub"; file: number; p: number }
   | { type: "finish" };
 
 /** A box in the preview's viewport, in its own (unscaled) pixels. */
