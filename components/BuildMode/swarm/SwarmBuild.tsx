@@ -104,7 +104,8 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
             <path d="M8 20 22 8l14 12v16a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2Z" fill="#1b1b21" stroke="rgba(255,255,255,.28)" strokeWidth="1.2" strokeLinejoin="round" />
             <path d="M5 21.5 22 6.5l17 15" fill="none" stroke="#3b62e5" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
             <rect className="win" x="12" y="21" width="6" height="6" rx="1" />
-            <path d="M24 38v-9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v9" fill="#0a0a0b" stroke="rgba(255,255,255,.2)" strokeWidth="1" />
+            <path d="M24 38v-9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v9" fill="#050506" />
+            <path className="door" d="M24 38v-9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v9" fill="#3b62e5" stroke="rgba(255,255,255,.25)" strokeWidth="0.8" />
           </svg>
         </div>
       </div>
