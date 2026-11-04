@@ -33,6 +33,7 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
   const stage = useRef<HTMLDivElement>(null);
   const cover = useRef<HTMLDivElement>(null);
   const logo = useRef<HTMLDivElement>(null);
+  const house = useRef<HTMLDivElement>(null);
   const rulerTop = useRef<HTMLCanvasElement>(null);
   const rulerLeft = useRef<HTMLCanvasElement>(null);
 
@@ -50,11 +51,12 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
   }, []);
 
   useEffect(() => {
-    if (!root || !stage.current || !cover.current || !logo.current || !rulerTop.current || !rulerLeft.current) return;
+    if (!root || !stage.current || !cover.current || !logo.current || !house.current || !rulerTop.current || !rulerLeft.current) return;
     const s = createSwarm({
       stage: stage.current,
       cover: cover.current,
       logo: logo.current,
+      house: house.current,
       rulerTop: rulerTop.current,
       rulerLeft: rulerLeft.current,
       roots: () => [...document.querySelectorAll(ROOTS)],
@@ -95,7 +97,18 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
       <div ref={cover} className="cover" />
       <canvas ref={rulerTop} className="ruler top" aria-hidden />
       <canvas ref={rulerLeft} className="ruler left" aria-hidden />
-      <div ref={stage} className="stage" aria-hidden />
+      <div ref={stage} className="stage" aria-hidden>
+        {/* The cursors' home: a little house with a lit window once they're all in. */}
+        <div ref={house} className="house">
+          <svg viewBox="0 0 44 44">
+            <circle className="glow" cx="22" cy="24" r="18" fill="rgba(255,210,63,.18)" />
+            <path d="M8 20 22 8l14 12v16a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2Z" fill="#1b1b21" stroke="rgba(255,255,255,.28)" strokeWidth="1.2" strokeLinejoin="round" />
+            <path d="M5 21.5 22 6.5l17 15" fill="none" stroke="#3b62e5" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+            <rect className="win" x="12" y="21" width="6" height="6" rx="1" />
+            <path d="M24 38v-9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v9" fill="#0a0a0b" stroke="rgba(255,255,255,.2)" strokeWidth="1" />
+          </svg>
+        </div>
+      </div>
       <div ref={logo} className="logo" aria-hidden>
         <LogoMark />
       </div>

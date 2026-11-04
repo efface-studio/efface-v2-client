@@ -8,6 +8,7 @@ import {
   SWARM_DRAG_MS,
   SWARM_FADE_MS,
   SWARM_FAN_MS,
+  SWARM_HOME_IDLE_MS,
   SWARM_MAX_AGENTS,
   SWARM_MAX_CARRY,
   SWARM_ORBIT_MS,
@@ -42,6 +43,9 @@ interface Agent {
   script: Script | null;
   /** The box it's working on, for the rulers' highlight. */
   sel: DOMRect | null;
+  /** Home: when its turn at the door comes, and whether it's gone in. */
+  homeAt?: number;
+  inside?: boolean;
 }
 
 export interface SwarmOptions {
@@ -49,6 +53,8 @@ export interface SwarmOptions {
   stage: HTMLElement;
   cover: HTMLElement;
   logo: HTMLElement;
+  /** The little house the cursors go into when the pointer rests. */
+  house: HTMLElement;
   rulerTop: HTMLCanvasElement;
   rulerLeft: HTMLCanvasElement;
   /** The page's blocks to rebuild, top to bottom. */
@@ -112,6 +118,7 @@ export function createSwarm(o: SwarmOptions) {
   let emitted = 0;
   let textTasks = 0;
   let mouse = { x: innerWidth / 2, y: innerHeight / 2 };
+  let mouseAt = 0;
   let stopped = false;
   let lastBuilt = 0;
   let idleUntil = 0;
@@ -734,6 +741,86 @@ export function createSwarm(o: SwarmOptions) {
     });
   };
 
+  // ── Home: in the finale, a pointer left still for a moment gets a little
+  // house beside it, and the cursors file in through its door one by one;
+  // move again and they spill back out to the pointer.
+  /** 0 out (flocking), 1 heading in, 2 all inside. */
+  let homeState = 0;
+  let home = { x: 0, y: 0 };
+  /** The doorway, in the house drawing (see SwarmBuild): just right of its centre, at the foot. */
+  const door = () => ({ x: home.x + 6, y: home.y + 3 });
+  const goHome = (now: number) => {
+    homeState = 1;
+    home = {
+      x: clamp(mouse.x + 46, 30, innerWidth - 30),
+      y: clamp(mouse.y + 6, 40, innerHeight - 90),
+    };
+    o.house.style.transform = `translate3d(${home.x}px,${home.y}px,0)`;
+    o.house.classList.remove("leave");
+    o.house.classList.add("show");
+    // Nearest first, so they queue in a line rather than a crowd.
+    const order = agents
+      .map((a, i) => ({ i, d: Math.hypot(a.x - home.x, a.y - home.y) }))
+      .sort((p, q) => p.d - q.d);
+    order.forEach(({ i }, k) => (agents[i].homeAt = now + 260 + k * 70));
+  };
+  const leaveHome = () => {
+    homeState = 0;
+    o.house.classList.add("leave");
+    sound.arpeggio();
+    const d = door();
+    agents.forEach((a, k) => {
+      a.x = d.x;
+      a.y = d.y;
+      // Out through the door in a burst, each its own way.
+      const ang = -Math.PI / 2 + ((k / agents.length) - 0.5) * Math.PI * 1.6;
+      const v = 380 + (k % 4) * 90;
+      a.vx = Math.cos(ang) * v;
+      a.vy = Math.sin(ang) * v;
+      a.inside = false;
+      a.homeAt = 0;
+      a.el.style.opacity = "";
+      a.el.style.scale = "";
+    });
+  };
+  const towardHome = (now: number, dt: number) => {
+    const s = dt / 1000;
+    const d = door();
+    let inside = 0;
+    for (const a of agents) {
+      if (a.inside) {
+        inside++;
+        continue;
+      }
+      if (now < (a.homeAt ?? 0)) {
+        // Waiting its turn: drift toward the door, slowly.
+        a.vx += ((d.x - 30 - a.x) * 1.4 - a.vx * 2.6) * s;
+        a.vy += ((d.y - a.y) * 1.4 - a.vy * 2.6) * s;
+      } else {
+        a.vx += ((d.x - a.x) * 14 - a.vx * 5.5) * s;
+        a.vy += ((d.y - a.y) * 14 - a.vy * 5.5) * s;
+      }
+      a.x += a.vx * s;
+      a.y += a.vy * s;
+      const dist = Math.hypot(a.x - d.x, a.y - d.y);
+      // Shrinking through the doorway.
+      const k = clamp(dist / 40, 0, 1);
+      a.el.style.scale = String(0.35 + 0.65 * k);
+      a.el.style.opacity = String(0.2 + 0.8 * k);
+      // In once at the door (or, should it dawdle, a little after its turn).
+      if (now >= (a.homeAt ?? 0) && (dist < 9 || now > (a.homeAt ?? 0) + 1400)) {
+        a.inside = true;
+        a.el.style.opacity = "0";
+        inside++;
+        sound.key(pan(a.x), false);
+      }
+    }
+    if (inside === agents.length && homeState === 1) {
+      homeState = 2;
+      o.house.classList.add("lit");
+    }
+  };
+
   const render = () => {
     for (const a of agents) a.el.style.transform = `translate3d(${a.x.toFixed(1)}px,${a.y.toFixed(1)}px,0)`;
   };
@@ -814,7 +901,11 @@ export function createSwarm(o: SwarmOptions) {
         sound.chord();
       }
     } else if (phase === "done") {
-      flock(real);
+      const still = now - mouseAt > SWARM_HOME_IDLE_MS && now - phaseAt > 1500;
+      if (still && homeState === 0) goHome(now);
+      else if (!still && homeState !== 0) leaveHome();
+      if (homeState === 0) flock(real);
+      else towardHome(now, real);
     }
     if (masked && highlight) CSS.highlights.set(HIDDEN, highlight);
     masked = false;
@@ -859,6 +950,7 @@ export function createSwarm(o: SwarmOptions) {
   };
   const onMouse = (e: PointerEvent) => {
     mouse = { x: e.clientX, y: e.clientY };
+    mouseAt = performance.now();
   };
   const listen = (on: boolean) => {
     for (const t of ["wheel", "touchmove", "keydown"]) {
@@ -921,6 +1013,8 @@ export function createSwarm(o: SwarmOptions) {
       }
       o.stage.querySelectorAll(".sel,.ghost,.measure,.guide,.pen").forEach((d) => d.remove());
       guides = 0;
+      if (homeState !== 0) leaveHome();
+      o.house.classList.remove("show", "lit", "leave");
       enter("scan");
       tour = true;
       await o.cover.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reduce ? 0 : 400, fill: "forwards" }).finished;
