@@ -21,7 +21,7 @@ function CareerLogo({ career }: { career: ProfileCareer }) {
       ) : logo ? (
         <img src={logo.src} alt="" className={cn("max-h-8 max-w-16 object-contain", logo.className)} />
       ) : (
-        <span className="text-base font-semibold text-fg-dim">{career.company.replace(/^㈜\s*/, "").charAt(0)}</span>
+        <span className="text-base font-semibold text-fg-dim">{career.company.replace(/^[㈜㈔]\s*/, "").charAt(0)}</span>
       )}
     </span>
   );
