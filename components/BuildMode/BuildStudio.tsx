@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Check, Pause, Play, SkipForward, X } from "lucide-react";
 import LogoMark from "@/components/LogoMark";
 import { cn } from "@/lib/cn";
+import { useUIStore } from "@/store/ui.store";
 import BuildSplash from "./BuildSplash";
 import CodePane from "./CodePane";
 import PreviewPane from "./PreviewPane";
@@ -70,7 +71,7 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
   }, []);
 
   // The run is to be done a set time after it opened, splash included (sooner at a higher speed).
-  const [openedAt] = useState(() => performance.now());
+  const [openedAt] = useState(() => useUIStore.getState().buildAt || performance.now());
   const player = useBuildPlayer(files, frameRef, speed, phase !== "intro", openedAt + BUILD_DURATION_MS / speed);
   const { loaded, status, view, progress, focus, skip } = player;
 

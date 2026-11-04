@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Volume2, VolumeX, X } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useUIStore } from "@/store/ui.store";
 import { createSwarm, type Swarm } from "./engine";
 import { SWARM_COLORS, SWARM_DURATION_MS, SWARM_INITIALS, SWARM_ROUTES, SWARM_SPEEDS, SWARM_WEIGHTS } from "./swarm.constants";
 import { SWARM_CSS } from "./swarm.css";
@@ -87,6 +88,7 @@ export default function SwarmBuild({ onClose }: SwarmBuildProps) {
         return arrival(old);
       },
       duration: SWARM_DURATION_MS,
+      startedAt: useUIStore.getState().buildAt,
       weigh: (el, i, page) => (page ? 1 : (SWARM_WEIGHTS[el.id || (i === 0 ? "hero" : el.tagName.toLowerCase())] ?? 1)),
       skip,
       onState: setState,

@@ -79,8 +79,9 @@ export interface SwarmOptions {
   /** Pages in the run; the engine moves on to the next through `turn`, which resolves once it's there. */
   pages: number;
   turn: (page: number) => Promise<void>;
-  /** The whole run, splash included, from start to done (ms at 1×). */
+  /** The whole run, splash included, from start to done (ms at 1×), and when it began (the click). */
   duration: number;
+  startedAt: number;
   /** How long a stretch of the page should take, relative to its height (1: its fair share). */
   weigh: (block: Element, index: number, page: number) => number;
   /** Elements left out (the overlay itself, the nav's build button). */
@@ -1254,7 +1255,7 @@ export function createSwarm(o: SwarmOptions) {
 
   return {
     start() {
-      endAt = performance.now() + o.duration;
+      endAt = (o.startedAt || performance.now()) + o.duration;
       listen(true);
       enter("scan");
       last = performance.now();
