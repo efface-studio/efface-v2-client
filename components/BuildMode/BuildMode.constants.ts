@@ -83,6 +83,10 @@ export const PREVIEW_PHONE_BELOW = 560;
 /** The camera's closest zoom, and how much of the pane the focused block may fill. */
 export const CAMERA_MAX_ZOOM = 1.45;
 export const CAMERA_FILL = 0.62;
+/** The camera moves on once what's being built comes this close (a share of the pane) to the frame's edge… */
+export const CAMERA_MARGIN = 0.06;
+/** …or once it could come this many times closer than it is. */
+export const CAMERA_CLOSER = 1.25;
 /** Shortest hold on one shot before the camera moves to the next. */
 export const CAMERA_DWELL_MS = 600;
 

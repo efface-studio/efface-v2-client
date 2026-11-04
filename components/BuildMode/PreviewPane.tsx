@@ -3,8 +3,10 @@
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { cn } from "@/lib/cn";
 import {
+  CAMERA_CLOSER,
   CAMERA_DWELL_MS,
   CAMERA_FILL,
+  CAMERA_MARGIN,
   CAMERA_MAX_ZOOM,
   PREVIEW_DESKTOP_WIDTH,
   PREVIEW_MIN_ASPECT,
@@ -25,6 +27,9 @@ interface PreviewPaneProps {
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+/** How close the camera comes to a shot: it fills a share of the pane, within limits. */
+const zoomFor = (r: BuildRect, box: { w: number; h: number }, scale: number) =>
+  clamp(Math.min((box.w * CAMERA_FILL) / (r.w * scale), (box.h * CAMERA_FILL) / (r.h * scale)), 1, CAMERA_MAX_ZOOM);
 
 /**
  * A browser window around the page being built. The page renders at a real
@@ -52,18 +57,25 @@ export default function PreviewPane({ frameRef, src, title, loadingLabel, status
   const scale = box.w ? Math.min(box.w / width, box.h / minHeight) : 1;
   const left = (box.w - width * scale) / 2;
 
-  // The camera holds each shot a moment before moving on, and ignores small
-  // shifts, so it glides between blocks instead of twitching across them.
+  // The camera holds each shot a moment before moving on, and stays put while
+  // what's being built is already in frame, so it moves only when the build
+  // leaves the frame instead of chasing every line back and forth.
   const [shot, setShot] = useState<BuildRect | null>(null);
   const movedAt = useRef(0);
+  const view = useRef({ tx: 0, ty: 0, z: 1 });
   useEffect(() => {
-    const near =
-      shot && focus
-        ? Math.abs(shot.x + shot.w / 2 - (focus.x + focus.w / 2)) < 48 &&
-          Math.abs(shot.y + shot.h / 2 - (focus.y + focus.h / 2)) < 48 &&
-          Math.abs(shot.w - focus.w) < 64
-        : shot === focus;
-    if (near) return;
+    const { tx, ty, z } = view.current;
+    const inFrame =
+      !!shot &&
+      !!focus &&
+      focus.x * z + tx >= box.w * CAMERA_MARGIN &&
+      (focus.x + focus.w) * z + tx <= box.w * (1 - CAMERA_MARGIN) &&
+      focus.y * z + ty >= box.h * CAMERA_MARGIN &&
+      (focus.y + focus.h) * z + ty <= box.h * (1 - CAMERA_MARGIN);
+    // …unless it could come much closer: the shot was wide, the copy is small.
+    const closer =
+      !!focus && zoomFor(focus, box, scale) > (z / scale) * CAMERA_CLOSER;
+    if ((inFrame && !closer) || shot === focus) return;
     const id = setTimeout(
       () => {
         movedAt.current = performance.now();
@@ -72,7 +84,7 @@ export default function PreviewPane({ frameRef, src, title, loadingLabel, status
       Math.max(0, movedAt.current + CAMERA_DWELL_MS - performance.now())
     );
     return () => clearTimeout(id);
-  }, [focus, shot]);
+  }, [focus, shot, box, scale]);
 
   // One transform on the frame — the fit-to-pane scale and the camera's zoom
   // and pan together, on whole pixels — so the page isn't resampled twice and
@@ -83,13 +95,17 @@ export default function PreviewPane({ frameRef, src, title, loadingLabel, status
   let tx = left;
   let ty = 0;
   if (shot && box.w && !still) {
-    zoom = clamp(Math.min((box.w * CAMERA_FILL) / (shot.w * scale), (box.h * CAMERA_FILL) / (shot.h * scale)), 1, CAMERA_MAX_ZOOM);
+    zoom = zoomFor(shot, box, scale);
     const cx = left + (shot.x + shot.w / 2) * scale;
     const cy = (shot.y + shot.h / 2) * scale;
     tx = zoom * left + clamp(box.w / 2 - zoom * cx, box.w * (1 - zoom), 0);
     ty = clamp(box.h / 2 - zoom * cy, box.h * (1 - zoom), 0);
   }
-  const frameTransform = `translate3d(${Math.round(tx)}px, ${Math.round(ty)}px, 0) scale(${(zoom * scale).toFixed(4)})`;
+  const z = zoom * scale;
+  useLayoutEffect(() => {
+    view.current = { tx: Math.round(tx), ty: Math.round(ty), z };
+  }, [tx, ty, z]);
+  const frameTransform = `translate3d(${Math.round(tx)}px, ${Math.round(ty)}px, 0) scale(${z.toFixed(4)})`;
 
   return (
     <section aria-label={title} className="build-pane flex min-h-0 flex-1 flex-col overflow-hidden rounded-[6px]">
