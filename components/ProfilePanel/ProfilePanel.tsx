@@ -123,19 +123,21 @@ export default function ProfilePanel() {
           <X aria-hidden className="h-5 w-5" />
         </button>
 
-        {/* Header — photo, name, email. */}
-        <header className="mt-6 flex flex-wrap items-stretch gap-5 pr-12">
+        {/* Header — photo, name, email, links; the motto and summary beside them
+            from sm up. On a phone it all stacks in that order (motto before links). */}
+        <header className="mt-6 flex flex-wrap items-stretch gap-5 pr-12 sm:mt-9 sm:grid sm:grid-cols-[auto_minmax(16rem,1fr)] sm:grid-rows-[auto_1fr] sm:gap-y-0">
           {/* The name sits on the photo's foot, whatever height the row takes. */}
-          <div className="flex min-w-0 items-end gap-5 self-start">
+          <div className="flex min-w-0 items-end gap-5 self-start sm:col-start-1 sm:row-start-1">
             <img
               src="/about/founder-photo.webp"
               alt={t("photoAlt")}
               width={400}
               height={514}
               // A cut-out on transparency — no frame, the panel is its background.
-              className="h-auto w-24 shrink-0 md:w-28"
+              // From sm up it sits a touch below the name's line.
+              className="h-auto w-24 shrink-0 sm:translate-y-3 md:w-28"
             />
-            <div className="min-w-0">
+            <div className="min-w-0 translate-y-1.5">
               <h2 id="profile-name" className="text-3xl font-semibold tracking-tight">
                 {t("name")}
               </h2>
@@ -148,33 +150,36 @@ export default function ProfilePanel() {
               </a>
             </div>
           </div>
-          {/* The motto and summary fill the rest of the row from sm up, spanning
-              the photo's height (motto at its top, summary at its foot); on a
-              phone they follow the name. */}
-          <div className="w-full sm:flex sm:w-auto sm:min-w-[16rem] sm:flex-1 sm:translate-y-4 sm:flex-col sm:justify-between sm:pl-12 sm:pt-4">
+          {/* The motto and summary take the column right of the photo and links
+              from sm up; on a phone they follow the name. */}
+          <div className="w-full sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:translate-y-4 sm:pl-12 sm:pt-4">
             <p className="break-keep text-lg font-medium leading-snug tracking-tight md:text-xl">{t("headline")}</p>
             <p className="mt-2.5 break-keep text-sm leading-relaxed text-fg-dim">{t("summary")}</p>
           </div>
+          {/* Links sit right under the photo and name, where they're looked for
+              first — from sm up in the column beside the summary, so the
+              summary's length doesn't push them away. */}
+          <ul
+            aria-label={t("linksLabel")}
+            className="mt-1 flex w-full flex-wrap gap-x-6 gap-y-3 self-start sm:col-start-1 sm:row-start-2 sm:mt-7"
+          >
+            {links.map((l) => (
+              <li key={l.label}>
+                <a
+                  href={l.href}
+                  title={l.value}
+                  {...(l.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
+                  className="flex items-center gap-2 text-sm text-fg-dim transition-colors hover:text-fg"
+                >
+                  <LinkMark href={l.href} />
+                  <span className="underline decoration-white/20 underline-offset-4 transition-colors hover:decoration-white/60">
+                    {l.label}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </header>
-
-        {/* Links sit right under the name, where they're looked for first. */}
-        <ul aria-label={t("linksLabel")} className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
-          {links.map((l) => (
-            <li key={l.label}>
-              <a
-                href={l.href}
-                title={l.value}
-                {...(l.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
-                className="flex items-center gap-2 text-sm text-fg-dim transition-colors hover:text-fg"
-              >
-                <LinkMark href={l.href} />
-                <span className="underline decoration-white/20 underline-offset-4 transition-colors hover:decoration-white/60">
-                  {l.label}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
 
         <section className="mt-10 border-t border-line pt-7">
           <h3 className="label">{t("careerLabel")}</h3>
