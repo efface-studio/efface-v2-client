@@ -156,8 +156,20 @@ export function startBuildStage() {
   };
   const shows = (el: Element | null, faded: boolean) =>
     !el || !el.checkVisibility || el.checkVisibility({ visibilityProperty: true, opacityProperty: faded });
+  /** Whether `r` shows through each box above `el` that clips its overflow — a
+   *  shot lane, a strip — bar the unit's own scroll box, which scrolls to it. */
+  const unclipped = (u: Unit, r: DOMRect, el: Element | null) => {
+    for (let a = el?.parentElement; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
+      const b = a.getBoundingClientRect();
+      if (cs.overflowX !== "visible" && (r.right <= b.left || r.left >= b.right)) return false;
+      if (cs.overflowY !== "visible" && a !== u.scroller && (r.bottom <= b.top || r.top >= b.bottom)) return false;
+    }
+    return true;
+  };
   const fits = (u: Unit, r: DOMRect, el: Element | null) =>
-    across(r, u) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly);
+    across(r, u) && (!u.onScreenOnly || onScreen(r)) && shows(el, u.onScreenOnly) && unclipped(u, r, el);
 
   // The camera: the block holding the piece being built, sent whenever the
   // build moves into a new one. Nothing (pull back) for blocks too big to be
