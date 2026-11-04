@@ -81,6 +81,8 @@ export function startBuildStage() {
   let focused: Element | null = null;
   /** Until when a detail view's scroll is still gliding. */
   let followUntil = 0;
+  /** Whether the region being built holds a pinned scene. */
+  let regionPinned = false;
   /** Where a scroll-through runs, from and to, while it plays. */
   let scrubFrom: [number, number] | null = null;
 
@@ -348,10 +350,14 @@ export function startBuildStage() {
     }
     if (!unit) return;
     const region = regions[at];
-    // Tall regions (the pinned project rows, the grid) scroll by as they build.
+    // Tall regions (the project grid) scroll by as they build. A pinned scene
+    // (a featured row) is built where its runway ends instead: held in place
+    // with every cover in, the way it reads once scrolled through.
     const top = Math.round(region.getBoundingClientRect().top + scrollY);
     const run = Math.max(0, region.offsetHeight - innerHeight);
-    const y = top + Math.round(Math.min(1, q / 0.95) * run) - (run ? 0 : Math.max(0, (innerHeight - region.offsetHeight) / 3));
+    if (fresh) regionPinned = [...region.children].some((c) => getComputedStyle(c).position === "sticky");
+    const along = regionPinned ? 1 : Math.min(1, q / 0.95);
+    const y = top + Math.round(along * run) - (run ? 0 : Math.max(0, (innerHeight - region.offsetHeight) / 3));
     // A new region is reached by a scroll (or a cut); within one, the page
     // follows the build frame by frame.
     // (Larger gaps mean that scroll or cut is still under way — leave it be.)
