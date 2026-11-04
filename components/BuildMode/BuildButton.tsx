@@ -48,9 +48,10 @@ export default function BuildButton() {
     }
   };
 
-  const builds: { kind: BuildKind; icon: typeof CodeXml; load: () => Promise<unknown> }[] = [
-    { kind: "studio", icon: CodeXml, load: loadStudio },
-    { kind: "swarm", icon: MousePointer2, load: loadSwarm },
+  // Each build gets an app-icon tile, as a macOS menu would show it.
+  const builds: { kind: BuildKind; icon: typeof CodeXml; tile: string; load: () => Promise<unknown> }[] = [
+    { kind: "studio", icon: CodeXml, tile: "from-[#3b8bff] to-[#2456d6]", load: loadStudio },
+    { kind: "swarm", icon: MousePointer2, tile: "from-[#b46cff] to-[#6a3be5]", load: loadSwarm },
   ];
 
   return (
@@ -71,13 +72,14 @@ export default function BuildButton() {
         <ChevronDown aria-hidden className={`h-3 w-3 transition-transform ${menu ? "rotate-180" : ""}`} />
       </button>
       {menu && (
+        // A macOS-style menu: frosted, hairline-edged, softly lifted.
         <div
           role="menu"
           aria-label={t("menu.label")}
           onKeyDown={onMenuKey}
-          className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl bg-surface p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
+          className="build-menu absolute right-0 top-full z-50 mt-2 w-[19rem] origin-top-right rounded-[12px] border-[0.5px] border-white/15 bg-[rgba(36,36,40,0.72)] p-[5px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.6),0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-[1.8]"
         >
-          {builds.map(({ kind, icon: Icon, load }, i) => (
+          {builds.map(({ kind, icon: Icon, tile, load }, i) => (
             <button
               key={kind}
               ref={(el) => {
@@ -88,12 +90,19 @@ export default function BuildButton() {
               onClick={() => choose(kind)}
               onPointerEnter={() => void load()}
               onFocus={() => void load()}
-              className="flex w-full cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none"
+              className="group flex w-full cursor-pointer items-center gap-3 rounded-[7px] px-2.5 py-2 text-left hover:bg-[#0a84ff] focus-visible:bg-[#0a84ff] focus-visible:outline-none"
             >
-              <Icon aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-fg-dim" />
+              <span
+                aria-hidden
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-b ${tile} shadow-[inset_0_0.5px_0_rgba(255,255,255,0.35),0_1px_2px_rgba(0,0,0,0.4)]`}
+              >
+                <Icon className="h-[15px] w-[15px] text-white" strokeWidth={2.25} />
+              </span>
               <span className="min-w-0">
-                <span className="block text-sm font-medium text-fg">{t(`menu.${kind}`)}</span>
-                <span className="mt-0.5 block break-keep text-xs leading-relaxed text-fg-faint">{t(`menu.${kind}Hint`)}</span>
+                <span className="block text-[13px] font-medium leading-tight tracking-[-0.01em] text-white">{t(`menu.${kind}`)}</span>
+                <span className="mt-0.5 block break-keep text-[11.5px] leading-snug text-white/55 group-hover:text-white/85 group-focus-visible:text-white/85">
+                  {t(`menu.${kind}Hint`)}
+                </span>
               </span>
             </button>
           ))}
