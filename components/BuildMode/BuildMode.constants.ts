@@ -62,7 +62,7 @@ export const SECTION_END_WAIT_MS = 300;
 export const DONE_CLOSE_MS = 2000;
 /** The opening splash: shortest it stays, and its lift-off (match globals.css). */
 /** The whole run, splash included, from the click to done (ms at 1×). */
-export const BUILD_DURATION_MS = 60_000;
+export const BUILD_DURATION_MS = 90_000;
 /** Pacing bounds: playback is sped up or eased off within these to land on time. */
 export const BUILD_PACE_MIN = 0.5;
 export const BUILD_PACE_MAX = 6;
