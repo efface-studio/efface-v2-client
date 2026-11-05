@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Pause, Play, SkipForward, X } from "lucide-react";
+import { Check, Pause, Play, SkipForward, Volume2, VolumeX, X } from "lucide-react";
 import LogoMark from "@/components/LogoMark";
 import { cn } from "@/lib/cn";
 import { useUIStore } from "@/store/ui.store";
@@ -11,6 +11,7 @@ import CodePane from "./CodePane";
 import PreviewPane from "./PreviewPane";
 import SplitHandle from "./SplitHandle";
 import { toBuildFile } from "./buildScript";
+import { createSound, type BuildSound } from "./sound";
 import { useBuildPlayer } from "./useBuildPlayer";
 import {
   BUILD_PARAM,
@@ -72,7 +73,32 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
 
   // The run is to be done a set time after it opened, splash included (sooner at a higher speed).
   const [openedAt] = useState(() => useUIStore.getState().buildAt || performance.now());
-  const player = useBuildPlayer(files, frameRef, speed, phase !== "intro", openedAt + BUILD_DURATION_MS / speed);
+  // Sound: on by default (the click that opened the studio lets it play), muted from the bar or with M.
+  const sound = useRef<BuildSound | null>(null);
+  const [soundOn, setSoundOn] = useState(true);
+  useEffect(() => {
+    const s = createSound();
+    sound.current = s;
+    s.swell();
+    return () => {
+      s.close();
+      sound.current = null;
+    };
+  }, []);
+  const toggleSound = useCallback(() => {
+    setSoundOn((on) => {
+      if (sound.current) sound.current.on = !on;
+      return !on;
+    });
+  }, []);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key === "m" || e.key === "M") && !e.metaKey && !e.ctrlKey && !e.altKey) toggleSound();
+    };
+    addEventListener("keydown", onKey);
+    return () => removeEventListener("keydown", onKey);
+  }, [toggleSound]);
+  const player = useBuildPlayer(files, frameRef, speed, phase !== "intro", openedAt + BUILD_DURATION_MS / speed, sound);
   const { loaded, status, view, progress, focus, skip } = player;
 
   // The splash lifts once the studio behind it is ready (or has failed to be).
@@ -186,6 +212,15 @@ export default function BuildStudio({ onClose }: { onClose: () => void }) {
                 </button>
               </>
             )}
+            <button
+              type="button"
+              aria-label={soundOn ? t("soundOff") : t("soundOn")}
+              aria-pressed={!soundOn}
+              onClick={toggleSound}
+              className={cn(CONTROL, "w-9 justify-center px-0")}
+            >
+              {soundOn ? <Volume2 aria-hidden className="h-4 w-4" /> : <VolumeX aria-hidden className="h-4 w-4" />}
+            </button>
             <button type="button" aria-label={t("close")} onClick={leave} className={cn(CONTROL, "w-9 justify-center px-0")}>
               <X aria-hidden className="h-4 w-4" />
             </button>

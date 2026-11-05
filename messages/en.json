@@ -640,6 +640,8 @@
     "intro": "Building efface from scratch",
     "outro": "Back to the site",
     "resize": "Resize preview and editor",
+    "soundOn": "Turn sound on",
+    "soundOff": "Turn sound off",
     "menu": {
       "label": "Choose a build",
       "studio": "Build 1 · Code editor",
