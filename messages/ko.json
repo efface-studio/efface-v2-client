@@ -640,6 +640,8 @@
     "intro": "efface를 처음부터 만들어 봅니다",
     "outro": "사이트로 돌아갑니다",
     "resize": "미리보기와 코드 창 비율 조절",
+    "soundOn": "소리 켜기",
+    "soundOff": "소리 끄기",
     "menu": {
       "label": "생성 방식 선택",
       "studio": "빌드 1 · 코드 에디터",

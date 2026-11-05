@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import type { BuildCommand, BuildEnvelope, BuildFile, BuildRect, BuildReply, BuildStatus } from "./BuildMode.types";
+import type { BuildSound } from "./sound";
 import {
   BUILD_PACE_MAX,
   BUILD_PACE_MIN,
@@ -27,7 +28,9 @@ export function useBuildPlayer(
   /** Held back until the opening splash has lifted. */
   started: boolean,
   /** When the whole run is to be done (a performance.now() time): playback keeps to it. */
-  deadline: number
+  deadline: number,
+  /** The studio's sound: keys as the code types, a note per file, a chord at the end. */
+  sound: RefObject<BuildSound | null>
 ) {
   const [previewReady, setPreviewReady] = useState(false);
   const [state, setState] = useState<Exclude<BuildStatus, "loading">>("playing");
@@ -161,6 +164,9 @@ export function useBuildPlayer(
           s.pos++;
         }
         if (s.pos !== before) {
+          // A key for what was just typed (the sound keeps its own rate); the editor's on the right.
+          const ch = file.code[s.pos - 1];
+          if (ch !== "\n") sound.current?.key(0.35, ch === " ");
           const stage = file.events[s.event - 1]?.event;
           if (file.driven) {
             post({ type: "progress", file: s.file, p: s.pos / file.code.length, speed: speedRef.current });
@@ -180,6 +186,7 @@ export function useBuildPlayer(
         if (s.pos >= file.code.length) {
           if (!file.driven) post({ type: "stage", file: s.file, stage: "done", speed: speedRef.current });
           post({ type: "fileDone", file: s.file });
+          sound.current?.note(60_000, (s.file + 1) / files.length, 0);
           Object.assign(s, { phase: "end", wait: 0, budget: 0 });
         }
         return;
@@ -192,12 +199,13 @@ export function useBuildPlayer(
         setView({ file: s.file, pos: 0 });
       } else {
         post({ type: "finish" });
+        sound.current?.chord();
         setState("done");
       }
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [files, post]);
+  }, [files, post, sound]);
 
   /** Jump to the finished page — every file written, the preview whole. */
   const skip = useCallback(() => {

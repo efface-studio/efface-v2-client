@@ -1,4 +1,4 @@
-import { createSound } from "./sound";
+import { createSound } from "../sound";
 import { snapshot } from "./snapshot";
 import {
   SWARM_AGENTS,

@@ -2,7 +2,7 @@
 const SCALE = [164.8, 185, 207.7, 246.9, 277.2, 329.6, 370, 415.3, 493.9, 554.4, 659.3, 740, 830.6, 987.8];
 
 /**
- * The swarm's sound, synthesized live (no files): a mechanical keyboard for
+ * Build mode's sound, synthesized live (no files): a mechanical keyboard for
  * typing, a click per mouse press, and sparse glass-piano notes for boxes —
  * low for big ones, high for small, panned to their cursor. Quiet by design.
  */
@@ -147,4 +147,4 @@ export function createSound() {
   };
 }
 
-export type SwarmSound = ReturnType<typeof createSound>;
+export type BuildSound = ReturnType<typeof createSound>;
