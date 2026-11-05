@@ -44,7 +44,7 @@ export const SWARM_HOME_IDLE_MS = 1200;
  *  page it starts on for now; the engine can turn to more (see `turn`). */
 export const SWARM_ROUTES: readonly string[] = [];
 /** The whole run, splash and every page included (ms at 1×). */
-export const SWARM_DURATION_MS = 60_000;
+export const SWARM_DURATION_MS = 90_000;
 /** Pacing: where it starts and its bounds (multiples of the 1× timings). */
 export const SWARM_PACE_START = 1.6;
 export const SWARM_PACE_MIN = 0.5;
