@@ -94,7 +94,7 @@ export default function WorkDetail({ projects }: WorkDetailProps) {
       className="m-auto max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] max-w-[1600px] overflow-y-auto overscroll-contain rounded-3xl bg-surface p-0 text-fg ring-1 ring-white/10 backdrop:bg-black/80 backdrop:backdrop-blur-sm md:max-h-[calc(100dvh-3rem)] md:w-[calc(100%-3rem)]"
     >
       {project && (
-        <div className="relative px-6 py-8 md:px-12 md:py-12 lg:px-16">
+        <div className="relative px-5 py-6 sm:px-6 sm:py-8 md:px-12 md:py-12 lg:px-16">
           <form method="dialog">
             <button
               aria-label={t("zoomClose")}
@@ -104,13 +104,14 @@ export default function WorkDetail({ projects }: WorkDetailProps) {
             </button>
           </form>
 
-          {/* Header — icon, name, subtitle, links. */}
-          <header className="flex items-start gap-5 pr-14 md:gap-8">
-            <div className="w-20 shrink-0 md:w-32">
+          {/* Header — icon, name, subtitle, links. Phones stack the icon over
+              the text; side by side it left the text a ~90px column. */}
+          <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:pr-14 md:gap-8">
+            <div className="w-16 shrink-0 sm:w-20 md:w-32">
               <WorkIconTile name={project.name} icon={icon} zoom />
             </div>
             <div className="min-w-0">
-              <h3 className="text-2xl font-semibold tracking-tight md:text-5xl">
+              <h3 className="break-keep text-2xl font-semibold tracking-tight md:text-5xl">
                 {project.name}
               </h3>
               {project.desc && (
