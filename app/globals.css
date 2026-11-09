@@ -82,6 +82,14 @@ body {
   font-feature-settings: "ss01", "ss02", "cv01";
 }
 
+/* Korean breaks between words, not between syllables — on a phone a heading
+   otherwise strands its last syllable ("다루는 / 가."). A string with no space
+   to break at (a URL, an address) still wraps instead of overflowing. */
+html:lang(ko) body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
 * {
   box-sizing: border-box;
 }
