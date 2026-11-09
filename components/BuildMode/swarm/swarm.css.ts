@@ -91,5 +91,6 @@ export const SWARM_CSS = `
 .bar button.icon:hover{color:#f4f4f6}
 .bar svg{display:block;width:14px;height:14px}
 @media (max-width:640px){.bar{gap:9px;padding:7px 8px 7px 12px;bottom:14px;font-size:12px}.bar .hide-sm{display:none}}
+@media (max-width:380px){.bar{gap:4px;padding:6px 4px 6px 10px}.bar button{padding:5px 7px}.bar button.icon{padding:5px}}
 @media (prefers-reduced-motion:reduce){.bar,.track.scan i{animation:none}.logo.play *,.logo.play::before{animation-duration:.01s!important;animation-delay:0s!important}}
 `;
