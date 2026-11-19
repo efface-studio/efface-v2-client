@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 import type { HeroSceneProps } from "./HeroScene.types";
 
-const LANDSCAPE = "/hero-prism-transit-4k.mp4";
-const PORTRAIT = "/hero-prism-transit-portrait.mp4";
+const LANDSCAPE = "/hero-prism-transit-4k.mp4?v=2";
+const PORTRAIT = "/hero-prism-transit-portrait.mp4?v=2";
 const LAST_FRAME = 1 / 30;
 
 export default function HeroScene({ progress }: HeroSceneProps) {
