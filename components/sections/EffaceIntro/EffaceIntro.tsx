@@ -84,7 +84,7 @@ export default function EffaceIntro() {
       style={{
         position: "relative",
         height: `calc(var(--svh, 1svh) * ${sceneVh})`,
-        background: "var(--intro-backdrop, var(--color-bg))",
+        background: "var(--color-bg)",
         color: "#EDEDEF",
       }}
     >

@@ -124,20 +124,17 @@ body {
 
 /* ── Motion utilities ─────────────────────────────────────────── */
 
-/* One pinned film runs under the leading edge of the definition section. */
+/* Pin only the film. The next section covers the stage with its own opaque backdrop. */
 .hero-runway {
   --hero-height: calc(var(--svh, 1svh) * 100);
-  height: calc(var(--hero-height) * 2.45);
+  height: calc(var(--hero-height) * 5.6);
 }
-.hero-stage {
+.hero-stage,
+.hero-copy {
   height: var(--hero-height);
 }
-.hero-film-layer {
-  mask-image: linear-gradient(to bottom, transparent, black 12%);
-}
 .hero-runway + #efface {
-  margin-top: calc(var(--svh, 1svh) * -36);
-  --intro-backdrop: linear-gradient(to bottom, transparent, var(--color-bg) calc(var(--svh, 1svh) * 36));
+  margin-top: calc(var(--svh, 1svh) * -100);
 }
 @media (max-height: 530px) {
   .hero-copy h1 { font-size: clamp(1.9rem, 7vh, 2.5rem); }
@@ -147,7 +144,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-runway { height: auto; }
   .hero-stage { position: relative; }
-  .hero-runway + #efface { margin-top: 0; --intro-backdrop: var(--color-bg); }
+  .hero-runway + #efface { margin-top: 0; }
 }
 
 /* Above-the-fold rise, runs on stylesheet parse (no hydration wait). */

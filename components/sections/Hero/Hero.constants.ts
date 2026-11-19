@@ -1,2 +1,4 @@
-/** Runway position at which the logo has the entire stage. */
-export const COPY_FADE_END = 0.29;
+/** The remaining pinned distance lets the opaque definition section enter. */
+export const FILM_START = 0.025;
+export const FILM_END = 0.79;
+export const HANDOFF_END = 0.88;
