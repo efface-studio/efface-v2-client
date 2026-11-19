@@ -1,109 +1,51 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
-import dynamic from "next/dynamic";
-import { cn } from "@/lib/cn";
+import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import HeroScene from "@/components/sections/HeroScene";
 import Tour from "@/components/Tour";
-import {
-  COPY_FADE_END,
-  COPY_LIFT,
-  LEFT_SCRIM,
-  PHONE_SCENE_DELAY_MS,
-  SCENE_BACKDROP,
-} from "./Hero.constants";
-
-// Live WebGL logo scene — client-only so three.js stays out of SSR and the
-// initial bundle, and only mounts once the hero is on the client.
-const HeroScene = dynamic(() => import("@/components/sections/HeroScene"), { ssr: false });
+import { COPY_FADE_END } from "./Hero.constants";
 
 export default function Hero() {
   const t = useTranslations("Hero");
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
-  // three.js is the heaviest thing on the page. Don't even fetch it until the
-  // page has loaded and the main thread is idle, so the copy, fonts and
-  // hydration get the network and CPU first; the backdrop colour stands in.
-  const [sceneReady, setSceneReady] = useState(false);
-  useEffect(() => {
-    let idle: number | undefined;
-    let timer: number | undefined;
-    // Phones have the least CPU to spare while the page boots: wait for the
-    // first touch or scroll, or a few quiet seconds, before compiling the scene.
-    const phone = window.matchMedia("(max-width: 767px)").matches;
-    const kinds = ["pointerdown", "touchstart", "scroll", "keydown"] as const;
-    const start = () => {
-      kinds.forEach((k) => window.removeEventListener(k, start));
-      setSceneReady(true);
-    };
-    const go = () => {
-      if (phone) {
-        kinds.forEach((k) => window.addEventListener(k, start, { once: true, passive: true }));
-        timer = window.setTimeout(() => {
-          idle = window.requestIdleCallback?.(start, { timeout: 2000 });
-          if (idle === undefined) start();
-        }, PHONE_SCENE_DELAY_MS);
-        return;
-      }
-      idle = window.requestIdleCallback?.(start, { timeout: 2000 });
-      if (idle === undefined) start();
-    };
-    if (document.readyState === "complete") go();
-    else window.addEventListener("load", go, { once: true });
-    return () => {
-      window.removeEventListener("load", go);
-      kinds.forEach((k) => window.removeEventListener(k, start));
-      if (timer !== undefined) window.clearTimeout(timer);
-      if (idle !== undefined) window.cancelIdleCallback(idle);
-    };
-  }, []);
-
-  // Scroll-linked parallax: the copy lifts and fades as the hero scrolls away.
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
+  const reduce = usePrefersReducedMotion();
+  const [copyHidden, setCopyHidden] = useState(false);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const contentY = useTransform(scrollYProgress, [0, COPY_FADE_END], ["0%", "-12%"]);
+  const opacity = useTransform(scrollYProgress, [0, COPY_FADE_END], [1, 0]);
+  const filmY = useTransform(scrollYProgress, [0, 0.35, 1], ["0%", "3%", "19%"]);
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    setCopyHidden(progress >= COPY_FADE_END);
   });
-  const contentY = useTransform(scrollYProgress, [0, 1], COPY_LIFT);
-  const contentOpacity = useTransform(scrollYProgress, [0, COPY_FADE_END], [1, 0]);
 
   return (
-    <section ref={ref} className="relative min-h-[calc(var(--svh,1svh)*100)] w-full overflow-hidden bg-bg">
-      {/* Background: live "glass squares" logo rendered in WebGL — stays crisp at
-          any resolution (no fixed-res video to pixelate on large screens). The
-          mark is framed to the right in the scene so the copy owns the lower-left.
-          The placeholder behind it is the scene's own backdrop colour, so there's
-          no visible swap when the canvas paints (a poster image would flash a
-          different frame first). Reduced motion gets a single frozen frame. */}
-      <div className={cn("pointer-events-none absolute inset-0", SCENE_BACKDROP)}>
-        {sceneReady && <HeroScene className="block h-full w-full" still={!!reduce} />}
-      </div>
+    <section ref={ref} className="hero-runway relative">
+      <div className="hero-stage sticky top-0 isolate overflow-hidden bg-bg">
+        <motion.div aria-hidden="true" className="hero-film-layer pointer-events-none absolute inset-0" style={reduce ? undefined : { y: filmY }}>
+          <HeroScene progress={scrollYProgress} />
+        </motion.div>
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-linear-to-b from-bg/30 via-bg/20 via-55% to-bg/80" />
 
-      {/* Left scrim for legibility — eased off so the backdrop's studio light
-          still reads through behind the copy. */}
-      <div className={cn("pointer-events-none absolute inset-0", LEFT_SCRIM)} />
-      {/* Top scrim (nav) + bottom blend into the next section. */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg/45 via-transparent to-bg" />
-
-      {/* Copy — anchored lower-left. */}
-      <motion.div
-        className="relative z-10 mx-auto flex min-h-[calc(var(--svh,1svh)*100)] max-w-[1400px] flex-col justify-end px-6 pb-[calc(var(--svh,1svh)*15)] md:px-10 md:pb-[12vh]"
-        style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
-      >
-        <div className="max-w-2xl">
-          <h1 id="hero-title" className="text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
+        <motion.div
+          inert={!reduce && copyHidden}
+          className="hero-copy relative mx-auto grid h-full grid-rows-[minmax(0,1fr)_auto_minmax(0,1fr)] justify-items-center px-5 text-center"
+          style={reduce ? undefined : { y: contentY, opacity }}
+        >
+          <h1 id="hero-title" className="row-start-2 w-full max-w-[7.5em] text-[clamp(2.35rem,8vw,4.5rem)] font-semibold leading-[1.04] tracking-tight">
             <span className="rise-in rise-d1 block">{t("titleLine1")}</span>
             <span className="rise-in rise-d2 block">{t("titleLine2")}</span>
           </h1>
-
-          <p className="rise-in rise-d3 mt-7 max-w-md text-base leading-relaxed text-fg-dim md:text-lg">
-            {t("sub")}
-          </p>
-
-          <Tour />
-        </div>
-      </motion.div>
-
+          <div className="hero-details row-start-3 self-start">
+            <p className="rise-in rise-d3 mx-auto mt-5 max-w-md text-base leading-relaxed text-fg md:mt-7 md:text-lg">
+              {t("sub")}
+            </p>
+            <Tour />
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }
