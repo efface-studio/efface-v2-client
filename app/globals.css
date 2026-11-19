@@ -133,6 +133,25 @@ body {
 .hero-copy {
   height: var(--hero-height);
 }
+.hero-copy-track {
+  height: calc(var(--hero-height) * 1.7);
+}
+.hero-copy {
+  overflow: clip;
+  --scatter: 0;
+}
+.hero-fragment {
+  --phase: clamp(0, calc((var(--scatter) - var(--delay)) * 1.65), 1);
+  --travel: calc(var(--phase) * var(--phase) * (3 - 2 * var(--phase)));
+  display: inline-block;
+  opacity: calc(1 - var(--phase) * var(--phase));
+  transform: translate3d(calc(var(--drift-x) * var(--travel)), calc(var(--drift-y) * var(--travel)), 0)
+    rotate(calc(var(--turn) * var(--travel)));
+}
+.hero-tour {
+  opacity: calc(1 - var(--scatter));
+}
+.hero-tour button { pointer-events: auto; }
 .hero-runway + #efface {
   margin-top: calc(var(--svh, 1svh) * -100);
 }
@@ -144,6 +163,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-runway { height: auto; }
   .hero-stage { position: relative; }
+  .hero-copy-track { height: 100%; }
+  .hero-copy { position: relative; }
+  .hero-fragment { transform: none; opacity: 1; }
   .hero-runway + #efface { margin-top: 0; }
 }
 
