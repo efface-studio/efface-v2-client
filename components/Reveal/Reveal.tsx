@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { fadeUp } from "@/lib/motion";
 import { elementProgress, useScrollMotion } from "@/lib/scrollMotion";
 import { useIsMobile } from "@/lib/useIsMobile";
@@ -18,7 +19,7 @@ const ERASE_SOFT = 28;
  * stay RSC.
  */
 export default function Reveal({ children, delay = 0, y = 20, className }: RevealProps) {
-  const reduce = useReducedMotion();
+  const reduce = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
   // Furthest the wipe has got. It only moves forward: once content is shown it

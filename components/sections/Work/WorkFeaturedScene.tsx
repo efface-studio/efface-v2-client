@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { useReducedMotion } from "motion/react";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import Reveal from "@/components/Reveal";
 import { useIsMobile } from "@/lib/useIsMobile";
 import WorkClients from "./WorkClients";
@@ -20,7 +20,7 @@ import type { WorkFeaturedSceneProps } from "./Work.types";
 export default function WorkFeaturedScene({ items }: WorkFeaturedSceneProps) {
   const t = useTranslations("Work.featured");
   const isMobile = useIsMobile();
-  const reduce = useReducedMotion();
+  const reduce = usePrefersReducedMotion();
   const perRow = isMobile ? 1 : FEATURED_PER_ROW;
   const rows = useMemo(() => {
     const out: (typeof items)[] = [];

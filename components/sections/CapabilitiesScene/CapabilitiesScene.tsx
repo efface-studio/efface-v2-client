@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { useIsMobile } from "@/lib/useIsMobile";
 import CapabilitiesDesktop from "./CapabilitiesDesktop";
 import CapabilitiesMobile from "./CapabilitiesMobile";
@@ -22,7 +22,7 @@ export default function CapabilitiesScene() {
   const title = t("title");
   const lead = t("lead");
   const isMobile = useIsMobile();
-  const still = !!useReducedMotion();
+  const still = usePrefersReducedMotion();
 
   // Both layouts hang off the same section element, so the root ref is shared.
   const rootRef = useRef<HTMLElement>(null);
