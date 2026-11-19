@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { JetBrains_Mono } from "next/font/google";
 import { useTranslations } from "next-intl";
 import {
   Bell,
@@ -23,9 +22,6 @@ import FileIcon from "./FileIcon";
 import { tokenize } from "./highlight";
 import { REPO_FILE_URL } from "./BuildMode.constants";
 import type { BuildFile, BuildRepoEntry, BuildToken } from "./BuildMode.types";
-
-// The editor's own face, fetched with the studio rather than the page.
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], display: "swap" });
 
 // Tokyo Night, on a darker workbench.
 const TOKEN_CLASS: Record<BuildToken["kind"], string> = {
@@ -369,7 +365,7 @@ export default function CodePane({ files, tree, file, pos, label, typing }: Code
           <div
             ref={bodyRef}
             className={cn(
-              mono.className,
+              "font-mono",
               "min-h-0 flex-1 overflow-auto pb-6 text-[11.5px] leading-[18px] [scrollbar-width:thin] md:text-[12.5px] md:leading-[20px]"
             )}
           >
