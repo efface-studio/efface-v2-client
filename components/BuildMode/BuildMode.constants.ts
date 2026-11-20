@@ -20,7 +20,7 @@ export const REPO_FILE_URL = "/build-source/";
  */
 export const BUILD_SOURCES: { path: string; plan: BuildPlanEntry; pace?: number; speed?: number; whole?: boolean }[] = [
   { path: "components/sections/Hero/Hero.tsx", plan: { sec: 0 } },
-  { path: "components/three/glassScene.ts", plan: { sec: 0, grow: "main > section:first-of-type canvas", land: true }, pace: 5, whole: true },
+  { path: "components/sections/HeroScene/HeroScene.tsx", plan: { sec: 0, grow: "[data-hero-film]", land: true }, pace: 5, whole: true },
   { path: "components/sections/EffaceIntro/EffaceIntro.tsx", plan: { sec: 1 } },
   { path: "components/sections/EffaceIntro/useEffaceTimeline.ts", plan: { sec: 1, scrub: true }, pace: 1.6, whole: true },
   {

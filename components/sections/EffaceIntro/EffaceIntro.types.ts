@@ -8,6 +8,7 @@ export type Token =
 /** DOM handles the timeline paints into. */
 export interface EffaceIntroRefs {
   rootRef: RefObject<HTMLElement | null>;
+  stageRef: RefObject<HTMLDivElement | null>;
   clutterRef: RefObject<HTMLDivElement | null>;
   puckRef: RefObject<HTMLDivElement | null>;
   fitRef: RefObject<HTMLDivElement | null>;

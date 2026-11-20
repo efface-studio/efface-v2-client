@@ -124,6 +124,51 @@ body {
 
 /* ── Motion utilities ─────────────────────────────────────────── */
 
+/* The film and incoming definition share the page background during the overlap. */
+.hero-runway {
+  --hero-height: calc(var(--svh, 1svh) * 100);
+  height: calc(var(--hero-height) * 5.6);
+}
+.hero-stage,
+.hero-copy {
+  height: var(--hero-height);
+}
+.hero-copy-track {
+  height: calc(var(--hero-height) * 1.7);
+}
+.hero-copy {
+  overflow: clip;
+  --scatter: 0;
+}
+.hero-fragment {
+  --phase: clamp(0, calc((var(--scatter) - var(--delay)) * 1.65), 1);
+  --travel: calc(var(--phase) * var(--phase) * (3 - 2 * var(--phase)));
+  display: inline-block;
+  opacity: calc(1 - var(--phase) * var(--phase));
+  transform: translate3d(calc(var(--drift-x) * var(--travel)), calc(var(--drift-y) * var(--travel)), 0)
+    rotate(calc(var(--turn) * var(--travel)));
+}
+.hero-tour {
+  opacity: calc(1 - var(--scatter));
+}
+.hero-tour button { pointer-events: auto; }
+.hero-runway + #efface {
+  margin-top: calc(var(--svh, 1svh) * -100);
+}
+@media (max-height: 530px) {
+  .hero-copy h1 { font-size: clamp(1.9rem, 7vh, 2.5rem); }
+  .hero-details p { margin-top: .55rem; font-size: .875rem; }
+  .hero-details button { margin-top: .75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-runway { height: auto; }
+  .hero-stage { position: relative; }
+  .hero-copy-track { height: 100%; }
+  .hero-copy { position: relative; }
+  .hero-fragment { transform: none; opacity: 1; }
+  .hero-runway + #efface { margin-top: 0; }
+}
+
 /* Above-the-fold rise, runs on stylesheet parse (no hydration wait). */
 @keyframes rise-in {
   /* 0.01, not 0: fully transparent text isn't an LCP candidate, so the hero

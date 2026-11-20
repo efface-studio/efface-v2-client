@@ -84,11 +84,11 @@ export default function EffaceIntro() {
       style={{
         position: "relative",
         height: `calc(var(--svh, 1svh) * ${sceneVh})`,
-        background: "var(--color-bg)",
         color: "#EDEDEF",
       }}
     >
       <div
+        ref={refs.stageRef}
         style={{
           position: "sticky",
           top: 0,

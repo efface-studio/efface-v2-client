@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { clamp, easeOutCubic } from "@/lib/motion";
-import { usePinnedSceneMotion } from "@/lib/scrollMotion";
+import { clamp, easeOutCubic, smoothstep } from "@/lib/motion";
+import { elementProgress, usePinnedSceneMotion } from "@/lib/scrollMotion";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { BODY_FIT_HEIGHT, STEP, W0, WIN } from "./EffaceIntro.constants";
 import type { EffaceIntroRefs, EffaceTimelineParams } from "./EffaceIntro.types";
 
@@ -26,6 +27,8 @@ export function useEffaceTimeline({
   timelineEnd,
 }: EffaceTimelineParams): EffaceIntroRefs {
   const rootRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const reduce = usePrefersReducedMotion();
   const clutterRef = useRef<HTMLDivElement>(null);
   const puckRef = useRef<HTMLDivElement>(null);
   const fitRef = useRef<HTMLDivElement>(null);
@@ -147,11 +150,24 @@ export function useEffaceTimeline({
   );
 
   // Pinned on every screen size, driven by how far the section has scrolled.
-  const pinnedFrame = useCallback((p: number) => paint(p * timelineEnd), [paint, timelineEnd]);
+  const pinnedFrame = useCallback((p: number) => {
+    const root = rootRef.current;
+    const stage = stageRef.current;
+    if (root && stage) {
+      // While the intro enters, pinned progress is still zero. Fade its contents
+      // over the film on the shared page background before the definition starts.
+      const entering = !reduce && p === 0;
+      const alpha = entering ? smoothstep(0, 1, elementProgress(root, 1, 0.66)) : 1;
+      const opacity = String(Math.round(alpha * 1000) / 1000);
+      if (stage.style.opacity !== opacity) stage.style.opacity = opacity;
+    }
+    paint(p * timelineEnd);
+  }, [paint, reduce, timelineEnd]);
   usePinnedSceneMotion(rootRef, pinnedFrame, true);
 
   return {
     rootRef,
+    stageRef,
     clutterRef,
     puckRef,
     fitRef,
