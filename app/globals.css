@@ -124,7 +124,7 @@ body {
 
 /* ── Motion utilities ─────────────────────────────────────────── */
 
-/* Pin only the film. The next section covers the stage with its own opaque backdrop. */
+/* The film and incoming definition share the page background during the overlap. */
 .hero-runway {
   --hero-height: calc(var(--svh, 1svh) * 100);
   height: calc(var(--hero-height) * 5.6);

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useScroll, useTransform } from "motion/react";
+import { smoothstep } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import HeroScene from "@/components/sections/HeroScene";
 import HeroCopy from "./HeroCopy";
@@ -14,7 +15,7 @@ export default function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const scatter = useTransform(scrollYProgress, [0, 0.145], [0, 1]);
   const time = useTransform(scrollYProgress, [FILM_START, FILM_END], [0, 1]);
-  const filmOpacity = useTransform(scrollYProgress, [FILM_END, HANDOFF_END], [1, 0]);
+  const filmOpacity = useTransform(scrollYProgress, (p) => 1 - smoothstep(FILM_END, HANDOFF_END, p));
 
   // Use the same sampled progress as the video. A native scroll timeline on
   // a descendant of the sticky stage measures a different range in Chrome.
@@ -32,7 +33,7 @@ export default function Hero() {
         <div ref={film} className="pointer-events-none absolute inset-0">
           <HeroScene progress={time} />
         </div>
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-linear-to-b from-bg/30 via-bg/20 via-55% to-bg/80" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-linear-to-b from-bg/30 via-bg/20 via-55% to-bg/80 motion-reduce:to-bg" />
       </div>
 
       <HeroCopy scatter={scatter} reduce={reduce} />
