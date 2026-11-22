@@ -1,0 +1,21 @@
+@media (prefers-reduced-motion: no-preference) {
+  .project:not(:focus-within) {
+    --remaining: calc(1 - var(--project-entry, 1));
+    opacity: var(--project-entry, 1);
+    transform: translate(
+      calc(var(--remaining) * var(--entry-x, 0px)),
+      calc(var(--remaining) * var(--entry-y, 36px))
+    );
+  }
+
+  @media (min-width: 48rem) {
+    .featured {
+      --entry-x: clamp(-144px, -9vw, -64px);
+      --entry-y: 16px;
+    }
+
+    .featured:nth-child(even) {
+      --entry-x: clamp(64px, 9vw, 144px);
+    }
+  }
+}

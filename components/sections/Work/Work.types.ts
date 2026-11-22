@@ -144,6 +144,7 @@ export interface WorkLaneRefs {
 export interface WorkFeaturedLaneProps {
   item: WorkFeaturedItem;
   refs: WorkLaneRefs;
+  rowRef: RefObject<HTMLDivElement | null>;
   eager: boolean;
   /** Shots in view at once — sets each shot's width. */
   visible: number;
