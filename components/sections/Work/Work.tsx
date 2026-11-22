@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import Reveal from "@/components/Reveal";
-import { STAGGER } from "@/lib/motion";
+import WorkProjectEntry from "./WorkProjectEntry";
 import WorkDetail from "./WorkDetail";
 import WorkFeaturedScene from "./WorkFeaturedScene";
 import WorkIconTile from "./WorkIconTile";
@@ -27,7 +27,7 @@ export default function Work() {
   const rest = projects.filter((p) => !featuredKeys.has(p.key)).sort((a, b) => rank(a.key) - rank(b.key));
 
   return (
-    <section id="work" className="relative border-t border-line bg-bg py-24 md:py-36">
+    <section id="work" className="relative overflow-x-clip border-t border-line bg-bg py-24 md:py-36">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <Reveal>
           <p className="label">
@@ -55,9 +55,9 @@ export default function Work() {
             <span className="text-accent">//</span> {t("otherLabel")}
           </p>
           <ul className="mt-8 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
-            {rest.map((project, i) => (
+            {rest.map((project) => (
               <li key={project.key}>
-                <Reveal delay={Math.min(i, 5) * STAGGER.tight}>
+                <WorkProjectEntry>
                   <button
                     type="button"
                     data-project={project.key}
@@ -83,7 +83,7 @@ export default function Work() {
                     </span>
                     {project.desc && <span className="mt-1.5 block text-sm text-fg-dim">{project.desc}</span>}
                   </button>
-                </Reveal>
+                </WorkProjectEntry>
               </li>
             ))}
           </ul>

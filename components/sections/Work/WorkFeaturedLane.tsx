@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import WorkFeaturedInfo from "./WorkFeaturedInfo";
+import WorkProjectEntry from "./WorkProjectEntry";
 import WorkPageFrame from "./WorkPageFrame";
 import { FEATURED_SLIDE, shotSrcSet } from "./Work.constants";
 import type { WorkFeaturedLaneProps } from "./Work.types";
@@ -14,13 +15,13 @@ const SHOT_WIDTH: Record<number, string> = {
 };
 
 /** One project inside a pinned row: details on top, its shots or page below. */
-export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFeaturedLaneProps) {
+export default function WorkFeaturedLane({ item, refs, rowRef, eager, visible }: WorkFeaturedLaneProps) {
   const t = useTranslations("Work.featured");
   const { feature, project } = item;
   const strip = feature.shots.length > visible;
 
   return (
-    <article aria-label={project.name} className="row-span-2 grid min-w-0 grid-rows-subgrid">
+    <WorkProjectEntry rowRef={rowRef} label={project.name} className="row-span-2 grid min-w-0 grid-rows-subgrid">
       <div>
         <WorkFeaturedInfo project={project} links={feature.links} more />
       </div>
@@ -89,6 +90,6 @@ export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFea
           </>
         )}
       </div>
-    </article>
+    </WorkProjectEntry>
   );
 }
