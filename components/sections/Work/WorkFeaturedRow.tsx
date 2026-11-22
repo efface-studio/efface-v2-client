@@ -42,7 +42,7 @@ export default function WorkFeaturedRow({ items, index, count, compact, showClie
       <section
         ref={stickyRef}
         className={cn(
-          "sticky overflow-hidden",
+          "sticky",
           compact
             ? "top-[max(4.5rem,calc(var(--svh,1svh)*50-20rem))]"
             : "top-[max(4.5rem,calc(50vh-22rem-var(--extra)/2))]"

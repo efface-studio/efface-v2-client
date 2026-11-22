@@ -27,7 +27,7 @@ export default function Work() {
   const rest = projects.filter((p) => !featuredKeys.has(p.key)).sort((a, b) => rank(a.key) - rank(b.key));
 
   return (
-    <section id="work" className="relative border-t border-line bg-bg py-24 md:py-36">
+    <section id="work" className="relative overflow-x-clip border-t border-line bg-bg py-24 md:py-36">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <Reveal>
           <p className="label">
