@@ -1,8 +1,7 @@
 "use client";
 
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { useReducedMotion } from "motion/react";
 import Reveal from "@/components/Reveal";
 import { useIsMobile } from "@/lib/useIsMobile";
 import WorkClients from "./WorkClients";
@@ -10,6 +9,17 @@ import WorkFeatured from "./WorkFeatured";
 import WorkFeaturedRow from "./WorkFeaturedRow";
 import { FEATURED_PER_ROW, WORK_CLIENTS } from "./Work.constants";
 import type { WorkFeaturedSceneProps } from "./Work.types";
+
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function subscribeToMotionPreference(update: () => void) {
+  const query = reducedMotion();
+  query.addEventListener("change", update);
+  return () => query.removeEventListener("change", update);
+}
+
+const readMotionPreference = () => reducedMotion().matches;
+const serverMotionPreference = () => false;
 
 /**
  * Featured projects. On desktop they pin two to a row, side by side, while
@@ -20,7 +30,7 @@ import type { WorkFeaturedSceneProps } from "./Work.types";
 export default function WorkFeaturedScene({ items }: WorkFeaturedSceneProps) {
   const t = useTranslations("Work.featured");
   const isMobile = useIsMobile();
-  const reduce = useReducedMotion();
+  const reduce = useSyncExternalStore(subscribeToMotionPreference, readMotionPreference, serverMotionPreference);
   const perRow = isMobile ? 1 : FEATURED_PER_ROW;
   const rows = useMemo(() => {
     const out: (typeof items)[] = [];
