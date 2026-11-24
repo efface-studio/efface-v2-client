@@ -6,7 +6,7 @@ import type { IntroBodyProps } from "./EffaceIntro.types";
 
 /**
  * Label, dictionary definition and the animated sentence. Shared by both
- * layouts — only the type scale and padding change below `md`.
+ * layouts, with centered copy on phones.
  */
 export default function IntroBody({
   tokens,
@@ -20,6 +20,7 @@ export default function IntroBody({
   return (
     <div
       ref={fitRef}
+      className="max-md:text-center"
       style={{
         position: "relative",
         maxWidth: 1080,
@@ -30,6 +31,7 @@ export default function IntroBody({
       }}
     >
       <div
+        className="max-md:justify-center"
         style={{
           display: "flex",
           alignItems: "center",
