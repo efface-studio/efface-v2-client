@@ -42,25 +42,25 @@ export default async function PoliciesPage({
     <main className="min-h-screen bg-bg text-fg">
       {/* sticky page header */}
       <div className="sticky top-0 z-10 border-b border-line bg-bg/55 backdrop-blur-md backdrop-saturate-150">
-        <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-6 px-6 md:px-12">
-          <div className="flex items-center gap-[11px]">
+        <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-4 px-6 md:px-12">
+          <div className="flex min-w-0 items-center gap-[11px]">
             <LogoMark className="h-[22px] w-[22px] text-fg" />
             <span className="policy-wordmark">efface</span>
             <span className="policy-kicker ml-2.5">POLICY</span>
           </div>
-          <Link href="/" className="text-[13.5px] text-fg-dim transition-colors hover:text-fg">
+          <Link href="/" className="shrink-0 text-[13.5px] text-fg-dim transition-colors hover:text-fg">
             {home}
           </Link>
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-[1180px] items-start gap-16 px-6 pb-32 pt-14 md:px-12 md:pt-[72px] lg:gap-[72px]">
+      <div className="mx-auto flex max-w-[1180px] flex-col gap-10 px-6 pb-32 pt-10 md:px-12 md:pt-14 lg:flex-row lg:items-start lg:gap-[72px] lg:pt-[72px]">
         <PolicyIndex
           label={navLabel}
           items={sections.map((s) => ({ id: s.id, title: s.title }))}
         />
 
-        <div className="min-w-0 flex-1 lg:max-w-[720px]">
+        <div className="w-full min-w-0 lg:max-w-[720px] lg:flex-1">
           <h1 data-intro="" className="policy-anim m-0 text-[28px] font-bold tracking-[-0.02em] md:text-[34px]">
             {pageTitle}
           </h1>
@@ -78,7 +78,7 @@ export default async function PoliciesPage({
               </h2>
               <div className="policy-date">{s.date}</div>
 
-              <div className="flex flex-col gap-[18px] text-[15px] leading-[1.85] text-fg-dim">
+              <div className="flex flex-col gap-[18px] break-words text-[15px] leading-[1.85] text-fg-dim">
                 {s.blocks.map((b, i) =>
                   b.kind === "p" ? (
                     <p key={i} className="m-0">

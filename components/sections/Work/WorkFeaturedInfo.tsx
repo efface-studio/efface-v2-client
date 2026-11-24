@@ -12,11 +12,14 @@ export default function WorkFeaturedInfo({ project, links, more }: WorkFeaturedI
 
   return (
     <>
-      <div className="flex items-center gap-4">
+      {/* Below `lg` a lane is phone-narrow (one per row on phones, two to a
+          row on tablets): "View details" wraps under the name there, so the
+          name and platforms keep the width instead of breaking word by word. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="w-14 shrink-0 md:w-16">
           <WorkIconTile name={project.name} icon={WORK_ICONS[project.key]} zoom />
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-[calc(100%-4.5rem)] md:basis-[calc(100%-5rem)] lg:basis-0">
           <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{project.name}</h3>
           {/* The year, a rule, then the platforms (in English, with marks) —
               year first, so a wrapped platform list never strands it. */}
@@ -38,7 +41,7 @@ export default function WorkFeaturedInfo({ project, links, more }: WorkFeaturedI
           <button
             type="button"
             data-project={project.key}
-            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 self-center text-sm font-medium text-fg transition-colors hover:text-accent-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="ml-[4.5rem] inline-flex shrink-0 cursor-pointer items-center gap-1.5 self-center text-sm font-medium md:ml-20 lg:ml-0 text-fg transition-colors hover:text-accent-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             {t("more")}
             <svg aria-hidden viewBox="0 0 12 12" className="h-3 w-3" fill="none">

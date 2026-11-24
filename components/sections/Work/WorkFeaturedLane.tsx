@@ -14,7 +14,7 @@ const SHOT_WIDTH: Record<number, string> = {
 };
 
 /** One project inside a pinned row: details on top, its shots or page below. */
-export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFeaturedLaneProps) {
+export default function WorkFeaturedLane({ item, refs, visible }: WorkFeaturedLaneProps) {
   const t = useTranslations("Work.featured");
   const { feature, project } = item;
   const strip = feature.shots.length > visible;
@@ -32,7 +32,6 @@ export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFea
           <WorkPageFrame
             page={feature.page}
             alt={t("pageAlt", { name: project.name })}
-            eager={eager}
             frameRef={refs.frameRef}
             imageRef={refs.pageRef}
           />
@@ -63,7 +62,7 @@ export default function WorkFeaturedLane({ item, refs, eager, visible }: WorkFea
                       alt={t("shotAlt", { name: project.name, n: k + 1 })}
                       width={720}
                       height={1565}
-                      loading={eager ? "eager" : "lazy"}
+                      loading="lazy"
                       data-zoom
                       tabIndex={0}
                       className="w-full rounded-2xl ring-1 ring-white/10"

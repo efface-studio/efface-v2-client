@@ -61,7 +61,7 @@ export default function BuildButton() {
         // Start fetching on intent, so whichever build is picked is there by the click.
         onPointerEnter={() => void loadStudio()}
         onFocus={() => void loadStudio()}
-        className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-medium text-fg-dim ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-expanded:bg-white/10 aria-expanded:text-fg"
+        className="flex h-8 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-xs font-medium text-fg-dim ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-expanded:bg-white/10 aria-expanded:text-fg"
       >
         <CodeXml aria-hidden className="h-3.5 w-3.5" />
         {t("open")}
@@ -73,7 +73,7 @@ export default function BuildButton() {
           role="menu"
           aria-label={t("menu.label")}
           onKeyDown={onMenuKey}
-          className="build-menu absolute right-0 top-full z-50 mt-2 w-[19rem] origin-top-right rounded-[12px] border-[0.5px] border-white/15 bg-[rgba(36,36,40,0.72)] p-[5px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.6),0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-[1.8]"
+          className="build-menu absolute right-0 top-full z-50 mt-2 w-[19rem] origin-top-right max-sm:fixed max-sm:inset-x-4 max-sm:top-14 max-sm:mt-0 max-sm:w-auto max-sm:origin-top rounded-[12px] border-[0.5px] border-white/15 bg-[rgba(36,36,40,0.72)] p-[5px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.6),0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-[1.8]"
         >
           {builds.map(({ kind, icon: Icon, load }, i) => (
             <button

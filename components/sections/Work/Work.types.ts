@@ -144,7 +144,6 @@ export interface WorkLaneRefs {
 export interface WorkFeaturedLaneProps {
   item: WorkFeaturedItem;
   refs: WorkLaneRefs;
-  eager: boolean;
   /** Shots in view at once — sets each shot's width. */
   visible: number;
 }

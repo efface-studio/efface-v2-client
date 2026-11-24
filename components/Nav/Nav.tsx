@@ -41,15 +41,15 @@ export default function Nav() {
             : "translate-y-0 opacity-100"
         )}
       >
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 md:h-20 md:px-10">
-          <Link href="/" className="group flex items-center gap-2.5" aria-label="efface home">
+        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-3 px-5 sm:px-6 md:h-20 md:px-10">
+          <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label="efface home">
             <LogoMark className="h-6 w-6 text-fg transition-transform duration-500 group-hover:rotate-[-8deg]" />
             <span className="text-lg font-semibold lowercase tracking-tight text-fg">
               efface
             </span>
           </Link>
 
-          <div className="flex items-center gap-4 md:gap-7">
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-7">
             <BuildButton />
             <LanguageToggle />
             <button

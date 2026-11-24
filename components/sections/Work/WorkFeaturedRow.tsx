@@ -67,7 +67,6 @@ export default function WorkFeaturedRow({ items, index, count, compact, showClie
               key={item.feature.key}
               item={item}
               refs={lanes[i]}
-              eager={index === 0}
               visible={visible}
             />
           ))}

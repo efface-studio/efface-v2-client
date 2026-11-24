@@ -38,9 +38,9 @@ export default function Contact() {
               <li key={c.email} className="border-b border-white/10">
                 <a
                   href={`mailto:${c.email}`}
-                  className="group flex flex-col gap-2 py-6 md:flex-row md:items-center md:justify-between md:gap-8 md:py-8"
+                  className="group flex flex-col gap-2 py-6 md:py-8 lg:flex-row lg:items-center lg:justify-between lg:gap-8"
                 >
-                  <span className="flex items-center gap-3 text-2xl font-semibold tracking-tight text-fg transition-[color,transform] duration-300 group-hover:translate-x-2 group-hover:text-accent-bright sm:text-3xl md:text-5xl">
+                  <span className="flex min-w-0 items-center gap-3 break-all text-2xl font-semibold tracking-tight text-fg transition-[color,transform] duration-300 group-hover:translate-x-2 group-hover:text-accent-bright sm:text-3xl md:text-5xl">
                     {c.email}
                     <ArrowUpRight
                       aria-hidden
@@ -48,7 +48,7 @@ export default function Contact() {
                       strokeWidth={1.75}
                     />
                   </span>
-                  <span className="shrink-0 text-sm text-fg-dim md:text-right">
+                  <span className="shrink-0 text-sm text-fg-dim lg:text-right">
                     <span className="label mr-3">{c.label}</span>
                     {c.note}
                   </span>

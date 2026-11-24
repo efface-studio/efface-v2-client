@@ -82,6 +82,27 @@ export function useFeaturedRow(
     };
   }, [enabled, lanes]);
 
+  // The shots wait off to the side (translated, inside a clipped lane), where
+  // native lazy loading never sees them — they'd only start loading as they
+  // slide in. Fetch a row's images once it's within a screen and a half of
+  // view instead: not with the page, but ready before the pin begins.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        root.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => {
+          img.loading = "eager";
+        });
+        io.disconnect();
+      },
+      { rootMargin: "150% 0px" }
+    );
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
+
   const frame = useCallback(() => {
     const root = rootRef.current;
     if (!root) return;

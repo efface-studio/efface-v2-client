@@ -28,7 +28,7 @@ export default function WorkClients({ clients }: WorkClientsProps) {
     <div data-tour="clients" className="mt-8">
       <p className="text-sm text-fg-faint">{t("clientsLabel")}</p>
       <div className="mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
-        <div className="flex w-max animate-marquee">
+        <div className="flex w-max animate-marquee max-md:[--marquee-duration:15.2s]">
           {row(false)}
           {row(true)}
         </div>

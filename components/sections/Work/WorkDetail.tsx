@@ -94,7 +94,7 @@ export default function WorkDetail({ projects }: WorkDetailProps) {
       className="m-auto max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] max-w-[1600px] overflow-y-auto overscroll-contain rounded-3xl bg-surface p-0 text-fg ring-1 ring-white/10 backdrop:bg-black/80 backdrop:backdrop-blur-sm md:max-h-[calc(100dvh-3rem)] md:w-[calc(100%-3rem)]"
     >
       {project && (
-        <div className="relative px-6 py-8 md:px-12 md:py-12 lg:px-16">
+        <div className="relative px-5 py-6 sm:px-6 sm:py-8 md:px-12 md:py-12 lg:px-16">
           <form method="dialog">
             <button
               aria-label={t("zoomClose")}
@@ -104,26 +104,25 @@ export default function WorkDetail({ projects }: WorkDetailProps) {
             </button>
           </form>
 
-          {/* Header — icon, name, subtitle, links. */}
-          <header className="flex items-start gap-5 pr-14 md:gap-8">
-            <div className="w-20 shrink-0 md:w-32">
+          <header className="grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-3 gap-y-3 md:grid-cols-[8rem_minmax(0,1fr)] md:items-start md:gap-x-8 md:gap-y-0 md:pr-14">
+            <div className="md:row-span-2">
               <WorkIconTile name={project.name} icon={icon} zoom />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-2xl font-semibold tracking-tight md:text-5xl">
-                {project.name}
-              </h3>
+            <h3 className="min-w-0 break-keep pr-12 text-2xl font-semibold tracking-tight [overflow-wrap:anywhere] md:pr-0 md:text-5xl">
+              {project.name}
+            </h3>
+            <div className="col-span-full min-w-0 md:col-span-1 md:col-start-2">
               {project.desc && (
-                <p className="mt-2 break-keep text-fg-dim md:mt-3 md:text-xl">
+                <p className="break-keep text-fg-dim md:mt-3 md:text-xl">
                   {project.desc}
                 </p>
               )}
               {/* Year, a rule, then every role efface took on the project. */}
-              <p className="mt-1.5 flex flex-wrap items-center text-sm text-fg-faint md:text-base">
+              <p className="mt-1.5 text-sm leading-relaxed text-fg-faint md:text-base">
                 {project.year && (
                   <>
                     <span className="font-mono">{project.year}</span>
-                    <span aria-hidden className="mx-3 h-3.5 w-px bg-white/20" />
+                    <span aria-hidden className="mx-2 inline-block h-3 w-px bg-white/20 align-middle" />
                   </>
                 )}
                 <span>{(WORK_ROLES[project.key] ?? WORK_ROLES_ALL).join(" · ")}</span>
