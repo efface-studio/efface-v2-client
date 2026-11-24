@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "motion/react";
 import { DURATION, menuItem, overlayFade } from "@/lib/motion";
+import { useUIStore } from "@/store/ui.store";
 import BuildButton from "@/components/BuildMode";
 import LanguageToggle from "@/components/LanguageToggle";
 import { NAV_ITEMS } from "./Nav.constants";
@@ -13,6 +14,7 @@ export default function NavOverlay({ onNavigate }: NavOverlayProps) {
   const t = useTranslations("Nav");
   const tc = useTranslations("Contact");
   const reduce = useReducedMotion();
+  const setTourMenuSlot = useUIStore((s) => s.setTourMenuSlot);
 
   return (
     <motion.div
@@ -57,8 +59,9 @@ export default function NavOverlay({ onNavigate }: NavOverlayProps) {
           >
             {tc("email")}
           </a>
-          <div className="flex w-full items-center justify-between md:contents">
+          <div className="flex w-full flex-wrap items-center justify-between gap-2 md:contents">
             <LanguageToggle />
+            <div ref={setTourMenuSlot} className="empty:hidden md:hidden" />
             <div className="md:hidden">
               <BuildButton onChoose={onNavigate} />
             </div>
