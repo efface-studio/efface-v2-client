@@ -176,7 +176,7 @@ html:lang(ko) body {
   }
 }
 .animate-marquee {
-  animation: marquee 38s linear infinite;
+  animation: marquee var(--marquee-duration, 38s) linear infinite;
 }
 
 /* Auto tour: the client marquee stops and lays every logo out, enlarged. */
