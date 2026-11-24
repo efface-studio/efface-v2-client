@@ -3,11 +3,12 @@
 import { createPortal } from "react-dom";
 import { useLocale, useTranslations } from "next-intl";
 import { Pause, Play } from "lucide-react";
+import { useUIStore } from "@/store/ui.store";
 import TourCaption from "./TourCaption";
 import { useTour } from "./useTour";
 
 /**
- * "Auto tour" — a button in the hero that plays the site like a video: the
+ * "Auto tour" plays the site like a video: the
  * page scrolls itself, a spotlight frames what is being described, a cursor
  * points and presses, and each line is narrated and captioned. Any real input
  * pauses it; the button or the caption bar picks it up where it stopped.
@@ -17,25 +18,46 @@ export default function Tour() {
   const locale = useLocale();
   const lines = t.raw("steps") as Record<string, string>;
   const tour = useTour(lines, locale);
+  const menuSlot = useUIStore((s) => s.tourMenuSlot);
+  const closeNav = useUIStore((s) => s.closeNav);
   const { status, index, total, step, start, pause, resume, close, getProgress, speed, setSpeed, volume, setVolume, cursorRef, focusRef, host } =
     tour;
   const label = status === "playing" ? t("pause") : status === "paused" ? t("resume") : t("start");
+  const togglePlayback = status === "playing" ? pause : status === "paused" ? resume : start;
+  const Icon = status === "playing" ? Pause : Play;
+  const buttonContent = (
+    <>
+      <Icon className="size-3.5 fill-current" aria-hidden />
+      {label}
+    </>
+  );
 
   return (
     <>
       <button
         type="button"
         data-tour-controls
-        onClick={status === "playing" ? pause : status === "paused" ? resume : start}
-        className="tour-glass-button rise-in rise-d4 mt-9 inline-flex cursor-pointer items-center gap-2.5 rounded-full px-5 py-2.5 text-sm font-medium text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        onClick={togglePlayback}
+        className="tour-glass-button rise-in rise-d4 mt-9 hidden cursor-pointer items-center gap-2.5 rounded-full px-5 py-2.5 text-sm font-medium text-fg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:inline-flex"
       >
-        {status === "playing" ? (
-          <Pause className="h-3.5 w-3.5 fill-current" aria-hidden />
-        ) : (
-          <Play className="h-3.5 w-3.5 fill-current" aria-hidden />
-        )}
-        {label}
+        {buttonContent}
       </button>
+
+      {menuSlot &&
+        createPortal(
+          <button
+            type="button"
+            data-tour-controls
+            onClick={() => {
+              closeNav();
+              togglePlayback();
+            }}
+            className="flex min-h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-medium text-fg-dim ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            {buttonContent}
+          </button>,
+          menuSlot
+        )}
 
       {status !== "idle" &&
         createPortal(
