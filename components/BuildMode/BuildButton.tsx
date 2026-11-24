@@ -12,7 +12,7 @@ const loadSwarm = () => import("./swarm/SwarmBuild");
 type BuildKind = "studio" | "swarm";
 
 /** The nav's "Build" button — a menu of the two builds: the code studio and the swarm. */
-export default function BuildButton() {
+export default function BuildButton({ onChoose }: { onChoose?: () => void }) {
   const t = useTranslations("Build");
   const [menu, setMenu] = useState(false);
   const setBuild = useUIStore((s) => s.setBuild);
@@ -31,12 +31,14 @@ export default function BuildButton() {
 
   const choose = (kind: BuildKind) => {
     setMenu(false);
+    onChoose?.();
     setBuild(kind);
   };
   const onMenuKey = (e: React.KeyboardEvent) => {
     const list = items.current.filter(Boolean) as HTMLButtonElement[];
     const at = list.indexOf(document.activeElement as HTMLButtonElement);
     if (e.key === "Escape") {
+      e.stopPropagation();
       setMenu(false);
       wrap.current?.querySelector<HTMLButtonElement>("[aria-haspopup]")?.focus();
     } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -73,7 +75,7 @@ export default function BuildButton() {
           role="menu"
           aria-label={t("menu.label")}
           onKeyDown={onMenuKey}
-          className="build-menu absolute right-0 top-full z-50 mt-2 w-[19rem] origin-top-right rounded-[12px] border-[0.5px] border-white/15 bg-[rgba(36,36,40,0.72)] p-[5px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.6),0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-[1.8]"
+          className="build-menu absolute bottom-full right-0 z-50 mb-2 w-[19rem] max-w-[calc(100vw-3rem)] origin-bottom-right md:bottom-auto md:top-full md:mb-0 md:mt-2 md:origin-top-right rounded-[12px] border-[0.5px] border-white/15 bg-[rgba(36,36,40,0.72)] p-[5px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.6),0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-[1.8]"
         >
           {builds.map(({ kind, icon: Icon, load }, i) => (
             <button

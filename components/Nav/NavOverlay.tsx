@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "motion/react";
 import { DURATION, menuItem, overlayFade } from "@/lib/motion";
+import BuildButton from "@/components/BuildMode";
 import LanguageToggle from "@/components/LanguageToggle";
 import { NAV_ITEMS } from "./Nav.constants";
 import type { NavOverlayProps } from "./Nav.types";
@@ -15,13 +16,13 @@ export default function NavOverlay({ onNavigate }: NavOverlayProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-40 bg-bg/95 backdrop-blur-xl"
+      className="fixed inset-0 z-40 overflow-y-auto bg-bg/95 backdrop-blur-xl"
       variants={overlayFade}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
-      <nav className="mx-auto flex h-full max-w-[1400px] flex-col justify-center px-6 md:px-10">
+      <nav className="mx-auto flex min-h-full max-w-[1400px] flex-col justify-center px-6 pb-8 pt-20 md:px-10 md:py-0">
         <ul className="space-y-2 md:space-y-3">
           {NAV_ITEMS.map((item, i) => (
             <li key={item.key} className="overflow-hidden">
@@ -44,7 +45,7 @@ export default function NavOverlay({ onNavigate }: NavOverlayProps) {
         </ul>
 
         <motion.div
-          className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-line pt-8"
+          className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-line pt-5 md:mt-14 md:pt-8"
           initial={reduce ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -56,7 +57,12 @@ export default function NavOverlay({ onNavigate }: NavOverlayProps) {
           >
             {tc("email")}
           </a>
-          <LanguageToggle />
+          <div className="flex w-full items-center justify-between md:contents">
+            <LanguageToggle />
+            <div className="md:hidden">
+              <BuildButton onChoose={onNavigate} />
+            </div>
+          </div>
         </motion.div>
       </nav>
     </motion.div>

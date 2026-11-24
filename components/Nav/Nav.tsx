@@ -50,12 +50,14 @@ export default function Nav() {
           </Link>
 
           <div className="flex items-center gap-4 md:gap-7">
-            <BuildButton />
-            <LanguageToggle />
+            <div className="hidden md:contents">
+              <BuildButton />
+              <LanguageToggle />
+            </div>
             <button
               type="button"
               onClick={toggleNav}
-              className="relative z-50 flex h-9 w-9 flex-col items-center justify-center gap-[5px]"
+              className="relative z-50 flex size-11 flex-col md:size-9 items-center justify-center gap-[5px]"
               aria-label={isOpen ? t("close") : t("menu")}
               aria-expanded={isOpen}
             >
