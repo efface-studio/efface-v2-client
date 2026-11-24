@@ -104,27 +104,25 @@ export default function WorkDetail({ projects }: WorkDetailProps) {
             </button>
           </form>
 
-          {/* Header — icon, name, subtitle, links. Phones stack the icon over
-              the text; side by side it left the text a ~90px column. */}
-          <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:pr-14 md:gap-8">
-            <div className="w-16 shrink-0 sm:w-20 md:w-32">
+          <header className="grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-3 gap-y-3 md:grid-cols-[8rem_minmax(0,1fr)] md:items-start md:gap-x-8 md:gap-y-0 md:pr-14">
+            <div className="md:row-span-2">
               <WorkIconTile name={project.name} icon={icon} zoom />
             </div>
-            <div className="min-w-0">
-              <h3 className="break-keep text-2xl font-semibold tracking-tight md:text-5xl">
-                {project.name}
-              </h3>
+            <h3 className="min-w-0 break-keep pr-12 text-2xl font-semibold tracking-tight [overflow-wrap:anywhere] md:pr-0 md:text-5xl">
+              {project.name}
+            </h3>
+            <div className="col-span-full min-w-0 md:col-span-1 md:col-start-2">
               {project.desc && (
-                <p className="mt-2 break-keep text-fg-dim md:mt-3 md:text-xl">
+                <p className="break-keep text-fg-dim md:mt-3 md:text-xl">
                   {project.desc}
                 </p>
               )}
               {/* Year, a rule, then every role efface took on the project. */}
-              <p className="mt-1.5 flex flex-wrap items-center text-sm text-fg-faint md:text-base">
+              <p className="mt-1.5 text-sm leading-relaxed text-fg-faint md:text-base">
                 {project.year && (
                   <>
                     <span className="font-mono">{project.year}</span>
-                    <span aria-hidden className="mx-3 h-3.5 w-px bg-white/20" />
+                    <span aria-hidden className="mx-2 inline-block h-3 w-px bg-white/20 align-middle" />
                   </>
                 )}
                 <span>{(WORK_ROLES[project.key] ?? WORK_ROLES_ALL).join(" · ")}</span>
