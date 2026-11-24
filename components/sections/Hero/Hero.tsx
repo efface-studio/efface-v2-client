@@ -85,18 +85,18 @@ export default function Hero() {
       {/* Top scrim (nav) + bottom blend into the next section. */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg/45 via-transparent to-bg" />
 
-      {/* Copy — anchored lower-left. */}
+      {/* Center the copy on phones and anchor it lower-left on desktop. */}
       <motion.div
-        className="relative z-10 mx-auto flex min-h-[calc(var(--svh,1svh)*100)] max-w-[1400px] flex-col justify-end px-6 pb-[calc(var(--svh,1svh)*15)] md:px-10 md:pb-[12vh]"
+        className="relative z-10 mx-auto flex min-h-[calc(var(--svh,1svh)*100)] max-w-[1400px] flex-col items-center justify-center px-6 py-16 text-center md:items-stretch md:justify-end md:px-10 md:pb-[12vh] md:pt-0 md:text-left"
         style={reduce ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         <div className="max-w-2xl">
-          <h1 id="hero-title" className="text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
+          <h1 id="hero-title" className="max-md:text-balance text-[2.75rem] font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl">
             <span className="rise-in rise-d1 block">{t("titleLine1")}</span>
             <span className="rise-in rise-d2 block">{t("titleLine2")}</span>
           </h1>
 
-          <p className="rise-in rise-d3 mt-7 max-w-md text-base leading-relaxed text-fg-dim md:text-lg">
+          <p className="rise-in rise-d3 mt-7 max-w-md max-md:mx-auto max-md:text-balance text-base leading-relaxed text-fg-dim md:text-lg">
             {t("sub")}
           </p>
 
