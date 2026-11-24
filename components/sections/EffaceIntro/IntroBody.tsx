@@ -20,7 +20,7 @@ export default function IntroBody({
   return (
     <div
       ref={fitRef}
-      className="max-md:text-center"
+      className="max-md:text-center max-md:break-keep"
       style={{
         position: "relative",
         maxWidth: 1080,
